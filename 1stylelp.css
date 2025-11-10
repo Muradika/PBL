@@ -77,30 +77,26 @@ body {
 }
 
 .select-wrapper {
-    position: relative; /* Penting! Agar anak-anaknya (ikon) bisa diatur posisinya relatif terhadap ini */
+    position: relative;
 }
 
-/* 1. Sembunyikan panah default browser */
 .select-wrapper select {
-    /* Untuk Chrome, Safari, Firefox */
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    padding-right: 40px; /* Tambahkan padding agar teks tidak menutupi ikon kustom */
+    padding-right: 40px;
 }
 
-/* 2. Styling ikon panah kustom */
 .dropdown-icon {
     position: absolute;
-    top: 50%; /* Posisi tengah vertikal */
-    right: 20px; /* Jarak dari sisi kanan input */
-    transform: translateY(-50%); /* Menyesuaikan posisi tengah yang sempurna */
-    pointer-events: none; /* Penting! Agar user bisa klik di select, bukan hanya ikon */
-    color: #555; /* Warna ikon panah (abu-abu gelap) */
-    font-size: 16px; /* Ukuran ikon */
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #555;
+    font-size: 16px;
 }
 
-/* Tambahan: Pastikan input-group tetap punya margin bawah */
 .input-group {
     margin-bottom: 15px; 
 }

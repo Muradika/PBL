@@ -17,17 +17,22 @@
         <img src="img_Politeknik.png" alt="Logo Polibatam" class="logo" />
       </div>
 
-      <form>
+      <form id="loginForm">
         <div class="input-group">
-          <input type="email" placeholder="Email" required />
+          <input id="email" type="email" placeholder="Email" required />
         </div>
 
         <div class="input-group">
-          <input type="password" placeholder="Password" required />
+          <input
+            id="password"
+            type="password"
+            placeholder="Password"
+            required
+          />
         </div>
 
         <div class="input-group select-wrapper">
-          <select required>
+          <select id="role" required>
             <option value="" disabled selected>Choose User</option>
             <option value="mahasiswa">Mahasiswa</option>
             <option value="dosen">Dosen/Staff</option>
@@ -36,16 +41,11 @@
           <div class="dropdown-icon">&#9660;</div>
         </div>
 
-        <button
-          type="submit"
-          class="btn-login"
-          formaction="page2_double_verification.html"
-        >
-          Log In
-        </button>
+        <button type="submit" class="btn-login">Log In</button>
       </form>
 
-      <a href="#" class="forgot-password">Forgot Password?</a>
+      <a href="page1_forgot.html" class="forgot-password">Forgot Password?</a>
     </div>
+    <script src="script_lp.js"></script>
   </body>
 </html>

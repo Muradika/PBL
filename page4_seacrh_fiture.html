@@ -32,7 +32,7 @@
     <div class="search-bar-section">
       <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Search User" class="search-input" />
+        <input type="text" placeholder="Search File" class="search-input" />
         <span class="filter-icon">&#9660;</span>
       </div>
     </div>
@@ -87,5 +87,12 @@
         </div>
       </div>
     </footer>
+    <script src="auth.js"></script>
+    <script>
+      /* page4: allowed roles = mahasiswa, dosen */ requireRole([
+        "mahasiswa",
+        "dosen",
+      ]);
+    </script>
   </body>
 </html>
