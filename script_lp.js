@@ -20,6 +20,10 @@ document.addEventListener("DOMContentLoaded", function () {
     localStorage.setItem("sipak_session", JSON.stringify(session));
 
     // Redirect to verification page which will forward to the correct landing
+<<<<<<< HEAD
     window.location.href = "page2_double_verification.html";
+=======
+    window.location.href = "page3_home.html";
+>>>>>>> 8b90af10607c5b4d583541224615ac9fc8e80667
   });
 });

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SIPAk - Login</title>
+
+    <link rel="stylesheet" href="2styledvp.css" />
+  </head>
+  <body>
+    <div class="background-container">
+      <div class="overlay"></div>
+    </div>
+
+    <div class="login-card">
+      <div class="logo-area">
+        <img src="img_Politeknik.png" alt="Logo Polibatam" class="logo" />
+      </div>
+
+      <p class="verification-message">
+        We have sent a verification code to your email. Please check and enter
+        it.
+      </p>
+
+      <form id="verifyForm">
+        <div class="input-group">
+          <input
+            id="codeInput"
+            type="text"
+            placeholder="Verification Code"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-login" style="margin-top: 5px">
+          Enter
+        </button>
+      </form>
+      <script src="auth.js"></script>
+      <script>
+        document
+          .getElementById("verifyForm")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            const code = document.getElementById("codeInput").value.trim();
+            if (!code) {
+              alert("Masukkan kode verifikasi.");
+              return;
+            }
+            // For demo purposes we accept any code. Then route by role.
+            const s = (function () {
+              try {
+                return JSON.parse(
+                  localStorage.getItem("sipak_session") || "null"
+                );
+              } catch (e) {
+                return null;
+              }
+            })();
+            if (!s || !s.role) {
+              alert("Session tidak ditemukan, silakan login lagi.");
+              window.location.href = "page1_login.html";
+              return;
+            }
+            const role = s.role;
+            if (role === "mahasiswa") window.location.href = "page3_home.html";
+            else if (role === "dosen")
+              window.location.href = "page8_profile_dosen.html";
+            else if (role === "admin")
+              window.location.href = "page7_profile_admin_file.html";
+            else window.location.href = "page1_login.html";
+          });
+      </script>
+    </div>
+  </body>
+</html>
