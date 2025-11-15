@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SIPAk - Login</title>
+
+    <link rel="stylesheet" href="2styledvp.css" />
+  </head>
+  <body>
+    <div class="background-container">
+      <div class="overlay"></div>
+    </div>
+
+    <div class="login-card">
+      <div class="logo-area">
+        <img src="img_Politeknik.png" alt="Logo Polibatam" class="logo" />
+      </div>
+
+      <p class="verification-message">
+        Enter your email to receive a verification code before resetting your
+        password.
+      </p>
+
+      <form id="verifyForm">
+        <div class="input-group">
+          <input
+            id="codeInput"
+            type="text"
+            placeholder="Email"
+            required
+          />
+        </div>
+
+         <form id="verifyForm">
+        <div class="input-group">
+          <input
+            id="codeInput"
+            type="text"
+            placeholder="Verification Code"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-login" style="margin-top: 5px"
+            onclick="window.location.href='page1_reset.html'">
+          Enter
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

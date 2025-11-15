@@ -18,21 +18,29 @@
       </div>
 
       <p class="verification-message">
-        We have sent a verification code to your email. Please check and enter
-        it.
+        Enter your new password.
       </p>
 
-      <form>
-        <div class="input-group">
-          <input type="text" placeholder="Verification Code" required />
+     <div class="input-group">
+          <input
+            id="password"
+            type="password"
+            placeholder="New Password"
+            required
+          />
         </div>
 
-        <button
-          type="submit"
-          class="btn-login"
-          formaction="page3_home.html"
-          style="margin-top: 5px"
-        >
+         <div class="input-group">
+          <input
+            id="password"
+            type="password"
+            placeholder="Confirm Your Password"
+            required
+          />
+        </div>
+
+        <button type="button" class="btn-login" style="margin-top: 5px"
+            onclick="window.location.href='page1_login.html'">
           Enter
         </button>
       </form>
