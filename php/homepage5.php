@@ -20,9 +20,9 @@
     </div>
 
     <nav class="nav-menu">
-      <a href="page3_home.html" class="nav-link active">Home</a>
-      <a href="page5_about_us.html" class="nav-link">About Us</a>
-      <a href="page6_profile_mahasiswa.html" class="nav-link">Profile</a>
+      <a href="homepage1.php" class="nav-link active">Home</a>
+      <a href="aboutuspage.php" class="nav-link">About Us</a>
+      <a href="profilemahasiswa.php" class="nav-link">Profile</a>
     </nav>
   </header>
 
