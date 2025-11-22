@@ -1,147 +1,185 @@
-// File upload handling
-let uploadedFile = null;
+// File upload handling - Gunakan objek untuk menyimpan kedua file
+let uploadedFiles = {
+  image: null,
+  document: null,
+};
 
-// Initialize dropzone
-const dropzone = document.getElementById('dropzone');
-const fileInput = document.getElementById('fileInput');
-const fileInfo = document.getElementById('fileInfo');
-const fileName = document.getElementById('fileName');
-const dropzoneContent = dropzone.querySelector('.dropzone-content');
+// --- DOM Element References ---
+// Image Dropzone Elements
+const imageDropzone = document.getElementById("imageDropzone");
+const imageFileInput = document.getElementById("imageFileInput");
+const imageFileInfo = document.getElementById("imageFileInfo");
+const imageFileName = document.getElementById("imageFileName");
+const imageDropzoneContent = imageDropzone
+  ? imageDropzone.querySelector(".dropzone-content")
+  : null;
 
-document.addEventListener('DOMContentLoaded', function() {
-    const dropdownBtn = document.getElementById('profile-dropdown-btn');
-    const dropdown = document.querySelector('.dropdown');
+// Document Dropzone Elements
+const documentDropzone = document.getElementById("documentDropzone");
+const documentFileInput = document.getElementById("documentFileInput");
+const documentFileInfo = document.getElementById("documentFileInfo");
+const documentFileName = document.getElementById("documentFileName");
+const documentDropzoneContent = documentDropzone
+  ? documentDropzone.querySelector(".dropzone-content")
+  : null;
 
+// Form Element
+const form = document.getElementById("announcementForm");
+
+// --- 1. Dropdown Navigation Handler ---
+document.addEventListener("DOMContentLoaded", function () {
+  const dropdownBtn = document.getElementById("profile-dropdown-btn");
+  const dropdown = document.querySelector(".dropdown");
+
+  if (dropdownBtn && dropdown) {
     // Fungsi untuk membuka/menutup dropdown
-    dropdownBtn.addEventListener('click', function(e) {
-        e.preventDefault(); // Mencegah link pindah halaman
-        
-        // Toggle (menambah/menghapus) class 'active' pada kontainer dropdown
-        dropdown.classList.toggle('active');
+    dropdownBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      dropdown.classList.toggle("active");
     });
 
     // Opsional: Tutup dropdown saat pengguna mengklik di luar area menu
-    document.addEventListener('click', function(e) {
-        if (!dropdown.contains(e.target) && !dropdownBtn.contains(e.target)) {
-            dropdown.classList.remove('active');
-        }
+    document.addEventListener("click", function (e) {
+      if (!dropdown.contains(e.target) && !dropdownBtn.contains(e.target)) {
+        dropdown.classList.remove("active");
+      }
     });
+  }
+
+  // Set today's date as default
+  const dateInput = document.getElementById("date");
+  if (dateInput) {
+    dateInput.valueAsDate = new Date();
+  }
+
+  // Initialize dropzone listeners if elements exist
+  if (imageDropzone && documentDropzone) {
+    initializeDropzone(imageDropzone, "image");
+    initializeDropzone(documentDropzone, "document");
+  }
 });
 
-// Prevent default drag behaviors
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropzone.addEventListener(eventName, preventDefaults, false);
-    document.body.addEventListener(eventName, preventDefaults, false);
-});
+// --- 2. Dropzone Logic Helper ---
+function initializeDropzone(dropzoneElement, type) {
+  const fileInput = type === "image" ? imageFileInput : documentFileInput;
+
+  // A. Prevent default drag behaviors
+  ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+    dropzoneElement.addEventListener(eventName, preventDefaults, false);
+  });
+
+  // B. Highlight drop zone when item is dragged over it
+  ["dragenter", "dragover"].forEach((eventName) => {
+    dropzoneElement.addEventListener(
+      eventName,
+      () => {
+        dropzoneElement.classList.add("dragover");
+      },
+      false
+    );
+  });
+
+  ["dragleave", "drop"].forEach((eventName) => {
+    dropzoneElement.addEventListener(
+      eventName,
+      () => {
+        dropzoneElement.classList.remove("dragover");
+      },
+      false
+    );
+  });
+
+  // C. Handle dropped files
+  dropzoneElement.addEventListener("drop", (e) => handleDrop(e, type), false);
+
+  // D. Trigger file input on dropzone click
+  dropzoneElement.addEventListener("click", () => {
+    // Hanya buka dialog jika belum ada file yang diupload
+    if (!uploadedFiles[type]) {
+      fileInput.click();
+    }
+  });
+
+  // E. Handle file input change
+  fileInput.addEventListener("change", (e) => {
+    if (e.target.files.length > 0) {
+      handleFiles(e.target.files[0], type);
+    }
+  });
+}
 
 function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  e.preventDefault();
+  e.stopPropagation();
 }
 
-// Highlight drop zone when item is dragged over it
-['dragenter', 'dragover'].forEach(eventName => {
-    dropzone.addEventListener(eventName, () => {
-        dropzone.classList.add('dragover');
-    }, false);
-});
+function handleDrop(e, type) {
+  const dt = e.dataTransfer;
+  const files = dt.files;
 
-['dragleave', 'drop'].forEach(eventName => {
-    dropzone.addEventListener(eventName, () => {
-        dropzone.classList.remove('dragover');
-    }, false);
-});
-
-// Handle dropped files
-dropzone.addEventListener('drop', handleDrop, false);
-dropzone.addEventListener('click', () => {
-    if (!uploadedFile) {
-        fileInput.click();
-    }
-});
-
-function handleDrop(e) {
-    const dt = e.dataTransfer;
-    const files = dt.files;
-    
-    if (files.length > 0) {
-        handleFiles(files[0]);
-    }
+  if (files.length > 0) {
+    handleFiles(files[0], type);
+  }
 }
 
-// Handle file input change
-fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) {
-        handleFiles(e.target.files[0]);
-    }
-});
+function handleFiles(file, type) {
+  uploadedFiles[type] = file;
+  const infoElement = type === "image" ? imageFileInfo : documentFileInfo;
+  const nameElement = type === "image" ? imageFileName : documentFileName;
+  const contentElement =
+    type === "image" ? imageDropzoneContent : documentDropzoneContent;
+  const fileInput = type === "image" ? imageFileInput : documentFileInput;
 
-function handleFiles(file) {
-    uploadedFile = file;
-    fileName.textContent = file.name;
-    dropzoneContent.style.display = 'none';
-    fileInfo.style.display = 'flex';
-    console.log('File uploaded:', file.name);
+  nameElement.textContent = file.name;
+  contentElement.style.display = "none";
+  infoElement.style.display = "flex";
+
+  // Mengganti file di input file tersembunyi dengan file yang di-drop.
+  // NOTE: Secara teknis, ini tidak bisa dilakukan secara langsung di browser karena alasan keamanan.
+  // SOLUSI: Kita akan mengandalkan nama 'name' yang sudah kita set di HTML input,
+  // dan saat submission (langkah 3), kita pastikan form method POST + enctype multipart/form-data
+  // yang menangani file dari input aslinya.
+
+  console.log(`File ${type} uploaded:`, file.name);
 }
 
-function removeFile() {
-    uploadedFile = null;
-    fileName.textContent = '';
-    dropzoneContent.style.display = 'block';
-    fileInfo.style.display = 'none';
-    fileInput.value = '';
-    console.log('File removed');
+// --- 3. Form Submission Handler (Dihapus/Diganti) ---
+// Kita tidak lagi memproses submission form di JavaScript (fetch/Ajax)
+// karena kita mengandalkan POST method ke PHP (profiledosen.php)
+// untuk upload file, yang lebih mudah untuk implementasi ini.
+
+// Form listener diubah hanya untuk mencegah submission jika ada error JS (tidak perlu lagi)
+// Logika utama submission sudah ditangani di profiledosen.php
+
+// form.addEventListener('submit', (e) => {
+//     // Karena kita menggunakan PHP native POST, kita tidak perlu e.preventDefault() di sini
+//     // kecuali ada validasi JavaScript yang gagal.
+// });
+
+// --- 4. Fungsi Utility ---
+function removeFile(type) {
+  uploadedFiles[type] = null;
+  const infoElement = type === "image" ? imageFileInfo : documentFileInfo;
+  const nameElement = type === "image" ? imageFileName : documentFileName;
+  const contentElement =
+    type === "image" ? imageDropzoneContent : documentDropzoneContent;
+  const fileInput = type === "image" ? imageFileInput : documentFileInput;
+
+  nameElement.textContent = "";
+  contentElement.style.display = "block";
+  infoElement.style.display = "none";
+
+  // Reset input file agar PHP tidak menerima data file ini
+  fileInput.value = "";
+  console.log(`File ${type} removed`);
 }
-
-// Form handling
-const form = document.getElementById('announcementForm');
-
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const formData = {
-        title: document.getElementById('title').value,
-        type: document.getElementById('type').value,
-        date: document.getElementById('date').value,
-        file: uploadedFile ? uploadedFile.name : null
-    };
-    
-    console.log('Form submitted:', formData);
-    alert('Announcement created successfully!\n\n' + 
-          'Title: ' + formData.title + '\n' +
-          'Type: ' + formData.type + '\n' +
-          'Date: ' + formData.date + '\n' +
-          'File: ' + (formData.file || 'No file uploaded'));
-    
-    // Reset form after submission
-    resetForm();
-});
 
 function resetForm() {
-    form.reset();
-    removeFile();
-    console.log('Form reset');
+  form.reset();
+  removeFile("image");
+  removeFile("document");
+  console.log("Form reset");
 }
 
-function toggleForm() {
-    const formContainer = document.getElementById('formContainer');
-    if (formContainer.style.display === 'none') {
-        formContainer.style.display = 'block';
-    } else {
-        formContainer.style.display = 'none';
-    }
-}
-
-function handleLogout() {
-    if (confirm('Are you sure you want to log out?')) {
-        console.log('User logged out');
-        alert('You have been logged out successfully!');
-        // In a real application, this would redirect to login page
-        // window.location.href = '/login.html';
-    }
-}
-
-// Set today's date as default
-document.getElementById('date').valueAsDate = new Date();
-
-console.log('Announcement system initialized');
+// Fungsi `toggleForm` dan `handleLogout` tidak digunakan dalam context ini
+// karena strukturnya sudah statis dan ada di HTML.

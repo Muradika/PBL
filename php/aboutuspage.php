@@ -58,7 +58,7 @@
                 <div class="card-details">
                     <h3 class="member-name">
                         Siti <br />
-                        Halimah
+                        Halimah Chania
                     </h3>
                     <p class="member-prodi">Prodi : Teknik Informatika</p>
                     <p class="member-nim">NIM : 3312501057</p>
@@ -71,7 +71,7 @@
                 <div class="card-details">
                     <h3 class="member-name">
                         Zahrah <br />
-                        Athirah
+                        Athirah Badiah
                     </h3>
                     <p class="member-prodi">Prodi : Teknik Informatika</p>
                     <p class="member-nim">NIM : 3312501060</p>

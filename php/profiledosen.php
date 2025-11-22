@@ -1,3 +1,80 @@
+<?php
+// 1. Include file koneksi database
+include '../database/pengumuman.php';
+
+// Tentukan folder target untuk upload
+$image_target_dir = "uploads/images/";
+$document_target_dir = "uploads/documents/";
+
+$message = "";
+
+// 2. Logika PHP untuk memproses form
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Ambil data form
+    $title = $_POST['title'];
+    $type = $_POST['type'];
+    $date = $_POST['date'];
+
+    $image_path = null;
+    $document_path = null;
+
+    // Pastikan folder upload ada
+    if (!is_dir($image_target_dir)) {
+        mkdir($image_target_dir, 0777, true);
+    }
+    if (!is_dir($document_target_dir)) {
+        mkdir($document_target_dir, 0777, true);
+    }
+
+    // A. Handle Image Upload (nama input: 'image_file')
+    if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] == UPLOAD_ERR_OK) {
+        $image_name = basename($_FILES["image_file"]["name"]);
+        // Menggunakan uniqid() agar nama file unik
+        $image_path = $image_target_dir . uniqid('img_') . "_" . $image_name;
+
+        if (move_uploaded_file($_FILES["image_file"]["tmp_name"], $image_path)) {
+            // Gambar berhasil diupload
+        } else {
+            $message .= "Maaf, ada error saat mengupload gambar Anda.<br>";
+        }
+    }
+
+    // B. Handle Document Upload (nama input: 'document_file')
+    if (isset($_FILES['document_file']) && $_FILES['document_file']['error'] == UPLOAD_ERR_OK) {
+        $document_name = basename($_FILES["document_file"]["name"]);
+        // Menggunakan uniqid() agar nama file unik
+        $document_path = $document_target_dir . uniqid('doc_') . "_" . $document_name;
+
+        if (move_uploaded_file($_FILES["document_file"]["tmp_name"], $document_path)) {
+            // Dokumen berhasil diupload
+        } else {
+            $message .= "Maaf, ada error saat mengupload dokumen Anda.<br>";
+        }
+    }
+
+    // C. Insert data ke database menggunakan Prepared Statement untuk keamanan
+    if (empty($message)) { // Lanjutkan jika tidak ada error upload
+        $stmt = $conn->prepare("INSERT INTO pengumuman (title, type, date, image_path, document_path) VALUES (?, ?, ?, ?, ?)");
+        // "sssss" menandakan 5 parameter yang akan diisi berupa string
+        $stmt->bind_param("sssss", $title, $type, $date, $image_path, $document_path);
+
+        if ($stmt->execute()) {
+            $message = "✅ Pengumuman berhasil dibuat!";
+            // Redirect setelah sukses (Post/Redirect/Get pattern)
+            header("Location: homepage1.php?status=success");
+            exit();
+        } else {
+            $message = " Error database: " . $stmt->error;
+        }
+
+        $stmt->close();
+    }
+
+    // Tutup koneksi setelah selesai memproses request
+    $conn->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -7,6 +84,7 @@
     <title>SIPAk - Sistem Informasi Pengumuman Akademik Online</title>
     <meta name="description" content="Sistem Informasi Pengumuman Akademik Online - Profile Dosen">
     <link rel="stylesheet" href="../css/profiledosen.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 
 <body>
@@ -33,13 +111,23 @@
                     </a>
                 </div>
             </div>
+        </nav>
     </header>
 
     <main class="main-content">
         <div class="form-container" id="formContainer">
             <h2 class="form-heading">Create New Announcement</h2>
 
-            <form id="announcementForm">
+            <?php if (!empty($message)): ?>
+                <div class="status-message"
+                    style="padding: 10px; margin-bottom: 15px; border-radius: 4px; background-color: <?php echo strpos($message, 'Error') !== false || strpos($message, 'Maaf') !== false ? '#f8d7da' : '#d4edda'; ?>; color: <?php echo strpos($message, 'Error') !== false || strpos($message, 'Maaf') !== false ? '#721c24' : '#155724'; ?>;">
+                    <?php echo $message; ?>
+                </div>
+            <?php endif; ?>
+
+            <form id="announcementForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST"
+                enctype="multipart/form-data">
+
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input type="text" id="title" name="title" required>
@@ -49,22 +137,47 @@
                     <label for="type">Type</label>
                     <select id="type" name="type" required>
                         <option value="" disabled selected>Choose file type</option>
-                        <option value="jadwal">Jadwal Ujian</option>
-                        <option value="beasiswa">Beasiswa</option>
-                        <option value="akademik">Akademik</option>
-                        <option value="kemahasiswaan">Kemahasiswaan</option>
-                        <option value="wisuda">Wisuda</option>
+                        <option value="Jadwal">Jadwal Ujian</option>
+                        <option value="Beasiswa">Beasiswa</option>
+                        <option value="Perubahan Kelas">Perubahan Kelas</option>
+                        <option value="Karir">Karir</option>
+                        <option value="Kemahasiswaan">Kemahasiswaan</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="date">Date</label>
-                    <input type="date" id="date" name="date" required>
+                    <input type="date" id="date" name="date" required value="<?php echo date('Y-m-d'); ?>">
                 </div>
 
                 <div class="form-group">
-                    <label for="document">Document</label>
-                    <div class="dropzone" id="dropzone">
+                    <label for="image_file">Image</label>
+                    <div class="dropzone" id="imageDropzone">
+                        <div class="dropzone-content">
+                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <p>You can drag and drop image here.</p>
+                        </div>
+                        <div class="file-info" id="imageFileInfo" style="display: none;">
+                            <span class="file-name" id="imageFileName"></span>
+                            <button type="button" class="remove-file" onclick="removeFile('image')">×</button>
+                        </div>
+                    </div>
+                    <div class="file-upload-info">
+                        <span>Attachment</span>
+                        <span class="file-limit">Maximum number of image : 1</span>
+                    </div>
+                    <input type="file" id="imageFileInput" name="image_file" style="display: none;"
+                        accept=".jpg,.png,.jpeg">
+                    <button type="button" class="btn-choose-file"
+                        onclick="document.getElementById('imageFileInput').click()">Choose Image</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="document_file">Document</label>
+                    <div class="dropzone" id="documentDropzone">
                         <div class="dropzone-content">
                             <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
@@ -72,19 +185,21 @@
                             </svg>
                             <p>You can drag and drop files here.</p>
                         </div>
-                        <div class="file-info" id="fileInfo" style="display: none;">
-                            <span class="file-name" id="fileName"></span>
-                            <button type="button" class="remove-file" onclick="removeFile()">×</button>
+                        <div class="file-info" id="documentFileInfo" style="display: none;">
+                            <span class="file-name" id="documentFileName"></span>
+                            <button type="button" class="remove-file" onclick="removeFile('document')">×</button>
                         </div>
                     </div>
                     <div class="file-upload-info">
                         <span>Attachment</span>
                         <span class="file-limit">Maximum number of files : 1</span>
                     </div>
-                    <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.jpg,.png">
+                    <input type="file" id="documentFileInput" name="document_file" style="display: none;"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx">
                     <button type="button" class="btn-choose-file"
-                        onclick="document.getElementById('fileInput').click()">Choose File</button>
+                        onclick="document.getElementById('documentFileInput').click()">Choose File</button>
                 </div>
+
                 <div class="form-actions">
                     <button type="button" class="btn-remove" onclick="resetForm()">Remove</button>
                     <button type="submit" class="btn-submit">Create</button>
@@ -92,6 +207,7 @@
             </form>
         </div>
     </main>
+
     <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-left">
