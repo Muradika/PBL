@@ -59,8 +59,13 @@ $count_query = "SELECT COUNT(*) AS total FROM pengumuman" . $where_sql;
 $count_stmt = $conn->prepare($count_query);
 
 if (!empty($bind_params)) {
-    // Memanggil bind_param secara dinamis
-    $count_stmt->bind_param($bind_params, ...$bind_values);
+    // Memanggil bind_param secara dinamis (bind_param membutuhkan reference)
+    $refs = [];
+    foreach ($bind_values as $k => $v) {
+        $refs[$k] = &$bind_values[$k];
+    }
+    array_unshift($refs, $bind_params);
+    call_user_func_array([$count_stmt, 'bind_param'], $refs);
 }
 
 $count_stmt->execute();
@@ -82,8 +87,13 @@ $bind_values[] = $announcements_per_page;
 $data_stmt = $conn->prepare($data_query);
 
 if (!empty($bind_params)) {
-    // Memanggil bind_param secara dinamis
-    $data_stmt->bind_param($bind_params, ...$bind_values);
+    // Memanggil bind_param secara dinamis (bind_param membutuhkan reference)
+    $refs = [];
+    foreach ($bind_values as $k => $v) {
+        $refs[$k] = &$bind_values[$k];
+    }
+    array_unshift($refs, $bind_params);
+    call_user_func_array([$data_stmt, 'bind_param'], $refs);
 }
 
 $data_stmt->execute();
@@ -141,7 +151,7 @@ function get_url_params($page_num)
     </header>
 
     <main class="main">
-        <form class="searchbar" method="GET" action="homepage.php">
+        <form class="searchbar" method="GET" action="homepage1.php">
             <div class="searchbox">
                 <span class="search-icon">🔍</span>
                 <input id="searchInput" name="search" placeholder="Search File (Title, Date, Type)"
@@ -276,33 +286,6 @@ function get_url_params($page_num)
     </footer>
 
     <script src="../js/homepage.js"></script>
-    <script>
-        // JS untuk Search/Filter sekarang hanya perlu menangani event submit/change
-
-        // Submit form ketika user menekan enter di search input
-        document.getElementById('searchInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault(); // Mencegah form submit ganda
-                this.form.submit();
-            }
-        });
-
-        // Catatan: Filter Tanggal menggunakan onchange="this.form.submit()" di HTML, jadi tidak perlu JS tambahan
-
-        // Logika Dropdown Filter (JS) tetap dibutuhkan untuk Toggle Menu
-        document.getElementById('filterButton').addEventListener('click', function (e) {
-            e.preventDefault();
-            document.getElementById('filterOptions').classList.toggle('active');
-        });
-
-        // Menutup filter saat klik di luar
-        document.addEventListener('click', function (e) {
-            const filterContainer = document.querySelector('.filter-dropdown-container');
-            if (!filterContainer.contains(e.target) && !document.getElementById('filterButton').contains(e.target)) {
-                document.getElementById('filterOptions').classList.remove('active');
-            }
-        });
-    </script>
 </body>
 
 </html>
