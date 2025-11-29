@@ -49,7 +49,7 @@
                     <h3 class="member-name">Bryan Abisai Immanuel Sitorus</h3>
                     <p class="member-prodi">Prodi : Teknik Informatika</p>
                     <p class="member-nim">NIM : 3312501058</p>
-                    <p class="member-kontribusi">Kontribusi : Front and Back-End</p>
+                    <p class="member-kontribusi">Kontribusi : Full Stack Developer</p>
                 </div>
             </div>
 

@@ -1,4 +1,5 @@
 <?php
+session_start();
 // 1. Include file koneksi database
 include '../database/pengumuman.php';
 
@@ -106,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <a href="profiledosen.php" class="dropdown-item create-btn">
                         <i class="fas fa-plus-circle"></i> Add
                     </a>
-                    <a href="loginpage.php" class="dropdown-item logout-btn">
+                    <a href="logout.php" class="dropdown-item logout-btn">
                         <i class="fas fa-sign-out-alt"></i> Log Out
                     </a>
                 </div>
@@ -162,7 +163,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div class="file-info" id="imageFileInfo" style="display: none;">
                             <span class="file-name" id="imageFileName"></span>
-                            <button type="button" class="remove-file" onclick="removeFile('image')">×</button>
+                            <div class="file-actions">
+                                <button type="button" class="btn-preview" onclick="previewImage()">Preview</button>
+                                <button type="button" class="remove-file" onclick="removeFile('image')">×</button>
+                            </div>
                         </div>
                     </div>
                     <div class="file-upload-info">
@@ -187,7 +191,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div class="file-info" id="documentFileInfo" style="display: none;">
                             <span class="file-name" id="documentFileName"></span>
-                            <button type="button" class="remove-file" onclick="removeFile('document')">×</button>
+                            <div class="file-actions">
+                                <button type="button" class="btn-preview" onclick="previewDocument()">Preview</button>
+                                <button type="button" class="remove-file" onclick="removeFile('document')">×</button>
+                            </div>
                         </div>
                     </div>
                     <div class="file-upload-info">
@@ -207,6 +214,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </form>
         </div>
     </main>
+
+    <!-- MODAL PREVIEW IMAGE -->
+    <div id="imagePreviewModal" class="preview-modal">
+        <div class="modal-content-preview">
+            <span class="close-modal" onclick="closeImagePreview()">&times;</span>
+            <img id="previewImageContent" src="" alt="Image Preview" />
+        </div>
+    </div>
 
     <footer class="main-footer">
         <div class="footer-content">

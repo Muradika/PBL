@@ -6,6 +6,7 @@ body {
     line-height: 1.6;
 }
 
+/* ============================ NAVBAR ============================ */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -136,9 +137,7 @@ body {
     }
 }
 
-/* ============================
-   MAIN & SEARCH AREA
-============================ */
+/* ============================ MAIN & SEARCH ============================ */
 .main {
     padding-top: 40px;
     width: 90%;
@@ -176,7 +175,6 @@ body {
     background: transparent;
 }
 
-/* ----- Date Filter ----- */
 .date-filter-group {
     display: flex;
     align-items: center;
@@ -217,7 +215,6 @@ body {
     cursor: pointer;
 }
 
-/* ----- Filter Dropdown ----- */
 .filter-dropdown-container {
     position: relative;
     display: inline-block;
@@ -265,7 +262,6 @@ body {
     color: white;
 }
 
-/* ----- Responsive Search Area ----- */
 @media (max-width: 768px) {
     .searchbar {
         flex-direction: column;
@@ -294,9 +290,7 @@ body {
     }
 }
 
-/* ============================
-   GRID & CARD
-============================ */
+/* ============================ GRID & CARD ============================ */
 .container {
     padding: 40px 5%;
     max-width: 1400px;
@@ -326,6 +320,7 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     cursor: pointer;
     transition: 0.3s;
+    position: relative;
 }
 
 .announcement-card:hover {
@@ -344,6 +339,53 @@ body {
     height: 180px;
     background-size: cover;
     background-position: center;
+    position: relative;
+}
+
+/* TOMBOL ACTION */
+.card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.action-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.action-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+}
+
+.download-btn:hover {
+    background: #28a745 !important;
+}
+
+.remove-btn:hover {
+    background: #dc3545 !important;
+}
+
+.card-actions button {
+    pointer-events: auto;
 }
 
 .card-content {
@@ -371,12 +413,47 @@ body {
     margin: 0;
 }
 
+/* ============================ PAGINATION ============================ */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.page-number {
+    width: 45px;
+    height: 45px;
+    background: #f1f1f1;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.page-number:hover {
+    background: #ddd;
+    transform: translateY(-2px);
+}
+
+.page-number.active {
+    background: #ff6a4a;
+    color: white;
+}
+
+/* ============================ FOOTER ============================ */
 .main-footer {
     background-color: #ff6347;
     color: white;
     padding: 5px 0;
     width: 100%;
-    margin-top: 300px;
+    margin-top: 100px;
 }
 
 .footer-content {

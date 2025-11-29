@@ -1,4 +1,5 @@
 <?php
+session_start(); // ✅ TAMBAHKAN INI di paling atas!
 include "../database/config.php";
 
 if (isset($_POST["login"])) {
@@ -6,13 +7,31 @@ if (isset($_POST["login"])) {
   $password = $_POST["password"];
   $role = $_POST["role"];
 
-  $sql = "SELECT * FROM user WHERE email='$email' AND password='$password' AND role='$role'";
-  $result = $db->query($sql);
-  if ($result->num_rows > 0) {
+  // ⚠️ PENTING: Gunakan prepared statement untuk keamanan
+  $sql = "SELECT * FROM user WHERE email=? AND password=? AND role=?";
+  $stmt = $db->prepare($sql);
+  $stmt->bind_param("sss", $email, $password, $role);
+  $stmt->execute();
+  $result = $stmt->get_result();
 
+  if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
     $role = $user["role"];
 
+    // ✅ SIMPAN DATA USER KE SESSION (INI YANG PENTING!)
+    $_SESSION['user_id'] = $user['id'];        // Simpan ID user
+    $_SESSION['email'] = $user['email'];       // Simpan email
+    $_SESSION['role'] = $user['role'];         // Simpan role
+
+    // Opsional: simpan data lain jika ada (nama, nim, dll)
+    if (isset($user['nama'])) {
+      $_SESSION['nama'] = $user['nama'];
+    }
+    if (isset($user['nim'])) {
+      $_SESSION['nim'] = $user['nim'];
+    }
+
+    // Redirect sesuai role
     if ($role == "mahasiswa") {
       header("Location: homepage1.php");
     } else if ($role == "dosen") {
@@ -24,6 +43,8 @@ if (isset($_POST["login"])) {
   } else {
     echo "<script>alert('Invalid email, password or role');</script>";
   }
+
+  $stmt->close();
 }
 ?>
 <!DOCTYPE html>

@@ -1,118 +1,173 @@
+<?php
+session_start();
+include '../database/pengumuman.php';
+
+// Cek apakah user adalah admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header('Location: loginpage.php');
+    exit();
+}
+
+// Handle delete file
+if (isset($_POST['delete_id'])) {
+    $delete_id = $_POST['delete_id'];
+
+    // Get file paths before deleting
+    $stmt = $conn->prepare("SELECT image_path, document_path FROM pengumuman WHERE id = ?");
+    $stmt->bind_param("i", $delete_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $file_data = $result->fetch_assoc();
+    $stmt->close();
+
+    // Delete files from server
+    if ($file_data) {
+        if (!empty($file_data['image_path']) && file_exists($file_data['image_path'])) {
+            unlink($file_data['image_path']);
+        }
+        if (!empty($file_data['document_path']) && file_exists($file_data['document_path'])) {
+            unlink($file_data['document_path']);
+        }
+    }
+
+    // Delete from database
+    $delete_stmt = $conn->prepare("DELETE FROM pengumuman WHERE id = ?");
+    $delete_stmt->bind_param("i", $delete_id);
+    $delete_stmt->execute();
+    $delete_stmt->close();
+
+    header('Location: adminfile.php?deleted=1');
+    exit();
+}
+
+// Get all announcements
+$search_query = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+$where_clause = "";
+
+if (!empty($search_query)) {
+    $where_clause = " WHERE title LIKE '%$search_query%' OR type LIKE '%$search_query%'";
+}
+
+$query = "SELECT id, title, type, date, image_path, document_path FROM pengumuman" . $where_clause . " ORDER BY date DESC";
+$result = $conn->query($query);
+$announcements = [];
+
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $announcements[] = $row;
+    }
+}
+
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>SIPAk - Sistem Informasi Pengumuman Akademik Online</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPAk - File Management</title>
     <link rel="stylesheet" href="../css/adminfile.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
 <body>
     <header class="navbar">
         <div class="logo-brand">
-            <img src="../img/img_Politeknikbnw.png" alt="Logo Polibatam" class="nav-logo" />
+            <img src="../img/img_Politeknikbnw.png" alt="Logo Polibatam" class="nav-logo">
             <div class="system-title">
-                Sistem Informasi Pengumuman <br />
+                Sistem Informasi Pengumuman <br>
                 Akademik <span class="online-tag">Online</span>
             </div>
         </div>
-
-        <nav class="nav-menu" aria-label="User menu">
+        <nav class="nav-menu">
             <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn" aria-haspopup="true"
-                    aria-expanded="false">Admin Dashboard</a>
-                <div class="dropdown-menu" id="profile-dropdown-menu" role="menu"
-                    aria-labelledby="profile-dropdown-btn">
-                    <a href="adminuser.php" class="dropdown-item create-btn" role="menuitem">User
-                        Management</a>
-                    <a href="adminfile.php" class="dropdown-item file-btn" role="menuitem">File
-                        Management</a>
-                    <a href="loginpage.php" class="dropdown-item logout-btn" role="menuitem">Log Out</a>
+                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn">Admin Dashboard</a>
+                <div class="dropdown-menu" id="profile-dropdown-menu">
+                    <a href="adminuser.php" class="dropdown-item user-btn">User Management</a>
+                    <a href="adminfile.php" class="dropdown-item file-btn">File Management</a>
+                    <a href="logout.php" class="dropdown-item logout-btn">Log Out</a>
                 </div>
             </div>
         </nav>
     </header>
 
     <div class="container">
-        <aside class="sidebar">
-            <button class="btn add" id="btnAdd">Add File</button>
-        </aside>
-
         <main class="main">
             <div class="searchbar">
-                <div class="searchbox">
+                <form class="searchbox" method="GET" action="adminfile.php">
                     <span class="search-icon">🔍</span>
-                    <input id="searchInput" placeholder="Search File (Title, Uploader, Type)" />
-                </div>
-                <div class="filter" title="Filter">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 5h18M6 12h12M10 19h4" stroke="#0b2b57" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-                </div>
+                    <input id="searchInput" name="search" placeholder="Search File (Title, Type, Date)"
+                        value="<?php echo htmlspecialchars($search_query); ?>">
+                </form>
             </div>
 
             <div class="list-header">
                 <div class="small">Type</div>
                 <div class="small">Title</div>
-                <div class="small">Uploader</div>
                 <div class="small">Date</div>
+                <div class="small">Document</div>
                 <div class="small">Actions</div>
             </div>
 
-            <div class="rows" id="rows"></div>
+            <div class="rows" id="rows">
+                <?php if (!empty($announcements)): ?>
+                    <?php foreach ($announcements as $announcement): ?>
+                        <div class="row">
+                            <div class="file-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div class="file-info">
+                                <div class="file-type"><?php echo htmlspecialchars($announcement['type']); ?></div>
+                                <div class="file-title"><?php echo htmlspecialchars($announcement['title']); ?></div>
+                            </div>
+                            <div class="upload-date"><?php echo date('d M Y', strtotime($announcement['date'])); ?></div>
+                            <div class="document-name">
+                                <?php if (!empty($announcement['document_path'])): ?>
+                                    <a href="<?php echo htmlspecialchars($announcement['document_path']); ?>" target="_blank"
+                                        class="doc-link">
+                                        View Document
+                                    </a>
+                                <?php else: ?>
+                                    <span class="no-doc">No document</span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="actions-cell">
+                                <form method="POST" action="adminfile.php"
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus file ini?');"
+                                    style="display: inline;">
+                                    <input type="hidden" name="delete_id" value="<?php echo $announcement['id']; ?>">
+                                    <button type="submit" class="btn-remove">Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div style="text-align: center; padding: 50px; color: #666;">
+                        Tidak ada file yang ditemukan.
+                    </div>
+                <?php endif; ?>
+            </div>
         </main>
     </div>
 
-    <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
-        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-            <h3 id="modalTitle">Edit File</h3>
+    <script>
+        // Dropdown toggle
+        document.getElementById('profile-dropdown-btn').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector('.dropdown').classList.toggle('active');
+        });
 
-            <div style="
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            margin-bottom: 12px;
-          ">
-                <div class="file-icon" id="modalFileIcon" title="File Type Icon">
-                    <svg id="fileSvg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
-
-                <div style="flex: 1">
-                    <div class="form-row">
-                        <input type="text" id="fileTitleInput" placeholder="File Title (e.g., Pengumuman Nilai)" />
-                    </div>
-                    <div class="form-row">
-                        <input type="text" id="fileNameInput"
-                            placeholder="File Name (e.g., nilai_semester_ganjil.pdf)" />
-                    </div>
-                    <div class="form-row">
-                        <input type="text" id="uploaderInput" placeholder="Uploader Name (e.g., Admin Fakultas)" />
-                    </div>
-                    <div class="form-row">
-                        <select id="fileTypeInput">
-                            <option value="Akademik">Akademik</option>
-                            <option value="Jadwal Ujian">Jadwal Ujian</option>
-                            <option value="Kemahasiswaan">Kemahasiswaan</option>
-                            <option value="Beasiswa">Beasiswa</option>
-                            <option value="Wisuda">Wisuda</option>
-                        </select>
-                        <input type="date" id="uploadDateInput" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button class="btn-cancel" id="btnCancel">Cancel</button>
-                <button class="btn-save" id="btnSave">Save</button>
-            </div>
-        </div>
-    </div>
-    <script src="../js/adminfile.js"></script>
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelector('.dropdown').classList.remove('active');
+            }
+        });
+    </script>
 </body>
 
 </html>
