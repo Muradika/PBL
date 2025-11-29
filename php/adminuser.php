@@ -26,7 +26,7 @@
                 <div class="dropdown-menu" id="profile-dropdown-menu">
                     <a href="adminuser.php" class="dropdown-item create-btn">User Management</a>
                     <a href="adminfile.php" class="dropdown-item file-btn">File Management</a>
-                    <a href="loginpage.php" class="dropdown-item logout-btn">Log Out</a>
+                    <a href="logout.php" class="dropdown-item logout-btn">Log Out</a>
                 </div>
             </div>
         </nav>

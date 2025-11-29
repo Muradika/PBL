@@ -251,7 +251,7 @@ function get_url_params($page_num)
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+                <p style="grid-column: 1 / -1; text-align: center; padding: 250px;">
                     Tidak ada pengumuman yang ditemukan dengan kriteria yang dicari.
                 </p>
             <?php endif; ?>
