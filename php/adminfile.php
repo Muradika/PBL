@@ -45,10 +45,10 @@ $search_query = isset($_GET['search']) ? $conn->real_escape_string($_GET['search
 $where_clause = "";
 
 if (!empty($search_query)) {
-    $where_clause = " WHERE title LIKE '%$search_query%' OR type LIKE '%$search_query%'";
+    $where_clause = " WHERE title LIKE '%$search_query%' OR type LIKE '%$search_query%' OR created_by_name LIKE '%$search_query%'";
 }
 
-$query = "SELECT id, title, type, date, image_path, document_path FROM pengumuman" . $where_clause . " ORDER BY date DESC";
+$query = "SELECT id, title, type, date, image_path, document_path, created_by_name FROM pengumuman" . $where_clause . " ORDER BY date DESC";
 $result = $conn->query($query);
 $announcements = [];
 
@@ -97,48 +97,65 @@ $conn->close();
             <div class="searchbar">
                 <form class="searchbox" method="GET" action="adminfile.php">
                     <span class="search-icon">🔍</span>
-                    <input id="searchInput" name="search" placeholder="Search File (Title, Type, Date)"
+                    <input id="searchInput" name="search" placeholder="Search File (Title, Type, Date, Creator)"
                         value="<?php echo htmlspecialchars($search_query); ?>">
                 </form>
             </div>
 
-            <div class="list-header">
-                <div class="small">Type</div>
-                <div class="small">Title</div>
-                <div class="small">Date</div>
-                <div class="small">Document</div>
-                <div class="small">Actions</div>
+            <!-- TABLE HEADER -->
+            <div class="table-header">
+                <div class="th-type">TYPE</div>
+                <div class="th-title">TITLE</div>
+                <div class="th-date">DATE</div>
+                <div class="th-creator">CREATED BY</div>
+                <div class="th-document">DOCUMENT</div>
+                <div class="th-actions">ACTIONS</div>
             </div>
 
-            <div class="rows" id="rows">
+            <!-- TABLE ROWS -->
+            <div class="table-body">
                 <?php if (!empty($announcements)): ?>
                     <?php foreach ($announcements as $announcement): ?>
-                        <div class="row">
-                            <div class="file-icon">
-                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
+                        <div class="table-row">
+                            <!-- Column 1: Type Badge -->
+                            <div class="td-type">
+                                <span class="type-badge"><?php echo htmlspecialchars($announcement['type']); ?></span>
                             </div>
-                            <div class="file-info">
-                                <div class="file-type"><?php echo htmlspecialchars($announcement['type']); ?></div>
-                                <div class="file-title"><?php echo htmlspecialchars($announcement['title']); ?></div>
+
+                            <!-- Column 2: Title -->
+                            <div class="td-title">
+                                <?php echo htmlspecialchars($announcement['title']); ?>
                             </div>
-                            <div class="upload-date"><?php echo date('d M Y', strtotime($announcement['date'])); ?></div>
-                            <div class="document-name">
+
+                            <!-- Column 3: Date -->
+                            <div class="td-date">
+                                <?php echo date('d M Y', strtotime($announcement['date'])); ?>
+                            </div>
+
+                            <!-- Column 4: Creator -->
+                            <div class="td-creator">
+                                <?php
+                                $creator = $announcement['created_by_name'] ?? 'Unknown';
+                                echo htmlspecialchars($creator);
+                                ?>
+                            </div>
+
+                            <!-- Column 5: Document -->
+                            <div class="td-document">
                                 <?php if (!empty($announcement['document_path'])): ?>
                                     <a href="<?php echo htmlspecialchars($announcement['document_path']); ?>" target="_blank"
                                         class="doc-link">
-                                        View Document
+                                        View Doc
                                     </a>
                                 <?php else: ?>
                                     <span class="no-doc">No document</span>
                                 <?php endif; ?>
                             </div>
-                            <div class="actions-cell">
+
+                            <!-- Column 6: Actions -->
+                            <div class="td-actions">
                                 <form method="POST" action="adminfile.php"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus file ini?');"
-                                    style="display: inline;">
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus file ini?');">
                                     <input type="hidden" name="delete_id" value="<?php echo $announcement['id']; ?>">
                                     <button type="submit" class="btn-remove">Remove</button>
                                 </form>
@@ -146,8 +163,13 @@ $conn->close();
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <div style="text-align: center; padding: 50px; color: #666;">
-                        Tidak ada file yang ditemukan.
+                    <div class="empty-state">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2">
+                            <path
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <h3>Tidak ada file yang ditemukan</h3>
+                        <p>Silakan ubah filter pencarian Anda</p>
                     </div>
                 <?php endif; ?>
             </div>

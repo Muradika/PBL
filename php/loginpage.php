@@ -22,6 +22,7 @@ if (isset($_POST["login"])) {
     $_SESSION['user_id'] = $user['id'];        // Simpan ID user
     $_SESSION['email'] = $user['email'];       // Simpan email
     $_SESSION['role'] = $user['role'];         // Simpan role
+    $_SESSION['nama_lengkap'] = $user['nama_lengkap']; // Simpan nama lengkap
 
     // Opsional: simpan data lain jika ada (nama, nim, dll)
     if (isset($user['nama'])) {

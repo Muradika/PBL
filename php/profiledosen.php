@@ -3,6 +3,17 @@ session_start();
 // 1. Include file koneksi database
 include '../database/pengumuman.php';
 
+// PROTEKSI: Hanya dosen yang boleh akses
+if (!isset($_SESSION['user_id'])) {
+    header("Location: loginpage.php");
+    exit;
+}
+
+if ($_SESSION['role'] !== 'dosen') {
+    header("Location: profilemahasiswa.php");
+    exit;
+}
+
 // Tentukan folder target untuk upload
 $image_target_dir = "uploads/images/";
 $document_target_dir = "uploads/documents/";
@@ -15,6 +26,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = $_POST['title'];
     $type = $_POST['type'];
     $date = $_POST['date'];
+
+    // 👇 AMBIL DATA USER YANG LOGIN
+    $created_by = $_SESSION['user_id'];
+    $created_by_name = $_SESSION['nama_lengkap'];
 
     $image_path = null;
     $document_path = null;
@@ -53,11 +68,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // C. Insert data ke database menggunakan Prepared Statement untuk keamanan
-    if (empty($message)) { // Lanjutkan jika tidak ada error upload
-        $stmt = $conn->prepare("INSERT INTO pengumuman (title, type, date, image_path, document_path) VALUES (?, ?, ?, ?, ?)");
-        // "sssss" menandakan 5 parameter yang akan diisi berupa string
-        $stmt->bind_param("sssss", $title, $type, $date, $image_path, $document_path);
+    // C. Insert data ke database (DENGAN created_by dan created_by_name)
+    if (empty($message)) {
+        $stmt = $conn->prepare("INSERT INTO pengumuman (title, type, date, image_path, document_path, created_by, created_by_name) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        // "sssssis" = 5 string, 1 integer, 1 string
+        $stmt->bind_param("sssssis", $title, $type, $date, $image_path, $document_path, $created_by, $created_by_name);
 
         if ($stmt->execute()) {
             $message = "✅ Pengumuman berhasil dibuat!";
@@ -65,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: homepage1.php?status=success");
             exit();
         } else {
-            $message = " Error database: " . $stmt->error;
+            $message = "❌ Error database: " . $stmt->error;
         }
 
         $stmt->close();
@@ -102,11 +117,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <a href="homepage1.php" class="nav-link">Home</a>
             <a href="aboutuspage.php" class="nav-link">About Us</a>
             <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn">Profile</a>
+                <a href="#" class="nav-link dropdown-toggle active" id="profile-dropdown-btn">Profile</a>
                 <div class="dropdown-menu" id="profile-dropdown-menu">
-                    <a href="profiledosen.php" class="dropdown-item create-btn">
-                        <i class="fas fa-plus-circle"></i> Add
+                    <a href="profilemahasiswa.php" class="dropdown-item create-btn">
+                        <i class="fas fa-bookmark"></i> Favorites
                     </a>
+
+                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'dosen'): ?>
+                        <a href="profiledosen.php" class="dropdown-item add-btn">
+                            <i class="fas fa-plus-circle"></i> Add
+                        </a>
+                    <?php endif; ?>
+
                     <a href="logout.php" class="dropdown-item logout-btn">
                         <i class="fas fa-sign-out-alt"></i> Log Out
                     </a>

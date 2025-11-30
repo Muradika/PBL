@@ -2,10 +2,11 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #e2e2e2; 
+    background-color: #e2e2e2;
     line-height: 1.6;
 }
 
+/* ============================ NAVBAR ============================ */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -89,6 +90,12 @@ body {
     color: white;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
+    font-weight: bold;
+}
+
+.dropdown-item.add-btn {
+    background-color: #ff6347;
+    color: white;
     font-weight: bold;
 }
 

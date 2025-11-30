@@ -130,6 +130,7 @@ function get_url_params($page_num)
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SIPAk - My Favorites</title>
     <link rel="stylesheet" href="../css/profilemahasiswa.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 
 <body>
@@ -149,8 +150,18 @@ function get_url_params($page_num)
                 <a href="#" class="nav-link dropdown-toggle active" id="profile-dropdown-btn">Profile</a>
                 <div class="dropdown-menu" id="profile-dropdown-menu">
                     <a href="profilemahasiswa.php" class="dropdown-item create-btn">
-                        <i class="fas fa-heart"></i> Favorites
+                        <i class="fas fa-bookmark"></i> Favorites
                     </a>
+
+                    <?php
+                    // 👇 HANYA TAMPILKAN MENU "ADD" JIKA ROLE = DOSEN
+                    if (isset($_SESSION['role']) && $_SESSION['role'] === 'dosen'):
+                        ?>
+                        <a href="profiledosen.php" class="dropdown-item add-btn">
+                            <i class="fas fa-plus-circle"></i> Add
+                        </a>
+                    <?php endif; ?>
+
                     <a href="logout.php" class="dropdown-item logout-btn">
                         <i class="fas fa-sign-out-alt"></i> Log Out
                     </a>
@@ -162,7 +173,19 @@ function get_url_params($page_num)
     <!-- SEARCH & FILTER SECTION (COPY DARI HOMEPAGE) -->
     <main class="main">
         <div style="padding: 0px 0 10px 0;">
-            <p style="color: #666; margin-bottom: 20px;">
+            <?php
+            // 👇 AMBIL NAMA DAN ROLE DARI SESSION
+            $nama = isset($_SESSION['nama_lengkap']) ? $_SESSION['nama_lengkap'] : 'User';
+            $role = isset($_SESSION['role']) ? ucfirst($_SESSION['role']) : 'Pengguna';
+            ?>
+
+            <!-- 👇 PESAN SAPAAN -->
+            <p style="color: #0b2b57; font-size: 20px; font-weight: bold; margin-top: 4px;">
+                👋 Halo <?php echo htmlspecialchars($nama); ?>, kamu login sebagai
+                <?php echo htmlspecialchars($role); ?>
+            </p>
+
+            <p style="color: #666; margin-left: 8px; margin-bottom: 20px;">
                 <?php echo $total_announcements; ?> pengumuman yang Anda bookmark
             </p>
         </div>

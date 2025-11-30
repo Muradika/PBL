@@ -93,6 +93,12 @@ body {
     font-weight: bold;
 }
 
+.dropdown-item.add-btn {
+    background-color: #ff6347;
+    color: white;
+    font-weight: bold;
+}
+
 .dropdown-item.logout-btn {
     background-color: #dc3545;
     color: white;
