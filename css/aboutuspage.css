@@ -1,11 +1,12 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', Arial, sans-serif; /* Mengubah font ke Inter/Arial agar konsisten dengan standar respons */
     background-color: #e2e2e2; 
     line-height: 1.6;
 }
 
+/* ============================ NAVBAR ============================ */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -75,6 +76,7 @@ body {
     }
 }
 
+/* ============================ PAGE CONTENT ============================ */
 .page-title {
     font-size: 1.8rem;
     font-weight: 600;
@@ -88,12 +90,14 @@ body {
     color: #ff6347;
 }
 
+/* --- TEAM CARD: Kontainer --- */
 .team-card-container {
     display: flex;
     gap: 30px;
     justify-content: center;
     margin: 0 auto;
-    padding: 20px 0;
+    padding: 20px 5%; /* Tambah padding horizontal untuk mobile */
+    max-width: 100%; /* Pastikan kontainer tidak melebihi lebar viewport */
 }
 
 .team-card {
@@ -110,7 +114,7 @@ body {
 }
 
 .team-card:hover {
-    transform: translateY(-10px); /* Efek terangkat */
+    transform: translateY(-10px); 
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
 }
 
@@ -119,26 +123,25 @@ body {
     height: 300px;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
+    background-size: cover;
+    background-position: center; /* Tambahkan agar gambar pas */
 }
 
 .card-placeholder.muradika {
-    background-image: url('../img/img_dika.jpg');
-    background-size: cover;
+    /* Asumsi URL relatif ke CSS */
+    background-image: url('../img/img_dika.jpg'); 
 }
 
 .card-placeholder.bryan {
     background-image: url('../img/img_bryan.jpg');
-    background-size: cover;
 }
 
 .card-placeholder.siti {
     background-image: url('../img/img_siti.jpg');
-    background-size: cover;
 }
 
 .card-placeholder.zahrah {
     background-image: url('../img/img_zahrah.jpg');
-    background-size: cover;
 }
 
 .card-details {
@@ -160,10 +163,11 @@ body {
     line-height: 1.4;
 }
 
+/* ============================ FOOTER ============================ */
 .main-footer {
     background-color: #ff6347;
     color: white;
-    padding: 5px 0;
+    padding: 25px 0; /* Tambah padding agar tidak terlalu mepet */
     width: 100%;
     margin-top: 100px;
 }
@@ -172,26 +176,14 @@ body {
     display: flex; 
     flex-wrap: wrap; 
     justify-content: space-between;
-    align-items: center; 
+    align-items: flex-start; /* Ubah ke flex-start agar konten rata atas */
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 5%;
 }
 
-.footer-right {
-    text-align: right;
-    max-width: 450px; 
-}
-
-.social-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: flex-end; 
-}
-
 .footer-left {
-    margin-bottom: 0px;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
 }
@@ -220,8 +212,8 @@ body {
 
 .footer-copyright {
     font-size: 12px;
-    margin-top: -30px;
-    margin-left: 36px;
+    margin-top: 10px; /* Sesuaikan margin */
+    margin-left: 0; /* Hilangkan margin-left */
     opacity: 0.8;
 }
 
@@ -251,7 +243,11 @@ body {
     font-weight: bold;
     display: flex;
     align-items: center;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
 }
 
 .social-btn.instagram {
@@ -264,12 +260,119 @@ body {
     background-color: #0077B5;
 }
 
+
+/* ============================ RESPONSIVE MOBILE ============================ */
+@media (max-width: 900px) {
+    .page-title {
+        font-size: 1.6rem;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+
+    /* 1. TEAM CARD: Horizontal Scroll & Snap */
+    .team-card-container {
+        justify-content: flex-start; /* Rata kiri untuk horizontal scroll */
+        overflow-x: scroll; /* Mengaktifkan scroll horizontal */
+        scroll-snap-type: x mandatory; /* Mengunci posisi card */
+        padding-bottom: 20px; /* Tambah padding untuk scrollbar */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Hilangkan scrollbar default di Chrome/Safari */
+    .team-card-container::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .team-card {
+        width: 80vw; /* Lebar card 80% dari viewport width */
+        min-width: 280px; /* Minimal 280px agar tidak terlalu kecil */
+        min-height: 480px;
+        box-sizing: border-box; /* Pastikan padding tidak menambah lebar total */
+        margin-left: 0;
+    }
+
+    /* Beri margin yang tepat agar card terlihat di tengah/rapi saat scroll */
+    .team-card-container > :first-child {
+        margin-left: 5%; /* Tambahkan margin kiri untuk card pertama */
+    }
+    .team-card-container > :last-child {
+        margin-right: 5%; /* Tambahkan margin kanan untuk card terakhir */
+    }
+    .team-card-container > .team-card {
+        margin-right: 20px; /* Jarak antar card */
+    }
+
+    .team-card:hover {
+        transform: none; /* Nonaktifkan efek hover (translateY) di mobile */
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 2. NAVBAR: Tumpuk Vertikal */
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 5%;
+    }
+
+    .nav-menu {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .nav-link {
+        margin-left: 0;
+        padding: 8px 0;
+        width: 100%;
+        text-align: left;
+    }
+}
+
 @media (max-width: 768px) {
+    /* 3. FOOTER: Tumpuk Vertikal */
     .footer-content {
         flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 5%;
     }
-    .footer-right {
-        text-align: left;
+    
+    .footer-left, .footer-right {
+        width: 100%;
         max-width: 100%;
+        text-align: left;
+    }
+    
+    .footer-left {
+        margin-bottom: 30px;
+    }
+
+    .logo-title-group {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    .footer-logo {
+        width: 150px; /* Perkecil logo di mobile */
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .footer-system-title {
+        font-size: 1.2rem;
+    }
+
+    .footer-copyright {
+        margin-top: 0;
+    }
+
+    .contact-info {
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+
+    .social-links {
+        justify-content: flex-start; 
     }
 }

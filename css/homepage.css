@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', Arial, sans-serif; /* Mengubah font ke Inter/Arial agar konsisten dengan standar responsif */
     background-color: #e2e2e2;
     line-height: 1.6;
 }
@@ -49,6 +49,7 @@ body {
     font-weight: 500;
     display: inline-block;
     transition: color 0.2s, transform 0.35s cubic-bezier(.2,.9,.3,1), box-shadow 0.25s;
+    will-change: transform, box-shadow;
 }
 
 .nav-link:hover,
@@ -200,34 +201,6 @@ body {
     color: white;
 }
 
-@media (max-width: 768px) {
-    .searchbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .searchbox,
-    .date-filter-group {
-        flex: 1 1 100%;
-    }
-
-    .date-filter-group {
-        justify-content: space-around;
-        padding: 10px 15px;
-    }
-
-    .date-input {
-        flex: 1;
-        max-width: 45%;
-        border: 1px solid #ddd;
-    }
-
-    .filter-dropdown-container {
-        align-self: flex-end;
-        margin-top: -5px;
-    }
-}
-
 /* ============================ GRID & CARD ============================ */
 .container {
     padding: 40px 5%;
@@ -239,6 +212,13 @@ body {
     display: grid;
     gap: 30px;
     grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    /* Untuk tablet kecil, gunakan 2 kolom */
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (min-width: 992px) {
@@ -365,15 +345,15 @@ body {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin: 20px 0;
+    margin: 40px 0; /* Tambah margin vertikal */
 }
 
 .page-number {
-    width: 45px;
-    height: 45px;
+    width: 40px; /* Sedikit perkecil untuk mobile */
+    height: 40px;
     background: #f1f1f1;
-    border-radius: 12px;
-    font-size: 18px;
+    border-radius: 10px; /* Sedikit perkecil radius */
+    font-size: 16px; /* Sedikit perkecil font */
     font-weight: bold;
     display: flex;
     justify-content: center;
@@ -382,6 +362,7 @@ body {
     color: #333;
     cursor: pointer;
     transition: 0.2s;
+    margin: 0 3px; /* Jarak antar tombol */
 }
 
 .page-number:hover {
@@ -392,15 +373,16 @@ body {
 .page-number.active {
     background: #ff6a4a;
     color: white;
+    box-shadow: 0 4px 8px rgba(255, 106, 74, 0.4); /* Tambah shadow untuk active state */
 }
 
 /* ============================ FOOTER ============================ */
 .main-footer {
     background-color: #ff6347;
     color: white;
-    padding: 5px 0;
+    padding: 25px 0; /* Tambah padding agar tidak terlalu mepet */
     width: 100%;
-    margin-top: 300px;
+    margin-top: 100px; /* Kurangi margin top agar lebih dinamis */
 }
 
 .footer-content {
@@ -410,7 +392,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start; /* Ubah ke flex-start agar konten rata atas */
 }
 
 .footer-left {
@@ -432,6 +414,7 @@ body {
 .footer-system-title {
     font-size: 1.4rem;
     line-height: 1.1;
+    font-weight: normal; /* Pastikan font-weight normal */
 }
 
 .footer-online-tag {
@@ -464,7 +447,10 @@ body {
     color: white;
     display: flex;
     align-items: center;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
+}
+.social-btn:hover {
+    transform: translateY(-2px);
 }
 
 .social-btn.instagram { background: #E4405F; }
@@ -473,18 +459,110 @@ body {
 
 .footer-copyright {
     font-size: 12px;
-    margin-top: -30px;
-    margin-left: 36px;
+    margin-top: 10px; /* Atur ulang margin top */
+    margin-left: 0; /* Atur ulang margin left */
     opacity: 0.8;
 }
 
+/* ============================ RESPONSIVE MOBILE (<= 768px) ============================ */
 @media (max-width: 768px) {
+    /* NAVBAR: Tumpuk Vertikal dan Sembunyikan Menu Navigasi */
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 5%;
+    }
+
+    .logo-brand {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .nav-menu {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+        /* Di sini Anda bisa menggunakan JavaScript untuk toggle menu ini */
+        display: none; /* Default sembunyikan, bisa di-toggle dengan JS */
+    }
+
+    /* Tambahkan kelas ini jika Anda ingin menampilkan menu di mobile (perlu JS) */
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .nav-link {
+        margin-left: 0;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+    }
+    .nav-link:last-child {
+        border-bottom: none;
+    }
+
+    /* SEARCH & FILTER: Tumpuk Elemen */
+    .searchbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .searchbox {
+        flex-basis: auto; /* Memastikan searchbox mengambil lebar penuh */
+        width: 100%;
+    }
+
+    .date-filter-group {
+        width: 100%;
+        justify-content: space-between;
+        padding: 8px 15px;
+    }
+    
+    .date-input {
+        max-width: 40%;
+    }
+
+    .filter-dropdown-container {
+        /* Pindahkan filter ke baris baru atau sembunyikan jika perlu */
+        align-self: flex-end; /* Tetap di kanan atas kontainer */
+        margin-top: 0;
+    }
+    
+    /* FOOTER: Tumpuk Vertikal */
     .footer-content {
         flex-direction: column;
+        align-items: flex-start;
+        padding: 0 5%;
+    }
+
+    .footer-left {
+        width: 100%;
+        margin-bottom: 25px;
+    }
+
+    .logo-title-group {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+    
+    .footer-logo {
+        width: 150px;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .footer-system-title {
+        font-size: 1.2rem;
+    }
+
+    .footer-copyright {
+        margin-top: 5px;
+        margin-left: 0;
     }
 
     .footer-right {
         max-width: 100%;
-        text-align: left;
     }
 }

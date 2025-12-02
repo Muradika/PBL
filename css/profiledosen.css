@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', Arial, sans-serif; /* Mengganti Arial dengan Inter/Arial */
     background-color: #e2e2e2;
     line-height: 1.6;
 }
@@ -39,84 +39,19 @@ body {
 }
 
 .nav-menu {
-    padding: 10px 15px;
-    margin-left: 10px;
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
+    /* Ini adalah container untuk elemen dropdown/links lain */
     display: flex;
     align-items: center;
-}
-
-.dropdown {
-    position: relative; 
-}
-
-.dropdown-toggle {
-    padding: 0; 
-    display: block;
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 150%;
-    right: 0;
-    background-color: white;
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 5px;
-    min-width: 150px;
-    z-index: 1000;
-    display: none;
-    opacity: 0;
-    transition: opacity 0.3s ease-out;
-}
-
-.dropdown.active .dropdown-menu {
-    display: block;
-    opacity: 1;
-}
-
-.dropdown-item {
-    display: block;
-    padding: 10px 15px;
-    text-decoration: none;
-    color: #333;
-    transition: background-color 0.2s;
-}
-
-.dropdown-item.create-btn {
-    background-color: #ff6347;
-    color: white;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    font-weight: bold;
-}
-
-.dropdown-item.add-btn {
-    background-color: #ff6347;
-    color: white;
-    font-weight: bold;
-}
-
-.dropdown-item.logout-btn {
-    background-color: #dc3545;
-    color: white;
-    font-weight: bold;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-
-.dropdown-item:hover {
-    filter: brightness(0.9);
 }
 
 .nav-link {
     color: white;
     text-decoration: none;
     margin-left: 25px;
+    padding: 10px 0; /* Padding vertikal untuk area sentuh yang lebih besar */
     font-weight: 500;
     transition: color 0.2s, transform 0.35s cubic-bezier(.2,.9,.3,1), box-shadow 0.25s;
+    display: inline-block;
 }
 
 .nav-link:hover,
@@ -143,6 +78,87 @@ body {
     }
 }
 
+/* ============================ DROPDOWN MENU ============================ */
+.dropdown {
+    position: relative; 
+    margin-left: 10px; /* Jarak dari nav-link */
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    padding: 10px 15px; 
+    display: block;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+}
+
+.dropdown-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%; /* Turun ke bawah toggle */
+    right: 0;
+    margin-top: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    min-width: 180px;
+    z-index: 1000;
+    display: none;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    overflow: hidden;
+}
+
+.dropdown.active .dropdown-menu {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s;
+    font-size: 15px;
+}
+
+.dropdown-item.create-btn,
+.dropdown-item.add-btn {
+    background-color: #ff6347;
+    color: white;
+    font-weight: bold;
+    border-radius: 0; /* Hapus radius agar sesuai dengan container */
+}
+
+.dropdown-item.create-btn:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.dropdown-item.logout-btn {
+    background-color: #dc3545;
+    color: white;
+    font-weight: bold;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.dropdown-item:hover {
+    filter: brightness(0.9);
+}
+
+/* ============================ MAIN CONTENT & FORM ============================ */
 .main-content {
     max-width: 1400px;
     margin: 3rem auto;
@@ -161,6 +177,8 @@ body {
     font-size: 1.5rem;
     font-weight: 400;
     margin-bottom: 3rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
 }
 
 .form-group {
@@ -173,7 +191,7 @@ body {
 
 .form-group label {
     color: #2c5282;
-    font-size: 1.5rem;
+    font-size: 1.25rem; /* Kurangi sedikit dari 1.5rem */
     font-weight: 600;
     padding-top: 0.5rem;
 }
@@ -191,25 +209,28 @@ body {
 
 .form-group input[type="text"],
 .form-group input[type="date"] {
-    width: 95%;
+    width: 95%; /* Ganti 95% agar padding/border tidak terpotong */
     padding: 1rem 1.5rem;
     border: 2px solid #2c5282;
     border-radius: 8px;
     font-size: 1rem;
+    box-sizing: border-box; /* Sangat penting */
     transition: all 0.3s ease;
     background-color: white;
 }
 
 .form-group input[type="text"]:focus,
-.form-group input[type="date"]:focus {
+.form-group input[type="date"]:focus,
+.form-group select:focus {
     outline: none;
     border-color: #3c6ba8;
     box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
 }
 
+/* ============================ DROPZONE & FILE UPLOAD ============================ */
 .dropzone {
     width: 100%;
-    min-height: 20px;
+    min-height: 150px; /* Naikkan min-height */
     border: 2px dashed #cbd5e0;
     border-radius: 8px;
     display: flex;
@@ -219,6 +240,7 @@ body {
     cursor: pointer;
     position: relative;
     background-color: #fafafa;
+    box-sizing: border-box;
 }
 
 .dropzone:hover {
@@ -234,18 +256,19 @@ body {
 .dropzone-content {
     text-align: center;
     color: #9ca3af;
+    padding: 15px;
 }
 
 .upload-icon {
-    width: 60px;
-    height: 100px;
-    margin-bottom: 1rem;
+    width: 40px; /* Kurangi ukuran icon */
+    height: 40px;
+    margin-bottom: 0.5rem;
     color: #cbd5e0;
 }
 
 .dropzone-content p {
-    font-size: 1.1rem;
-    margin-top: -30px;
+    font-size: 1rem;
+    margin: 0;
 }
 
 .file-info {
@@ -253,31 +276,68 @@ body {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 1rem 2rem;
+    padding: 15px 20px; /* Disesuaikan */
+    box-sizing: border-box;
+    border: 2px solid #2c5282;
+    border-radius: 8px;
+    background-color: #e6f2ff;
 }
 
 .file-name {
     color: #2c5282;
     font-weight: 500;
+    font-size: 1rem;
+    word-break: break-all; /* Penting untuk nama file panjang di mobile */
+}
+
+.file-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.btn-preview {
+    padding: 6px 16px;
+    background: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-preview:hover {
+    background: #138496;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+}
+
+.btn-preview:active {
+    transform: translateY(0);
 }
 
 .remove-file {
-    background: #ef4444;
+    width: 28px;
+    height: 28px;
+    background: #dc3545;
     color: white;
     border: none;
-    width: 30px;
-    height: 30px;
     border-radius: 50%;
-    font-size: 1.5rem;
+    font-size: 18px; /* Sedikit perkecil font */
+    font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    line-height: 1;
 }
 
 .remove-file:hover {
-    background: #dc2626;
+    background: #c82333;
     transform: scale(1.1);
 }
 
@@ -314,6 +374,7 @@ body {
     gap: 1rem;
     margin-top: 3rem;
     padding-top: 2rem;
+    border-top: 1px solid #eee;
 }
 
 .btn-remove,
@@ -349,105 +410,7 @@ body {
     box-shadow: 0 4px 12px rgba(44, 82, 130, 0.3);
 }
 
-@media (max-width: 1200px) {
-    .header-container {
-        flex-wrap: wrap;
-    }
-    
-    .navigation {
-        order: 3;
-        width: 100%;
-        justify-content: center;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
-    }
-}
-
-@media (max-width: 768px) {
-    .form-group {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-    }
-    
-    .form-container {
-        padding: 2rem 1.5rem;
-    }
-    
-    .header-title h1 {
-        font-size: 1.2rem;
-    }
-    
-    .navigation {
-        gap: 1.5rem;
-    }
-    
-    .navigation a {
-        font-size: 1rem;
-    }
-}
-
-/* TAMBAHKAN CSS INI KE FILE profiledosen.css YANG SUDAH ADA */
-
-/* ========== FILE INFO WITH PREVIEW BUTTON ========== */
-.file-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 15px;
-}
-
-.file-actions {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.btn-preview {
-    padding: 6px 16px;
-    background: #17a2b8;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-preview:hover {
-    background: #138496;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
-}
-
-.btn-preview:active {
-    transform: translateY(0);
-}
-
-.remove-file {
-    width: 28px;
-    height: 28px;
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    line-height: 1;
-}
-
-.remove-file:hover {
-    background: #c82333;
-    transform: scale(1.1);
-}
-
-/* ========== MODAL PREVIEW IMAGE ========== */
+/* ============================ MODAL PREVIEW IMAGE ============================ */
 .preview-modal {
     display: none;
     position: fixed;
@@ -481,8 +444,8 @@ body {
 
 .close-modal {
     position: absolute;
-    top: -10px;
-    right: 10px;
+    top: -15px; /* Pindahkan lebih jauh ke atas/kanan */
+    right: 5px;
     color: white;
     font-size: 45px;
     font-weight: bold;
@@ -494,81 +457,47 @@ body {
 .close-modal:hover,
 .close-modal:focus {
     color: #ff6347;
-    transform: scale(1.2);
+    transform: scale(1.2) rotate(10deg);
 }
 
 /* Animations */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @keyframes zoomIn {
-    from {
+    from { 
         transform: translateY(-50%) scale(0.7);
         opacity: 0;
     }
-    to {
+    to { 
         transform: translateY(-50%) scale(1);
         opacity: 1;
     }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .file-info {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .file-actions {
-        width: 100%;
-        justify-content: flex-end;
-    }
-    
-    .modal-content-preview {
-        width: 95%;
-        padding: 10px;
-    }
-}
-
+/* ============================ FOOTER ============================ */
 .main-footer {
     background-color: #ff6347;
     color: white;
-    padding: 5px 0;
+    padding: 20px 0;
     width: 100%;
-    margin-top: auto;
+    margin-top: 50px; /* Jarak atas footer */
 }
 
 .footer-content {
     display: flex; 
     flex-wrap: wrap; 
     justify-content: space-between;
-    align-items: center; 
+    align-items: flex-start; /* Ganti ke flex-start agar konten tidak terlalu renggang */
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 5%;
 }
 
-.footer-right {
-    text-align: right;
-    max-width: 450px; 
-}
-
-.social-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: flex-end; 
-}
-
 .footer-left {
-    margin-bottom: 0px;
+    margin-bottom: 0;
     display: flex;
     flex-direction: column;
 }
@@ -580,7 +509,7 @@ body {
 }
 
 .footer-logo {
-    width: 200px;
+    width: 150px; /* Sedikit perkecil di desktop */
     height: auto;
     margin-right: 15px;
 }
@@ -597,8 +526,8 @@ body {
 
 .footer-copyright {
     font-size: 12px;
-    margin-top: -30px;
-    margin-left: 36px;
+    margin-top: 0; 
+    margin-left: 0;
     opacity: 0.8;
 }
 
@@ -628,25 +557,164 @@ body {
     font-weight: bold;
     display: flex;
     align-items: center;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-.social-btn.instagram {
-    background-color: #E4405F;
-}
-.social-btn.youtube {
-    background-color: #FF0000;
-}
-.social-btn.linkedin {
-    background-color: #0077B5;
+.social-btn:hover {
+    transform: translateY(-2px);
 }
 
+.social-btn.instagram { background-color: #E4405F; }
+.social-btn.youtube { background-color: #FF0000; }
+.social-btn.linkedin { background-color: #0077B5; }
+
+
+/* ============================ RESPONSIVE (Max 1200px / Tablet Landscape) ============================ */
+@media (max-width: 1200px) {
+    /* Hanya untuk form, jika lebar terlalu sempit sebelum 768px */
+    .form-group {
+        grid-template-columns: 180px 1fr;
+        gap: 1rem;
+    }
+    .form-group label {
+        font-size: 1.1rem;
+    }
+}
+
+
+/* ============================ RESPONSIVE MOBILE (Max 768px / Tablet Portrait & Mobile) ============================ */
 @media (max-width: 768px) {
+    /* --- NAVBAR --- */
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 15px;
+    }
+
+    .nav-menu {
+        /* Memastikan nav-menu mengambil lebar penuh saat ditumpuk */
+        width: 100%; 
+        justify-content: space-between;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    .nav-link {
+        margin-left: 0;
+        margin-right: 15px;
+    }
+
+    .dropdown {
+        margin-left: auto; /* Pindahkan dropdown ke kanan */
+    }
+
+    .dropdown-menu {
+        min-width: 150px;
+    }
+
+    /* --- FORM LAYOUT --- */
+    .main-content {
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .form-container {
+        padding: 1.5rem 1rem;
+    }
+
+    .form-heading {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        /* Tumpuk menjadi kolom tunggal */
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        font-size: 1rem; /* Kurangi ukuran label */
+        padding-top: 0;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="date"],
+    .form-group select {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        width: 100%; /* Pastikan 100% untuk input */
+    }
+
+    /* --- FILE INFO / DROPZONE --- */
+    .dropzone {
+        min-height: 100px;
+    }
+
+    .file-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px;
+    }
+    
+    .file-actions {
+        width: 100%;
+        justify-content: space-between; /* Rata kanan kiri untuk tombol */
+    }
+
+    /* --- ACTIONS --- */
+    .form-actions {
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+        padding-top: 1rem;
+    }
+
+    .btn-remove,
+    .btn-submit {
+        flex: 1 1 48%; /* Bagi ruang hampir merata */
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+    
+    /* --- MODAL --- */
+    .modal-content-preview {
+        width: 95%;
+        padding: 10px;
+    }
+
+    .close-modal {
+        top: 0px;
+        right: 0px;
+        font-size: 40px;
+    }
+    
+    /* --- FOOTER --- */
+    .main-footer {
+        margin-top: 30px;
+    }
+
     .footer-content {
         flex-direction: column;
+        align-items: flex-start;
     }
+
+    .logo-title-group {
+        margin-bottom: 10px;
+    }
+    
+    .footer-logo {
+        width: 120px;
+    }
+
+    .footer-system-title {
+        font-size: 1.2rem;
+    }
+
     .footer-right {
-        text-align: left;
         max-width: 100%;
+        margin-top: 15px;
     }
 }

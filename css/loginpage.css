@@ -7,11 +7,11 @@ body {
     align-items: center;
     min-height: 100vh;
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden; Dihapus karena dapat mengganggu scrolling jika konten melebihi 100vh */
 }
 
 .background-container {
-    position: absolute;
+    position: fixed; /* Mengubah absolute menjadi fixed agar background tetap di tempat */
     top: 0;
     left: 0;
     width: 100%;
@@ -23,7 +23,7 @@ body {
 }
 
 .overlay {
-    position: absolute;
+    position: fixed; /* Mengubah absolute menjadi fixed */
     top: 0;
     left: 0;
     width: 100%;
@@ -41,6 +41,7 @@ body {
     max-width: 500px;
     text-align: center;
     z-index: 10;
+    margin: 20px 0; /* Tambahkan margin vertikal agar ada ruang saat keyboard muncul di mobile */
 }
 
 .logo-area {
@@ -67,6 +68,7 @@ body {
     border-radius: 8px;
     font-size: 16px;
     box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-group input:focus,
@@ -97,10 +99,6 @@ body {
     font-size: 16px;
 }
 
-.input-group {
-    margin-bottom: 15px; 
-}
-
 .btn-login {
     width: 100%;
     padding: 12px 20px;
@@ -112,11 +110,15 @@ body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.1s;
 }
 
 .btn-login:hover {
     background-color: #0d2e5a;
+}
+
+.btn-login:active {
+    transform: scale(0.99);
 }
 
 .forgot-password {
@@ -125,8 +127,45 @@ body {
     color: #12417d;
     text-decoration: none;
     font-weight: 500;
+    font-size: 14px;
 }
 
 .forgot-password:hover {
     text-decoration: underline;
+}
+
+/* ============================ RESPONSIVE MOBILE (<= 480px) ============================ */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 25px 20px; /* Kurangi padding untuk layar sangat kecil */
+        border-radius: 15px; /* Sedikit kurangi radius */
+        /* Hapus margin 20px 0 jika Anda ingin kartu memenuhi layar vertikal, 
+           tetapi jika tetap ada, itu baik untuk menghindari tombol keyboard menutupi input. */
+        margin: 15px auto;
+    }
+
+    .logo {
+        max-width: 140px; /* Sedikit perkecil logo agar tidak terlalu mendominasi */
+    }
+    
+    .logo-area {
+        margin-bottom: 20px;
+    }
+
+    .input-group input,
+    .input-group select {
+        padding: 10px 12px; /* Kurangi padding input */
+        height: 45px; /* Kurangi tinggi input */
+        font-size: 15px; /* Sedikit perkecil font input */
+    }
+
+    .btn-login {
+        padding: 10px 15px; /* Kurangi padding tombol */
+        font-size: 16px; /* Sedikit perkecil font tombol */
+    }
+
+    .forgot-password {
+        margin-top: 15px;
+        font-size: 13px; /* Sedikit perkecil font link */
+    }
 }

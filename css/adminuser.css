@@ -1,7 +1,8 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    /* Mengubah font ke Inter/Arial agar konsisten dengan standar respons */
+    font-family: 'Inter', Arial, sans-serif; 
     background-color: #e2e2e2;
     line-height: 1.6;
 }
@@ -38,23 +39,24 @@ body {
     color: #ff6347;
 }
 
+/* --- PERBAIKAN: Mengatur ulang .nav-menu agar fleksibel dan responsif --- */
 .nav-menu {
-    padding: 10px 15px;
-    margin-left: 10px;
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
     display: flex;
     align-items: center;
+    /* Hapus padding, margin-left, dan properti lain yang menghambat flexbox di sini */
 }
 
 .dropdown {
     position: relative; 
+    margin-left: 25px; /* Tambahkan margin agar terpisah dari nav-link */
 }
 
 .dropdown-toggle {
-    padding: 0; 
+    padding: 10px 0; /* Tambahkan padding vertikal agar mudah diklik */
     display: block;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
 }
 
 .dropdown-menu {
@@ -69,12 +71,14 @@ body {
     z-index: 1000;
     display: none;
     opacity: 0;
-    transition: opacity 0.3s ease-out;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Tambah transisi transform */
+    transform: translateY(10px);
 }
 
 .dropdown.active .dropdown-menu {
     display: block;
     opacity: 1;
+    transform: translateY(0); /* Tampilkan di posisi normal */
 }
 
 .dropdown-item {
@@ -85,8 +89,9 @@ body {
     transition: background-color 0.2s;
 }
 
+/* Menyesuaikan warna Dropdown Item agar lebih profesional */
 .dropdown-item.user-btn {
-    background-color: #ff6347;
+    background-color: #12417d; /* Warna brand utama */
     color: white;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
@@ -107,16 +112,25 @@ body {
     border-bottom-right-radius: 5px;
 }
 
-.dropdown-item:hover {
-    filter: brightness(0.9);
+.dropdown-item:hover:not(.user-btn, .file-btn, .logout-btn) {
+    background-color: #f1f1f1;
+    filter: none; /* Nonaktifkan filter brightness yang berlebihan */
 }
+
+.dropdown-item:hover {
+    filter: brightness(1.1); /* Pertahankan efek hover yang halus */
+}
+
 
 .nav-link {
     color: white;
     text-decoration: none;
     margin-left: 25px;
     font-weight: 500;
+    padding: 10px 0; /* Tambahkan padding vertikal agar mudah diklik */
+    display: inline-block;
     transition: color 0.2s, transform 0.35s cubic-bezier(.2,.9,.3,1), box-shadow 0.25s;
+    will-change: transform, box-shadow;
 }
 
 .nav-link:hover,
@@ -170,6 +184,7 @@ body {
     padding-top: 40px;
     width: 100%;
     margin: auto;
+    padding: 0 5%; /* Tambahkan padding horizontal agar konsisten */
 }
 
 .searchbar {
@@ -215,6 +230,7 @@ body {
     font-size: 15px;
     transition: all 0.3s;
     box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+    flex-shrink: 0; /* Penting agar tidak menyusut di mobile */
 }
 
 .btn-add-user:hover {
@@ -239,11 +255,13 @@ body {
     justify-content: center;
     background: white;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .filter-dropdown-container {
     position: relative;
     display: inline-block;
+    flex-shrink: 0;
 }
 
 .filter-options {
@@ -292,6 +310,7 @@ body {
 .container {
     max-width: 1400px;
     margin: auto;
+    padding: 20px 0; /* Tambahkan padding vertikal */
 }
 
 /* Header */
@@ -373,6 +392,7 @@ body {
 .td-email {
     color: #6b7280;
     font-size: 14px;
+    text-align: center; /* Sesuaikan agar rata tengah di desktop */
 }
 
 /* ID Badge */
@@ -628,63 +648,191 @@ body {
     box-shadow: 0 6px 20px rgba(18, 65, 125, 0.4);
 }
 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 1200px) {
-    .table-header, .table-row {
-        grid-template-columns: 1fr 160px 1fr 120px 180px;
-    }
-}
-
+/* ================= RESPONSIF NAVBAR DAN TATA LETAK UMUM ================= */
 @media (max-width: 900px) {
+    /* Navbar: Tumpuk Vertikal */
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 5%;
+    }
+
+    .nav-menu {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .nav-link {
+        margin-left: 0;
+        padding: 8px 0;
+        width: 100%;
+        text-align: left;
+    }
+
+    .dropdown {
+        margin-left: 0;
+        width: 100%;
+        border-top: 1px solid rgba(255, 255, 255, 0.1); /* Pemisah visual */
+    }
+
+    .dropdown-toggle {
+        width: 100%;
+        padding: 8px 0;
+        text-align: left;
+    }
+
+    .dropdown-menu {
+        position: static; /* Biarkan menu muncul di bawah toggle */
+        width: 100%;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+        background-color: rgba(0, 0, 0, 0.1); /* Latar belakang semi-transparan */
+        transform: translateY(0);
+    }
+    
+    .dropdown-item {
+        color: white; /* Ubah warna agar terlihat di atas background navbar */
+        border-radius: 0;
+    }
+    .dropdown-item:hover:not(.user-btn, .file-btn, .logout-btn) {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    /* Search Bar: Tumpuk Vertikal */
     .searchbar {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px; /* Kurangi jarak antar elemen */
     }
-    
+
+    .searchbox {
+        order: 1; /* Posisikan kotak pencarian di atas */
+        width: 100%;
+    }
+
+    .btn-add-user {
+        order: 2; /* Posisikan tombol di bawah */
+        width: 100%;
+        justify-content: center;
+    }
+
+    .filter-dropdown-container {
+        order: 3; /* Posisikan filter di paling bawah */
+        width: 100%;
+        display: flex;
+        justify-content: flex-end; /* Rata kanan di mobile */
+    }
+
+    /* ================= RESPONSIF TABEL MOBILE (Prioritas Utama) ================= */
     .table-header {
-        display: none;
+        display: none; /* Sembunyikan Header Kolom di Mobile */
     }
     
     .table-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Ubah ke satu kolom untuk tumpukan vertikal */
         padding: 18px;
         gap: 12px;
+        align-items: flex-start; /* Rata kiri vertikal */
     }
     
+    /* Memastikan nama adalah yang paling atas dan menonjol */
+    .td-name {
+        order: -5; /* Pindahkan ke paling atas */
+        font-size: 18px;
+        margin-bottom: 5px;
+        display: block;
+    }
+    
+    /* Mengubah sel agar tidak rata tengah, lebih mudah dibaca */
+    .td-id,
+    .td-role,
+    .td-actions,
+    .td-email {
+        justify-content: flex-start; /* Rata kiri */
+        display: flex; /* Pertahankan flex untuk layout konten */
+        align-items: center;
+        width: 100%;
+        text-align: left; /* Penting untuk email */
+    }
+    
+    /* Menambahkan Label Menggunakan Pseudo-elemen */
     .td-name::before {
-        content: "Name: ";
+        content: "Nama: ";
         font-weight: 700;
         color: #6b7280;
+        margin-right: 8px;
+        display: none; /* Tidak perlu label untuk nama karena sudah di atas */
     }
     
+    .td-id {
+        order: -3;
+    }
+
     .td-id::before {
-        content: "ID: ";
+        content: "ID Pengguna: ";
         font-weight: 700;
         color: #6b7280;
         margin-right: 8px;
     }
     
+    .td-email {
+        order: -2;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #eee;
+    }
+
     .td-email::before {
         content: "Email: ";
         font-weight: 700;
         color: #6b7280;
+        margin-right: 8px;
+    }
+    
+    .td-role {
+        order: -1;
     }
     
     .td-role::before {
-        content: "Role: ";
+        content: "Peran: ";
         font-weight: 700;
         color: #6b7280;
         margin-right: 8px;
     }
     
-    .td-id,
-    .td-role,
+    /* Memastikan tombol aksi berada di baris sendiri di bagian bawah */
     .td-actions {
-        justify-content: flex-start;
+        order: 10;
+        padding-top: 10px;
+        gap: 10px;
+        flex-direction: row; /* Pertahankan tombol berdampingan */
+    }
+
+    .btn-edit, .btn-remove {
+        flex: 1; /* Buat tombol memenuhi lebar */
+        padding: 10px;
+        font-size: 14px;
+        text-align: center;
+        justify-content: center;
     }
     
+    /* Modal Responsif */
     .modal-content {
         width: 95%;
         margin: 10% auto;
+    }
+}
+
+/* Penyesuaian untuk layar yang sangat kecil (di bawah 500px) */
+@media (max-width: 500px) {
+    .td-actions {
+        flex-direction: column; /* Tumpuk tombol Aksi di layar yang sangat kecil */
+    }
+    .btn-edit, .btn-remove {
+        width: 100%;
+        flex: none;
     }
 }
