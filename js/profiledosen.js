@@ -311,22 +311,15 @@ function validateFormAndSubmit(e) {
   const title = document.getElementById("title").value.trim();
   const type = document.getElementById("type").value;
   const date = document.getElementById("date").value;
+  const image_file = document.getElementById("imageFileInput").value;
+  const document_file = document.getElementById("documentFileInput").value;
 
-  if (!title || !type || !date) {
+  if (!title || !type || !date || !image_file || !document_file) {
     e.preventDefault();
-    alert("Please fill in all required fields (Title, Type, Date)!");
+    alert(
+      "Please fill in all required fields (Title, Type, Date, Image, Document) !"
+    );
     return false;
-  }
-
-  if (!uploadedFiles.image && !uploadedFiles.document) {
-    if (
-      !confirm(
-        "No files uploaded. Continue creating announcement without files?"
-      )
-    ) {
-      e.preventDefault();
-      return false;
-    }
   }
 
   // Jika validasi OK, biarkan form disubmit secara normal
