@@ -7,7 +7,7 @@ $announcements_per_page = 6;
 $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 if ($current_page < 1)
     $current_page = 1;
-tes
+
 $search_query = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 $filter_type = isset($_GET['filter']) && $_GET['filter'] !== 'All' ? $conn->real_escape_string($_GET['filter']) : '';
 $start_date = isset($_GET['start_date']) ? $conn->real_escape_string($_GET['start_date']) : '';
@@ -131,7 +131,7 @@ function get_url_params($page_num)
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SIPAk - Sistem Informasi Pengumuman Akademik Online</title>
     <link rel="stylesheet" href="../css/homepage.css" />
 </head>
