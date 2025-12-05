@@ -613,24 +613,8 @@ body {
     gap: 12px;
     padding-top: 12px;
 }
-.btn-cancel {
-    flex: 1;
-    padding: 12px 24px;
-    background: #e5e7eb;
-    color: #374151;
-    border: none;
-    border-radius: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.25s;
-}
-
-.btn-cancel:hover {
-    background: #d1d5db;
-    transform: translateY(-2px);
-}
-
 .btn-edit {
+    flex:1;
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
     padding: 8px 16px;
@@ -647,6 +631,23 @@ body {
     background: linear-gradient(135deg, #2563eb, #1d4ed8);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
 }
+.btn-cancel {
+    flex: 1;
+    padding: 8px 16px;
+    background: #e5e7eb;
+    color: #374151;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.btn-cancel:hover {
+    background: #d1d5db;
+    transform: translateY(-2px);
+}
+
 .btn-submit {
     flex: 1;
     padding: 12px 24px;
