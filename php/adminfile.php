@@ -75,7 +75,6 @@ if (!empty($end_date)) {
 
 $where_sql = count($where_clauses) > 0 ? " WHERE " . implode(" AND ", $where_clauses) : "";
 
-if (isset($_POST['update_file'])) {
     if (isset($_POST['update_file'])) {
 
     $id    = $_POST['edit_id'];
@@ -96,7 +95,7 @@ if (isset($_POST['update_file'])) {
         }
 
         $new_img  = 'img_' . time() . '.' . $img_ext;
-        $img_dir  = '../uploads/images/';
+        $img_dir  = 'uploads/images/';
         $image_path = $img_dir . $new_img;
 
         move_uploaded_file($_FILES['edit_image']['tmp_name'], $image_path);
@@ -145,52 +144,6 @@ if (isset($_POST['update_file'])) {
         $doc_path,
         $id
     );
-    $stmt->execute();
-
-    header("Location: adminfile.php?updated=1");
-    exit();
-}
-
-    $id    = $_POST['edit_id'];
-    $title = $_POST['edit_title'];
-    $type  = $_POST['edit_type'];
-    $date  = $_POST['edit_date'];
-
-    $old_doc = $_POST['old_document'];
-
-    // DEFAULT: pakai dokumen lama
-    $doc_path = $old_doc;
-
-    // ✅ JIKA upload baru
-    if (!empty($_FILES['edit_document']['name'])) {
-
-        $ext = strtolower(pathinfo($_FILES['edit_document']['name'], PATHINFO_EXTENSION));
-        $allowed = ['pdf', 'doc', 'docx'];
-
-        if (!in_array($ext, $allowed)) {
-            die("Format file tidak diizinkan");
-        }
-
-        $new_name = 'doc_' . time() . '.' . $ext;
-        $upload_dir = '../uploads/documents/';
-        $doc_path = $upload_dir . $new_name;
-
-        // Upload file baru
-        move_uploaded_file($_FILES['edit_document']['tmp_name'], $doc_path);
-
-        // ✅ Hapus file lama
-        if (!empty($old_doc) && file_exists($old_doc)) {
-            unlink($old_doc);
-        }
-    }
-
-    // Update database
-    $stmt = $conn->prepare("
-        UPDATE pengumuman 
-        SET title=?, type=?, date=?, document_path=? 
-        WHERE id=?
-    ");
-    $stmt->bind_param("ssssi", $title, $type, $date, $doc_path, $id);
     $stmt->execute();
 
     header("Location: adminfile.php?updated=1");
@@ -439,8 +392,8 @@ function get_url_params()
         
 
         <div class="modal-footer">
-        <button type="button" onclick="closeEditModal()">Cancel</button>
-        <button type="submit">Update</button>
+        <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" class="btn-edit" name="update_file">Update</button>
         </div>
     </form>
     </div>
@@ -492,6 +445,9 @@ function get_url_params()
     document.getElementById("edit_title").value = this.dataset.title;
     document.getElementById("edit_type").value  = this.dataset.type;
     document.getElementById("edit_date").value  = this.dataset.date;
+
+    document.getElementById("old_image").value = this.dataset.image;
+    document.getElementById("old_document").value = this.dataset.document;
 
     document.getElementById("editModal").style.display = "block";
     document.body.style.overflow = "hidden";
