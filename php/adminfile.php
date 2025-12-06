@@ -7,7 +7,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: loginpage.php');
     exit();
 }
-
+// Handle Edit User
+if (isset($_POST['edit_user'])) {
+    $id = $conn->real_escape_string($_POST['edit_id']);
+    $nama = $conn->real_escape_string($_POST['edit_nama']);
+    $email = $conn->real_escape_string($_POST['edit_email']);
+    $role = $conn->real_escape_string($_POST['edit_role']);
+}
 // Handle delete file
 if (isset($_POST['delete_id'])) {
     $delete_id = $_POST['delete_id'];
@@ -68,6 +74,81 @@ if (!empty($end_date)) {
 }
 
 $where_sql = count($where_clauses) > 0 ? " WHERE " . implode(" AND ", $where_clauses) : "";
+
+    if (isset($_POST['update_file'])) {
+
+    $id    = $_POST['edit_id'];
+    $title = $_POST['edit_title'];
+    $type  = $_POST['edit_type'];
+    $date  = $_POST['edit_date'];
+
+    /* ================== FOTO ================== */
+    $old_image  = $_POST['old_image'];
+    $image_path = $old_image;
+
+    if (!empty($_FILES['edit_image']['name'])) {
+        $img_ext = strtolower(pathinfo($_FILES['edit_image']['name'], PATHINFO_EXTENSION));
+        $allowed_img = ['jpg','jpeg','png'];
+
+        if (!in_array($img_ext, $allowed_img)) {
+            die("Format gambar tidak diizinkan");
+        }
+
+        $new_img  = 'img_' . time() . '.' . $img_ext;
+        $img_dir  = 'uploads/images/';
+        $image_path = $img_dir . $new_img;
+
+        move_uploaded_file($_FILES['edit_image']['tmp_name'], $image_path);
+
+        // Hapus foto lama
+        if (!empty($old_image) && file_exists($old_image)) {
+            unlink($old_image);
+        }
+    }
+
+    /* ================== DOKUMEN ================== */
+    $old_doc = $_POST['old_document'];
+    $doc_path = $old_doc;
+
+    if (!empty($_FILES['edit_document']['name'])) {
+        $ext = strtolower(pathinfo($_FILES['edit_document']['name'], PATHINFO_EXTENSION));
+        $allowed = ['pdf','doc','docx'];
+
+        if (!in_array($ext, $allowed)) {
+            die("Format file tidak diizinkan");
+        }
+
+        $new_name = 'doc_' . time() . '.' . $ext;
+        $upload_dir = '../uploads/documents/';
+        $doc_path = $upload_dir . $new_name;
+
+        move_uploaded_file($_FILES['edit_document']['tmp_name'], $doc_path);
+
+        if (!empty($old_doc) && file_exists($old_doc)) {
+            unlink($old_doc);
+        }
+    }
+
+    /* ================== UPDATE DATABASE ================== */
+    $stmt = $conn->prepare("
+        UPDATE pengumuman 
+        SET title=?, type=?, date=?, image_path=?, document_path=?
+        WHERE id=?
+    ");
+    $stmt->bind_param(
+        "sssssi",
+        $title,
+        $type,
+        $date,
+        $image_path,
+        $doc_path,
+        $id
+    );
+    $stmt->execute();
+
+    header("Location: adminfile.php?updated=1");
+    exit();
+}
 
 // Query
 $query = "SELECT id, title, type, date, image_path, document_path, created_by_name FROM pengumuman" . $where_sql . " ORDER BY date DESC";
@@ -234,13 +315,25 @@ function get_url_params()
                                     <span class="no-doc">No document</span>
                                 <?php endif; ?>
                             </div>
-
+                        
                             <!-- Column 6: Actions -->
                             <div class="td-actions">
+                                <button
+                            type="button"
+                            class="btn-edit js-edit-file"
+                            data-id="<?= $announcement['id'] ?>"
+                            data-title="<?= htmlspecialchars($announcement['title']) ?>"
+                            data-type="<?= htmlspecialchars($announcement['type']) ?>"
+                            data-date="<?= $announcement['date'] ?>"
+                            data-image="<?= $announcement['image_path'] ?>"
+                            data-document="<?= $announcement['document_path'] ?>"
+                            >
+                            ✏️
+                            </button>
                                 <form method="POST" action="adminfile.php"
                                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus file ini?');">
                                     <input type="hidden" name="delete_id" value="<?php echo $announcement['id']; ?>">
-                                    <button type="submit" class="btn-remove">Remove</button>
+                                    <button type="submit" class="btn-remove">🗑️</button>
                                 </form>
                             </div>
                         </div>
@@ -258,6 +351,53 @@ function get_url_params()
             </div>
         </main>
     </div>
+<div id="editModal" class="modal">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h2>Edit Pengumuman</h2>
+        <span class="close" onclick="closeEditModal()">&times;</span>
+    </div>
+
+    <form method="POST" action="adminfile.php" enctype="multipart/form-data">
+        <input type="hidden" name="edit_id" id="edit_id">
+        <input type="hidden" name="old_image" id="old_image">
+        <input type="hidden" name="old_document" id="old_document">
+
+        <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="edit_title" id="edit_title">
+        </div>
+
+        <div class="form-group">
+        <label>Type</label>
+        <input type="text" name="edit_type" id="edit_type">
+        </div>
+
+        <div class="form-group">
+        <label>Date</label>
+        <input type="date" name="edit_date" id="edit_date">
+        </div>
+
+        <div class="form-group">
+        <label>Photo</label>
+        <input type="file" name="edit_image" accept="image/*">
+        <small>Kosongkan jika tidak ingin mengganti foto</small>
+        </div>
+
+        <div class="form-group">
+        <label>Document</label>
+        <input type="file" name="edit_document" id="edit_document" accept=".pdf,.doc,.docx">
+        <small>Kosongkan jika tidak ingin mengganti</small>
+        </div>
+        
+
+        <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" class= "btn-edit" name="update_file">Update</button>
+        </div>
+    </form>
+    </div>
+</div>
 
     <script>
         // Dropdown toggle
@@ -288,7 +428,38 @@ function get_url_params()
                 filterContainer.classList.remove('show');
             }
         });
+        // Add Modal Functions
+        function openAddModal() {
+            document.getElementById('addModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".js-edit-file").forEach(button => {
+    button.addEventListener("click", function () {
+    document.getElementById("edit_id").value    = this.dataset.id;
+    document.getElementById("edit_title").value = this.dataset.title;
+    document.getElementById("edit_type").value  = this.dataset.type;
+    document.getElementById("edit_date").value  = this.dataset.date;
+
+    document.getElementById("old_image").value = this.dataset.image;
+    document.getElementById("old_document").value = this.dataset.document;
+
+    document.getElementById("editModal").style.display = "block";
+    document.body.style.overflow = "hidden";
+    });
+    });
+});
+
+function closeEditModal() {
+    document.getElementById("editModal").style.display = "none";
+    document.body.style.overflow = "auto";
+}
+
     </script>
 </body>
-
 </html>
