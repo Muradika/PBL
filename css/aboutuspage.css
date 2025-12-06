@@ -149,7 +149,6 @@ body {
     justify-content: center;
     margin: 0 auto;
     padding: 20px 0;
-    max-width: 1400px;
 }
 
 .team-card {
@@ -165,7 +164,6 @@ body {
     overflow: hidden;
     min-height: 500px;
     transition: transform 0.3s cubic-bezier(.25, .8, .25, 1), box-shadow 0.3s cubic-bezier(.25,.8,.25,1);
-    position: relative;
 }
 
 @media (min-width: 768px) {
