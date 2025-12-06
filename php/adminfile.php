@@ -393,7 +393,7 @@ function get_url_params()
 
         <div class="modal-footer">
         <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
-        <button type="submit" class="btn-edit" name="update_file">Update</button>
+        <button type="submit" class= "btn-edit" name="update_file">Update</button>
         </div>
     </form>
     </div>
