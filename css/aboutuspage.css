@@ -144,25 +144,40 @@ body {
 /* ============================ TEAM CARDS (MODERN & CLEAN) ============================ */
 .team-card-container {
     display: flex;
-    gap: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
     justify-content: center;
     margin: 0 auto;
     padding: 20px 0;
-    flex-wrap: wrap;
     max-width: 1400px;
 }
 
 .team-card {
     background-color: white;
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    width: 100px;
+    max-width: 400px;
+    margin: auto;
     flex-shrink: 0;
+    flex: 1 1 calc(100% - 20px);
     text-align: left;
     overflow: hidden;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                box-shadow 0.4s ease;
+    min-height: 500px;
+    transition: transform 0.3s cubic-bezier(.25, .8, .25, 1), box-shadow 0.3s cubic-bezier(.25,.8,.25,1);
     position: relative;
+}
+
+@media (min-width: 768px) {
+    .card {
+        flex: 1 1 calc(50% - 20px);
+    }
+}
+
+@media (min-width: 1024px) {
+    .card {
+        flex: 1 1 calc(25% - 20px);
+    }
 }
 
 /* HOVER EFFECT - CARD TERANGKAT (BUKAN FOTO) */
