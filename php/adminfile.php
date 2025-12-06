@@ -2,21 +2,100 @@
 session_start();
 include '../database/pengumuman.php';
 
-// Cek apakah user adalah admin
+// ========== STRICT ADMIN CHECK ==========
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: loginpage.php');
     exit();
 }
-// Handle Edit User
-if (isset($_POST['edit_user'])) {
-    $id = $conn->real_escape_string($_POST['edit_id']);
-    $nama = $conn->real_escape_string($_POST['edit_nama']);
-    $email = $conn->real_escape_string($_POST['edit_email']);
-    $role = $conn->real_escape_string($_POST['edit_role']);
+
+// Regenerate session ID untuk security
+if (!isset($_SESSION['admin_verified'])) {
+    session_regenerate_id(true);
+    $_SESSION['admin_verified'] = true;
 }
-// Handle delete file
+
+// ========== HANDLE UPDATE FILE ==========
+if (isset($_POST['update_file'])) {
+    $id = (int) $_POST['edit_id'];
+    $title = trim($_POST['edit_title']);
+    $type = trim($_POST['edit_type']);
+    $date = trim($_POST['edit_date']);
+
+    // Image handling
+    $old_image = $_POST['old_image'];
+    $image_path = $old_image;
+
+    if (!empty($_FILES['edit_image']['name'])) {
+        $img_ext = strtolower(pathinfo($_FILES['edit_image']['name'], PATHINFO_EXTENSION));
+        $allowed_img = ['jpg', 'jpeg', 'png'];
+
+        if (!in_array($img_ext, $allowed_img)) {
+            $error = "Format gambar tidak diizinkan! Hanya JPG, JPEG, PNG.";
+        } else {
+            $new_img = 'img_' . time() . '.' . $img_ext;
+            $img_dir = '../uploads/images/';
+
+            if (!is_dir($img_dir)) {
+                mkdir($img_dir, 0755, true);
+            }
+
+            $image_path = $img_dir . $new_img;
+
+            if (move_uploaded_file($_FILES['edit_image']['tmp_name'], $image_path)) {
+                // Delete old image
+                if (!empty($old_image) && file_exists($old_image)) {
+                    unlink($old_image);
+                }
+            }
+        }
+    }
+
+    // Document handling
+    $old_doc = $_POST['old_document'];
+    $doc_path = $old_doc;
+
+    if (!empty($_FILES['edit_document']['name'])) {
+        $ext = strtolower(pathinfo($_FILES['edit_document']['name'], PATHINFO_EXTENSION));
+        $allowed = ['pdf', 'doc', 'docx'];
+
+        if (!in_array($ext, $allowed)) {
+            $error = "Format dokumen tidak diizinkan! Hanya PDF, DOC, DOCX.";
+        } else {
+            $new_name = 'doc_' . time() . '.' . $ext;
+            $upload_dir = '../uploads/documents/';
+
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+            }
+
+            $doc_path = $upload_dir . $new_name;
+
+            if (move_uploaded_file($_FILES['edit_document']['tmp_name'], $doc_path)) {
+                // Delete old document
+                if (!empty($old_doc) && file_exists($old_doc)) {
+                    unlink($old_doc);
+                }
+            }
+        }
+    }
+
+    // Update database with prepared statement
+    if (!isset($error)) {
+        $stmt = $conn->prepare("UPDATE pengumuman SET title=?, type=?, date=?, image_path=?, document_path=? WHERE id=?");
+        $stmt->bind_param("sssssi", $title, $type, $date, $image_path, $doc_path, $id);
+
+        if ($stmt->execute()) {
+            $success = "✅ File berhasil diupdate!";
+        } else {
+            $error = "❌ Gagal update file: " . $conn->error;
+        }
+        $stmt->close();
+    }
+}
+
+// ========== HANDLE DELETE FILE ==========
 if (isset($_POST['delete_id'])) {
-    $delete_id = $_POST['delete_id'];
+    $delete_id = (int) $_POST['delete_id'];
 
     // Get file paths before deleting
     $stmt = $conn->prepare("SELECT image_path, document_path FROM pengumuman WHERE id = ?");
@@ -39,131 +118,75 @@ if (isset($_POST['delete_id'])) {
     // Delete from database
     $delete_stmt = $conn->prepare("DELETE FROM pengumuman WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_id);
-    $delete_stmt->execute();
+
+    if ($delete_stmt->execute()) {
+        $success = "✅ File berhasil dihapus!";
+    } else {
+        $error = "❌ Gagal menghapus file!";
+    }
     $delete_stmt->close();
-
-    header('Location: adminfile.php?deleted=1');
-    exit();
 }
 
-// --- FILTERS ---
-$search_query = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-$filter_type = isset($_GET['filter']) && $_GET['filter'] !== 'All' ? $conn->real_escape_string($_GET['filter']) : '';
-$start_date = isset($_GET['start_date']) ? $conn->real_escape_string($_GET['start_date']) : '';
-$end_date = isset($_GET['end_date']) ? $conn->real_escape_string($_GET['end_date']) : '';
+// ========== FILTERS WITH PREPARED STATEMENTS ==========
+$search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
+$filter_type = isset($_GET['filter']) && $_GET['filter'] !== 'All' ? trim($_GET['filter']) : '';
+$start_date = isset($_GET['start_date']) ? trim($_GET['start_date']) : '';
+$end_date = isset($_GET['end_date']) ? trim($_GET['end_date']) : '';
 
-// Build WHERE clause
+// Build query with prepared statements
 $where_clauses = [];
+$params = [];
+$types = '';
 
-// Search filter
 if (!empty($search_query)) {
-    $where_clauses[] = "(title LIKE '%$search_query%' OR type LIKE '%$search_query%' OR created_by_name LIKE '%$search_query%')";
+    $where_clauses[] = "(title LIKE ? OR type LIKE ? OR created_by_name LIKE ?)";
+    $search_param = '%' . $search_query . '%';
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $types .= 'sss';
 }
 
-// Category filter
 if (!empty($filter_type)) {
-    $where_clauses[] = "type = '$filter_type'";
+    $where_clauses[] = "type = ?";
+    $params[] = $filter_type;
+    $types .= 's';
 }
 
-// Date range filter
 if (!empty($start_date)) {
-    $where_clauses[] = "date >= '$start_date'";
+    $where_clauses[] = "date >= ?";
+    $params[] = $start_date;
+    $types .= 's';
 }
+
 if (!empty($end_date)) {
-    $where_clauses[] = "date <= '$end_date'";
+    $where_clauses[] = "date <= ?";
+    $params[] = $end_date;
+    $types .= 's';
 }
 
 $where_sql = count($where_clauses) > 0 ? " WHERE " . implode(" AND ", $where_clauses) : "";
 
-    if (isset($_POST['update_file'])) {
+// Query with prepared statement
+$query = "SELECT id, title, type, date, image_path, document_path, created_by_name FROM pengumuman" . $where_sql . " ORDER BY date DESC";
+$stmt = $conn->prepare($query);
 
-    $id    = $_POST['edit_id'];
-    $title = $_POST['edit_title'];
-    $type  = $_POST['edit_type'];
-    $date  = $_POST['edit_date'];
-
-    /* ================== FOTO ================== */
-    $old_image  = $_POST['old_image'];
-    $image_path = $old_image;
-
-    if (!empty($_FILES['edit_image']['name'])) {
-        $img_ext = strtolower(pathinfo($_FILES['edit_image']['name'], PATHINFO_EXTENSION));
-        $allowed_img = ['jpg','jpeg','png'];
-
-        if (!in_array($img_ext, $allowed_img)) {
-            die("Format gambar tidak diizinkan");
-        }
-
-        $new_img  = 'img_' . time() . '.' . $img_ext;
-        $img_dir  = 'uploads/images/';
-        $image_path = $img_dir . $new_img;
-
-        move_uploaded_file($_FILES['edit_image']['tmp_name'], $image_path);
-
-        // Hapus foto lama
-        if (!empty($old_image) && file_exists($old_image)) {
-            unlink($old_image);
-        }
-    }
-
-    /* ================== DOKUMEN ================== */
-    $old_doc = $_POST['old_document'];
-    $doc_path = $old_doc;
-
-    if (!empty($_FILES['edit_document']['name'])) {
-        $ext = strtolower(pathinfo($_FILES['edit_document']['name'], PATHINFO_EXTENSION));
-        $allowed = ['pdf','doc','docx'];
-
-        if (!in_array($ext, $allowed)) {
-            die("Format file tidak diizinkan");
-        }
-
-        $new_name = 'doc_' . time() . '.' . $ext;
-        $upload_dir = '../uploads/documents/';
-        $doc_path = $upload_dir . $new_name;
-
-        move_uploaded_file($_FILES['edit_document']['tmp_name'], $doc_path);
-
-        if (!empty($old_doc) && file_exists($old_doc)) {
-            unlink($old_doc);
-        }
-    }
-
-    /* ================== UPDATE DATABASE ================== */
-    $stmt = $conn->prepare("
-        UPDATE pengumuman 
-        SET title=?, type=?, date=?, image_path=?, document_path=?
-        WHERE id=?
-    ");
-    $stmt->bind_param(
-        "sssssi",
-        $title,
-        $type,
-        $date,
-        $image_path,
-        $doc_path,
-        $id
-    );
-    $stmt->execute();
-
-    header("Location: adminfile.php?updated=1");
-    exit();
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
 }
 
-// Query
-$query = "SELECT id, title, type, date, image_path, document_path, created_by_name FROM pengumuman" . $where_sql . " ORDER BY date DESC";
-$result = $conn->query($query);
+$stmt->execute();
+$result = $stmt->get_result();
 $announcements = [];
 
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        $announcements[] = $row;
-    }
+while ($row = $result->fetch_assoc()) {
+    $announcements[] = $row;
 }
 
+$stmt->close();
 $conn->close();
 
-// Helper function untuk URL params
+// Helper function
 function get_url_params()
 {
     $params = $_GET;
@@ -199,28 +222,63 @@ function get_url_params()
                 Akademik <span class="online-tag">Online</span>
             </div>
         </div>
+
+        <!-- Hamburger Menu Button (Mobile Only) -->
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Desktop Navigation with Dropdown -->
         <nav class="nav-menu">
             <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn">Admin Dashboard</a>
+                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn"> Admin Dashboard
+                </a>
                 <div class="dropdown-menu" id="profile-dropdown-menu">
-                    <a href="adminuser.php" class="dropdown-item user-btn"><i class="fas fa-user"></i>User
-                        Management</a>
-                    <a href="adminfile.php" class="dropdown-item file-btn"><i class="fas fa-file"></i>File
-                        Management</a>
-                    <a href="logout.php" class="dropdown-item logout-btn"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+                    <a href="adminuser.php" class="dropdown-item user-btn">
+                        <i class="fas fa-users"></i> User Management
+                    </a>
+                    <a href="adminfile.php" class="dropdown-item file-btn">
+                        <i class="fas fa-file-alt"></i> File Management
+                    </a>
+                    <a href="logout.php" class="dropdown-item logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Log Out
+                    </a>
                 </div>
             </div>
+        </nav>
+
+        <!-- Mobile Navigation (Direct Links) -->
+        <nav class="nav-menu-mobile">
+            <a href="adminuser.php" class="nav-link-mobile">
+                <i class="fas fa-users"></i> User Management
+            </a>
+            <a href="adminfile.php" class="nav-link-mobile">
+                <i class="fas fa-file-alt"></i> File Management
+            </a>
+            <a href="logout.php" class="nav-link-mobile">
+                <i class="fas fa-sign-out-alt"></i> Log Out
+            </a>
         </nav>
     </header>
 
     <div class="container">
         <main class="main">
+            <!-- Success/Error Messages -->
+            <?php if (isset($success)): ?>
+                <div class="alert alert-success"><?php echo $success; ?></div>
+            <?php endif; ?>
+            <?php if (isset($error)): ?>
+                <div class="alert alert-error"><?php echo $error; ?></div>
+            <?php endif; ?>
+
             <!-- SEARCH & FILTERS -->
             <form class="searchbar" method="GET" action="adminfile.php">
                 <!-- Search Box -->
                 <div class="searchbox">
                     <span class="search-icon">🔍</span>
-                    <input id="searchInput" name="search" placeholder="Search File (Title, Type, Date, Creator)"
+                    <input id="searchInput" name="search" placeholder="Search File (Title, Type, Creator)"
                         value="<?php echo htmlspecialchars($search_query); ?>">
                     <button type="submit" style="display:none;"></button>
                 </div>
@@ -253,11 +311,8 @@ function get_url_params()
                         <?php
                         $categories = ["Jadwal", "Beasiswa", "Perubahan Kelas", "Karir", "Kemahasiswaan"];
                         foreach ($categories as $cat):
-                            $link_params = $_GET;
-                            $link_params['filter'] = $cat;
-                            $category_url = '?' . http_build_query($link_params);
                             ?>
-                            <a href="<?php echo $category_url; ?>"
+                            <a href="?search=<?php echo urlencode($search_query); ?>&filter=<?php echo $cat; ?>"
                                 class="filter-option <?php echo ($filter_type === $cat) ? 'active' : ''; ?>">
                                 <?php echo htmlspecialchars($cat); ?>
                             </a>
@@ -281,59 +336,48 @@ function get_url_params()
                 <?php if (!empty($announcements)): ?>
                     <?php foreach ($announcements as $announcement): ?>
                         <div class="table-row">
-                            <!-- Column 1: Type Badge -->
+                            <!-- Type -->
                             <div class="td-type">
                                 <span class="type-badge"><?php echo htmlspecialchars($announcement['type']); ?></span>
                             </div>
 
-                            <!-- Column 2: Title -->
+                            <!-- Title -->
                             <div class="td-title">
                                 <?php echo htmlspecialchars($announcement['title']); ?>
                             </div>
 
-                            <!-- Column 3: Date -->
+                            <!-- Date -->
                             <div class="td-date">
                                 <?php echo date('d M Y', strtotime($announcement['date'])); ?>
                             </div>
 
-                            <!-- Column 4: Creator -->
+                            <!-- Creator -->
                             <div class="td-creator">
-                                <?php
-                                $creator = $announcement['created_by_name'] ?? 'Unknown';
-                                echo htmlspecialchars($creator);
-                                ?>
+                                <?php echo htmlspecialchars($announcement['created_by_name'] ?? 'Unknown'); ?>
                             </div>
 
-                            <!-- Column 5: Document -->
+                            <!-- Document -->
                             <div class="td-document">
                                 <?php if (!empty($announcement['document_path'])): ?>
                                     <a href="<?php echo htmlspecialchars($announcement['document_path']); ?>" target="_blank"
                                         class="doc-link">
-                                        View Doc
+                                        📄 View
                                     </a>
                                 <?php else: ?>
-                                    <span class="no-doc">No document</span>
+                                    <span class="no-doc">No Doc</span>
                                 <?php endif; ?>
                             </div>
-                        
-                            <!-- Column 6: Actions -->
+
+                            <!-- Actions -->
                             <div class="td-actions">
-                                <button
-                            type="button"
-                            class="btn-edit js-edit-file"
-                            data-id="<?= $announcement['id'] ?>"
-                            data-title="<?= htmlspecialchars($announcement['title']) ?>"
-                            data-type="<?= htmlspecialchars($announcement['type']) ?>"
-                            data-date="<?= $announcement['date'] ?>"
-                            data-image="<?= $announcement['image_path'] ?>"
-                            data-document="<?= $announcement['document_path'] ?>"
-                            >
-                            ✏️
-                            </button>
-                                <form method="POST" action="adminfile.php"
+                                <button type="button" class="btn-edit"
+                                    onclick='openEditModal(<?php echo json_encode($announcement); ?>)'>
+                                    Edit
+                                </button>
+                                <form method="POST" action="adminfile.php" style="display:inline;"
                                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus file ini?');">
                                     <input type="hidden" name="delete_id" value="<?php echo $announcement['id']; ?>">
-                                    <button type="submit" class="btn-remove">🗑️</button>
+                                    <button type="submit" class="btn-remove">Remove</button>
                                 </form>
                             </div>
                         </div>
@@ -351,115 +395,62 @@ function get_url_params()
             </div>
         </main>
     </div>
-<div id="editModal" class="modal">
-    <div class="modal-content">
-    <div class="modal-header">
-        <h2>Edit Pengumuman</h2>
-        <span class="close" onclick="closeEditModal()">&times;</span>
+
+    <!-- EDIT MODAL -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Edit Pengumuman</h2>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+
+            <form method="POST" action="adminfile.php" enctype="multipart/form-data">
+                <input type="hidden" name="edit_id" id="edit_id">
+                <input type="hidden" name="old_image" id="old_image">
+                <input type="hidden" name="old_document" id="old_document">
+
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="edit_title" id="edit_title" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Type</label>
+                    <select name="edit_type" id="edit_type" required>
+                        <option value="Jadwal">Jadwal</option>
+                        <option value="Beasiswa">Beasiswa</option>
+                        <option value="Perubahan Kelas">Perubahan Kelas</option>
+                        <option value="Karir">Karir</option>
+                        <option value="Kemahasiswaan">Kemahasiswaan</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="edit_date" id="edit_date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Photo (Optional)</label>
+                    <input type="file" name="edit_image" accept="image/*">
+                    <small>Kosongkan jika tidak ingin mengganti foto</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Document (Optional)</label>
+                    <input type="file" name="edit_document" accept=".pdf,.doc,.docx">
+                    <small>Kosongkan jika tidak ingin mengganti dokumen</small>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" name="update_file" class="btn-submit">Update File</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <form method="POST" action="adminfile.php" enctype="multipart/form-data">
-        <input type="hidden" name="edit_id" id="edit_id">
-        <input type="hidden" name="old_image" id="old_image">
-        <input type="hidden" name="old_document" id="old_document">
-
-        <div class="form-group">
-        <label>Title</label>
-        <input type="text" name="edit_title" id="edit_title">
-        </div>
-
-        <div class="form-group">
-        <label>Type</label>
-        <input type="text" name="edit_type" id="edit_type">
-        </div>
-
-        <div class="form-group">
-        <label>Date</label>
-        <input type="date" name="edit_date" id="edit_date">
-        </div>
-
-        <div class="form-group">
-        <label>Photo</label>
-        <input type="file" name="edit_image" accept="image/*">
-        <small>Kosongkan jika tidak ingin mengganti foto</small>
-        </div>
-
-        <div class="form-group">
-        <label>Document</label>
-        <input type="file" name="edit_document" id="edit_document" accept=".pdf,.doc,.docx">
-        <small>Kosongkan jika tidak ingin mengganti</small>
-        </div>
-        
-
-        <div class="modal-footer">
-        <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
-        <button type="submit" class= "btn-edit" name="update_file">Update</button>
-        </div>
-    </form>
-    </div>
-</div>
-
-    <script>
-        // Dropdown toggle
-        document.getElementById('profile-dropdown-btn').addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector('.dropdown').classList.toggle('active');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('.dropdown')) {
-                document.querySelector('.dropdown').classList.remove('active');
-            }
-        });
-
-        // Filter dropdown toggle
-        const filterButton = document.getElementById('filterButton');
-        const filterContainer = document.querySelector('.filter-dropdown-container');
-
-        filterButton.addEventListener('click', function (e) {
-            e.stopPropagation();
-            filterContainer.classList.toggle('show');
-        });
-
-        // Close filter dropdown when clicking outside
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('.filter-dropdown-container')) {
-                filterContainer.classList.remove('show');
-            }
-        });
-        // Add Modal Functions
-        function openAddModal() {
-            document.getElementById('addModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeAddModal() {
-            document.getElementById('addModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-    document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".js-edit-file").forEach(button => {
-    button.addEventListener("click", function () {
-    document.getElementById("edit_id").value    = this.dataset.id;
-    document.getElementById("edit_title").value = this.dataset.title;
-    document.getElementById("edit_type").value  = this.dataset.type;
-    document.getElementById("edit_date").value  = this.dataset.date;
-
-    document.getElementById("old_image").value = this.dataset.image;
-    document.getElementById("old_document").value = this.dataset.document;
-
-    document.getElementById("editModal").style.display = "block";
-    document.body.style.overflow = "hidden";
-    });
-    });
-});
-
-function closeEditModal() {
-    document.getElementById("editModal").style.display = "none";
-    document.body.style.overflow = "auto";
-}
-
-    </script>
+    <script src="../js/adminfile.js"></script>
 </body>
+
 </html>

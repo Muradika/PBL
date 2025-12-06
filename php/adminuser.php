@@ -2,19 +2,25 @@
 session_start();
 include '../database/pengumuman.php';
 
-// Cek apakah user adalah admin
+// ========== STRICT ADMIN CHECK ==========
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: loginpage.php');
     exit();
 }
 
-// Handle Add User
+// Regenerate session ID untuk security
+if (!isset($_SESSION['admin_verified'])) {
+    session_regenerate_id(true);
+    $_SESSION['admin_verified'] = true;
+}
+
+// ========== HANDLE ADD USER ==========
 if (isset($_POST['add_user'])) {
-    $nama = $conn->real_escape_string($_POST['nama_lengkap']);
-    $id_number = $conn->real_escape_string($_POST['id_number']);
-    $email = $conn->real_escape_string($_POST['email']);
-    $password = $_POST['password']; // No hashing as requested
-    $role = $conn->real_escape_string($_POST['role']);
+    $nama = trim($_POST['nama_lengkap']);
+    $id_number = trim($_POST['id_number']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $role = $_POST['role'];
 
     // Validate ID number (10 digits only)
     if (!preg_match('/^\d{10}$/', $id_number)) {
@@ -29,14 +35,17 @@ if (isset($_POST['add_user'])) {
         if ($check_id->num_rows > 0) {
             $error = "ID Number sudah terdaftar!";
         } else {
+            // ✅ HASH PASSWORD SEBELUM DISIMPAN
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
             // Insert new user
             $insert = $conn->prepare("INSERT INTO user (id, nama_lengkap, email, password, role) VALUES (?, ?, ?, ?, ?)");
-            $insert->bind_param("sssss", $id_number, $nama, $email, $password, $role);
+            $insert->bind_param("sssss", $id_number, $nama, $email, $hashed_password, $role);
 
             if ($insert->execute()) {
-                $success = "User berhasil ditambahkan!";
+                $success = "✅ User berhasil ditambahkan!";
             } else {
-                $error = "Gagal menambahkan user: " . $conn->error;
+                $error = "❌ Gagal menambahkan user: " . $conn->error;
             }
             $insert->close();
         }
@@ -44,81 +53,99 @@ if (isset($_POST['add_user'])) {
     }
 }
 
-// Handle Edit User
+// ========== HANDLE EDIT USER ==========
 if (isset($_POST['edit_user'])) {
-    $id = $conn->real_escape_string($_POST['edit_id']);
-    $nama = $conn->real_escape_string($_POST['edit_nama']);
-    $email = $conn->real_escape_string($_POST['edit_email']);
-    $role = $conn->real_escape_string($_POST['edit_role']);
+    $id = trim($_POST['edit_id']);
+    $nama = trim($_POST['edit_nama']);
+    $email = trim($_POST['edit_email']);
+    $role = $_POST['edit_role'];
 
     // Update password only if provided
     if (!empty($_POST['edit_password'])) {
-        $password = $_POST['edit_password'];
+        // ✅ HASH PASSWORD BARU
+        $hashed_password = password_hash($_POST['edit_password'], PASSWORD_DEFAULT);
+
         $update = $conn->prepare("UPDATE user SET nama_lengkap = ?, email = ?, password = ?, role = ? WHERE id = ?");
-        $update->bind_param("sssss", $nama, $email, $password, $role, $id);
+        $update->bind_param("sssss", $nama, $email, $hashed_password, $role, $id);
+
+        $success = "✅ User berhasil diupdate dengan password baru!";
     } else {
         $update = $conn->prepare("UPDATE user SET nama_lengkap = ?, email = ?, role = ? WHERE id = ?");
         $update->bind_param("ssss", $nama, $email, $role, $id);
+
+        $success = "✅ User berhasil diupdate!";
     }
 
-    if ($update->execute()) {
-        $success = "User berhasil diupdate!";
-    } else {
-        $error = "Gagal update user: " . $conn->error;
+    if (!$update->execute()) {
+        $error = "❌ Gagal update user: " . $conn->error;
+        $success = null;
     }
     $update->close();
 }
 
-// Handle Delete User
+// ========== HANDLE DELETE USER ==========
 if (isset($_POST['delete_id'])) {
-    $delete_id = $conn->real_escape_string($_POST['delete_id']);
+    $delete_id = trim($_POST['delete_id']);
 
     // Prevent deleting own account
     if ($delete_id == $_SESSION['user_id']) {
-        $error = "Tidak dapat menghapus akun sendiri!";
+        $error = "⚠️ Tidak dapat menghapus akun sendiri!";
     } else {
         $delete = $conn->prepare("DELETE FROM user WHERE id = ?");
         $delete->bind_param("s", $delete_id);
 
         if ($delete->execute()) {
-            $success = "User berhasil dihapus!";
+            $success = "✅ User berhasil dihapus!";
         } else {
-            $error = "Gagal menghapus user: " . $conn->error;
+            $error = "❌ Gagal menghapus user: " . $conn->error;
         }
         $delete->close();
     }
 }
 
-// --- FILTERS ---
-$search_query = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-$filter_role = isset($_GET['filter']) && $_GET['filter'] !== 'All' ? $conn->real_escape_string($_GET['filter']) : '';
+// ========== FILTERS WITH PREPARED STATEMENTS ==========
+$search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
+$filter_role = isset($_GET['filter']) && $_GET['filter'] !== 'All' ? trim($_GET['filter']) : '';
 
-// Build WHERE clause
+// Build query with prepared statements
 $where_clauses = [];
+$params = [];
+$types = '';
 
-// Search filter
 if (!empty($search_query)) {
-    $where_clauses[] = "(nama_lengkap LIKE '%$search_query%' OR email LIKE '%$search_query%' OR id LIKE '%$search_query%')";
+    $where_clauses[] = "(nama_lengkap LIKE ? OR email LIKE ? OR id LIKE ?)";
+    $search_param = '%' . $search_query . '%';
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $types .= 'sss';
 }
 
-// Role filter
 if (!empty($filter_role)) {
-    $where_clauses[] = "role = '$filter_role'";
+    $where_clauses[] = "role = ?";
+    $params[] = $filter_role;
+    $types .= 's';
 }
 
 $where_sql = count($where_clauses) > 0 ? " WHERE " . implode(" AND ", $where_clauses) : "";
 
-// Query
+// Query with prepared statement
 $query = "SELECT id, nama_lengkap, email, role FROM user" . $where_sql . " ORDER BY id ASC";
-$result = $conn->query($query);
-$users = [];
+$stmt = $conn->prepare($query);
 
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        $users[] = $row;
-    }
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
 }
 
+$stmt->execute();
+$result = $stmt->get_result();
+$users = [];
+
+while ($row = $result->fetch_assoc()) {
+    $users[] = $row;
+}
+
+$stmt->close();
 $conn->close();
 ?>
 
@@ -142,17 +169,44 @@ $conn->close();
                 Akademik <span class="online-tag">Online</span>
             </div>
         </div>
+
+        <!-- Hamburger Menu Button (Mobile Only) -->
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Desktop Navigation with Dropdown -->
         <nav class="nav-menu">
             <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn">Admin Dashboard</a>
+                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn"> Admin Dashboard
+                </a>
                 <div class="dropdown-menu" id="profile-dropdown-menu">
-                    <a href="adminuser.php" class="dropdown-item user-btn"><i class="fas fa-user"></i>User
-                        Management</a>
-                    <a href="adminfile.php" class="dropdown-item file-btn"><i class="fas fa-file"></i>File
-                        Management</a>
-                    <a href="logout.php" class="dropdown-item logout-btn"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+                    <a href="adminuser.php" class="dropdown-item user-btn">
+                        <i class="fas fa-users"></i> User Management
+                    </a>
+                    <a href="adminfile.php" class="dropdown-item file-btn">
+                        <i class="fas fa-file-alt"></i> File Management
+                    </a>
+                    <a href="logout.php" class="dropdown-item logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Log Out
+                    </a>
                 </div>
             </div>
+        </nav>
+
+        <!-- Mobile Navigation (Direct Links) -->
+        <nav class="nav-menu-mobile">
+            <a href="adminuser.php" class="nav-link-mobile">
+                <i class="fas fa-users"></i> User Management
+            </a>
+            <a href="adminfile.php" class="nav-link-mobile">
+                <i class="fas fa-file-alt"></i> File Management
+            </a>
+            <a href="logout.php" class="nav-link-mobile">
+                <i class="fas fa-sign-out-alt"></i> Log Out
+            </a>
         </nav>
     </header>
 
@@ -275,7 +329,7 @@ $conn->close();
     <div id="addModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add New User</h2>
+                <h2><i class="fas fa-user-plus"></i> Add New User</h2>
                 <span class="close" onclick="closeAddModal()">&times;</span>
             </div>
             <form method="POST" action="adminuser.php">
@@ -295,7 +349,7 @@ $conn->close();
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" name="password" required placeholder="Enter password">
+                    <input type="password" name="password" required placeholder="Enter password" minlength="6">
                 </div>
                 <div class="form-group">
                     <label>Role</label>
@@ -318,7 +372,7 @@ $conn->close();
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Edit User</h2>
+                <h2><i class="fas fa-user-edit"></i> Edit User</h2>
                 <span class="close" onclick="closeEditModal()">&times;</span>
             </div>
             <form method="POST" action="adminuser.php">
@@ -339,7 +393,7 @@ $conn->close();
                 <div class="form-group">
                     <label>Password (leave blank to keep current)</label>
                     <input type="password" name="edit_password" id="edit_password"
-                        placeholder="Enter new password (optional)">
+                        placeholder="Enter new password (optional)" minlength="6">
                 </div>
                 <div class="form-group">
                     <label>Role</label>
@@ -357,85 +411,7 @@ $conn->close();
         </div>
     </div>
 
-    <script>
-        // Dropdown toggle
-        document.getElementById('profile-dropdown-btn').addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector('.dropdown').classList.toggle('active');
-        });
-
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('.dropdown')) {
-                document.querySelector('.dropdown').classList.remove('active');
-            }
-        });
-
-        // Filter dropdown
-        const filterButton = document.getElementById('filterButton');
-        const filterContainer = document.querySelector('.filter-dropdown-container');
-
-        filterButton.addEventListener('click', function (e) {
-            e.stopPropagation();
-            filterContainer.classList.toggle('show');
-        });
-
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('.filter-dropdown-container')) {
-                filterContainer.classList.remove('show');
-            }
-        });
-
-        // Add Modal Functions
-        function openAddModal() {
-            document.getElementById('addModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeAddModal() {
-            document.getElementById('addModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // Edit Modal Functions
-        function openEditModal(user) {
-            document.getElementById('edit_id').value = user.id;
-            document.getElementById('edit_id_display').value = user.id;
-            document.getElementById('edit_nama').value = user.nama_lengkap;
-            document.getElementById('edit_email').value = user.email;
-            document.getElementById('edit_role').value = user.role;
-            document.getElementById('edit_password').value = '';
-
-            document.getElementById('editModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function (event) {
-            const addModal = document.getElementById('addModal');
-            const editModal = document.getElementById('editModal');
-
-            if (event.target == addModal) {
-                closeAddModal();
-            }
-            if (event.target == editModal) {
-                closeEditModal();
-            }
-        }
-
-        // Auto-hide alerts after 5 seconds
-        setTimeout(function () {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 300);
-            });
-        }, 5000);
-    </script>
+    <script src="../js/adminuser.js"></script>
 </body>
 
 </html>

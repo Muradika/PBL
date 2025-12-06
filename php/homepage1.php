@@ -145,6 +145,14 @@ function get_url_params($page_num)
                 Akademik <span class="online-tag">Online</span>
             </div>
         </div>
+
+        <!-- Hamburger Menu Button -->
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
         <nav class="nav-menu">
             <a href="homepage1.php" class="nav-link active">Home</a>
             <a href="aboutuspage.php" class="nav-link">About Us</a>
