@@ -805,7 +805,6 @@ body {
     }
 
     .td-name::before {
-        content: "📛 ";
         font-size: 18px;
         margin-right: 8px;
     }
@@ -815,7 +814,6 @@ body {
     }
 
     .td-id::before {
-        content: "🆔 ID: ";
         font-weight: 700;
         color: #6b7280;
         margin-right: 8px;
@@ -827,7 +825,6 @@ body {
     }
 
     .td-email::before {
-        content: "📧 ";
         font-size: 16px;
         margin-right: 8px;
     }
@@ -837,7 +834,6 @@ body {
     }
 
     .td-role::before {
-        content: "👤 ";
         font-size: 16px;
         margin-right: 8px;
     }

@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SIPAk - Sistem Informasi Pengumuman Akademik Online</title>
-
+    <title>SIPAk - About Us</title>
     <link rel="stylesheet" href="../css/aboutuspage.css" />
 </head>
-
 <body>
     <header class="navbar">
         <div class="logo-brand">
@@ -17,6 +14,13 @@
                 Sistem Informasi Pengumuman <br />
                 Akademik <span class="online-tag">Online</span>
             </div>
+        </div>
+
+        <!-- Hamburger Menu Button -->
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
 
         <nav class="nav-menu">
@@ -121,6 +125,7 @@
             </div>
         </div>
     </footer>
-</body>
 
+    <script src="../js/aboutus.js"></script>
+</body>
 </html>
