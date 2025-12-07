@@ -204,7 +204,7 @@ if (isset($_POST["login"])) {
       <!-- Remember Me Checkbox -->
       <div class="remember-me">
         <input type="checkbox" id="remember" name="remember" />
-        <label for="remember">Remember me for 30 days</label>
+        <label for="remember">Remember me</label>
       </div>
 
       <button type="submit" name="login" class="btn-login" <?php echo $is_locked ? 'disabled' : ''; ?>>
