@@ -811,13 +811,12 @@ body {
     }
 
     .td-type::before {
-        content: "📁 ";
         font-size: 16px;
         margin-right: 8px;
     }
 
     .td-title::before {
-        content: "📄 Title: ";
+        content: "Title: ";
         font-weight: 700;
         color: #6b7280;
         font-size: 14px;
@@ -830,7 +829,7 @@ body {
     }
 
     .td-date::before {
-        content: "📅 ";
+        content: "Date: ";
         font-size: 16px;
         margin-right: 8px;
     }
@@ -840,7 +839,6 @@ body {
     }
 
     .td-creator::before {
-        content: "👤 ";
         font-size: 16px;
         margin-right: 8px;
     }

@@ -14,76 +14,176 @@ if ($_SESSION['role'] !== 'dosen') {
     exit;
 }
 
+// Regenerate session ID untuk security
+if (!isset($_SESSION['profile_dosen_verified'])) {
+    session_regenerate_id(true);
+    $_SESSION['profile_dosen_verified'] = true;
+}
+
 // Tentukan folder target untuk upload
 $image_target_dir = "uploads/images/";
 $document_target_dir = "uploads/documents/";
 
+// File size limits (dalam bytes)
+define('MAX_IMAGE_SIZE', 5 * 1024 * 1024); // 5MB
+define('MAX_DOCUMENT_SIZE', 10 * 1024 * 1024); // 10MB
+
 $message = "";
+$message_type = ""; // 'success' atau 'error'
 
 // 2. Logika PHP untuk memproses form
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ambil data form
-    $title = $_POST['title'];
-    $type = $_POST['type'];
-    $date = $_POST['date'];
+    // Server-side validation
+    $title = isset($_POST['title']) ? trim($_POST['title']) : '';
+    $type = isset($_POST['type']) ? trim($_POST['type']) : '';
+    $date = isset($_POST['date']) ? trim($_POST['date']) : '';
 
-    // 👇 AMBIL DATA USER YANG LOGIN
-    $created_by = $_SESSION['user_id'];
-    $created_by_name = $_SESSION['nama_lengkap'];
-
-    $image_path = null;
-    $document_path = null;
-
-    // Pastikan folder upload ada
-    if (!is_dir($image_target_dir)) {
-        mkdir($image_target_dir, 0777, true);
-    }
-    if (!is_dir($document_target_dir)) {
-        mkdir($document_target_dir, 0777, true);
-    }
-
-    // A. Handle Image Upload (nama input: 'image_file')
-    if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] == UPLOAD_ERR_OK) {
-        $image_name = basename($_FILES["image_file"]["name"]);
-        // Menggunakan uniqid() agar nama file unik
-        $image_path = $image_target_dir . uniqid('img_') . "_" . $image_name;
-
-        if (move_uploaded_file($_FILES["image_file"]["tmp_name"], $image_path)) {
-            // Gambar berhasil diupload
+    // Validasi input wajib
+    if (empty($title) || empty($type) || empty($date)) {
+        $message = "⚠️ Semua field wajib diisi!";
+        $message_type = "error";
+    } else {
+        // Validasi panjang title
+        if (strlen($title) > 200) {
+            $message = "⚠️ Judul terlalu panjang (maksimal 200 karakter)";
+            $message_type = "error";
         } else {
-            $message .= "Maaf, ada error saat mengupload gambar Anda.<br>";
+            // Validasi tipe pengumuman
+            $allowed_types = ["Jadwal", "Beasiswa", "Perubahan Kelas", "Karir", "Kemahasiswaan"];
+            if (!in_array($type, $allowed_types)) {
+                $message = "⚠️ Tipe pengumuman tidak valid!";
+                $message_type = "error";
+            } else {
+                // Validasi format tanggal
+                $date_obj = DateTime::createFromFormat('Y-m-d', $date);
+                if (!$date_obj || $date_obj->format('Y-m-d') !== $date) {
+                    $message = "⚠️ Format tanggal tidak valid!";
+                    $message_type = "error";
+                } else {
+                    // Ambil data user yang login
+                    $created_by = $_SESSION['user_id'];
+                    $created_by_name = $_SESSION['nama_lengkap'];
+
+                    $image_path = null;
+                    $document_path = null;
+
+                    // Pastikan folder upload ada
+                    if (!is_dir($image_target_dir)) {
+                        mkdir($image_target_dir, 0755, true);
+                    }
+                    if (!is_dir($document_target_dir)) {
+                        mkdir($document_target_dir, 0755, true);
+                    }
+
+                    // A. Handle Image Upload dengan validasi ketat
+                    if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] == UPLOAD_ERR_OK) {
+                        $image_file = $_FILES['image_file'];
+
+                        // Validasi ukuran file
+                        if ($image_file['size'] > MAX_IMAGE_SIZE) {
+                            $message .= "⚠️ Ukuran gambar terlalu besar (maksimal 5MB)<br>";
+                            $message_type = "error";
+                        } else {
+                            // Validasi MIME type
+                            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                            $mime_type = finfo_file($finfo, $image_file['tmp_name']);
+                            finfo_close($finfo);
+
+                            $allowed_mime = ['image/jpeg', 'image/jpg', 'image/png'];
+
+                            if (!in_array($mime_type, $allowed_mime)) {
+                                $message .= "⚠️ Format gambar tidak valid (hanya JPG, JPEG, PNG)<br>";
+                                $message_type = "error";
+                            } else {
+                                // Sanitasi nama file
+                                $image_extension = strtolower(pathinfo($image_file['name'], PATHINFO_EXTENSION));
+                                $image_name = uniqid('img_', true) . '.' . $image_extension;
+                                $image_path = $image_target_dir . $image_name;
+
+                                if (!move_uploaded_file($image_file['tmp_name'], $image_path)) {
+                                    $message .= "⚠️ Gagal mengupload gambar<br>";
+                                    $message_type = "error";
+                                    $image_path = null;
+                                }
+                            }
+                        }
+                    } else {
+                        $message .= "⚠️ Gambar wajib diupload<br>";
+                        $message_type = "error";
+                    }
+
+                    // B. Handle Document Upload dengan validasi ketat
+                    if (isset($_FILES['document_file']) && $_FILES['document_file']['error'] == UPLOAD_ERR_OK) {
+                        $document_file = $_FILES['document_file'];
+
+                        // Validasi ukuran file
+                        if ($document_file['size'] > MAX_DOCUMENT_SIZE) {
+                            $message .= "⚠️ Ukuran dokumen terlalu besar (maksimal 10MB)<br>";
+                            $message_type = "error";
+                        } else {
+                            // Validasi MIME type
+                            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                            $mime_type = finfo_file($finfo, $document_file['tmp_name']);
+                            finfo_close($finfo);
+
+                            $allowed_mime = [
+                                'application/pdf',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            ];
+
+                            if (!in_array($mime_type, $allowed_mime)) {
+                                $message .= "⚠️ Format dokumen tidak valid (hanya PDF, DOC, DOCX, XLS, XLSX)<br>";
+                                $message_type = "error";
+                            } else {
+                                // Sanitasi nama file
+                                $document_extension = strtolower(pathinfo($document_file['name'], PATHINFO_EXTENSION));
+                                $document_name = uniqid('doc_', true) . '.' . $document_extension;
+                                $document_path = $document_target_dir . $document_name;
+
+                                if (!move_uploaded_file($document_file['tmp_name'], $document_path)) {
+                                    $message .= "⚠️ Gagal mengupload dokumen<br>";
+                                    $message_type = "error";
+                                    $document_path = null;
+                                }
+                            }
+                        }
+                    } else {
+                        $message .= "⚠️ Dokumen wajib diupload<br>";
+                        $message_type = "error";
+                    }
+
+                    // C. Insert data ke database jika tidak ada error
+                    if ($message_type !== "error" && $image_path && $document_path) {
+                        $stmt = $conn->prepare("INSERT INTO pengumuman (title, type, date, image_path, document_path, created_by, created_by_name) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                        $stmt->bind_param("sssssis", $title, $type, $date, $image_path, $document_path, $created_by, $created_by_name);
+
+                        if ($stmt->execute()) {
+                            $message = "✅ Pengumuman berhasil dibuat!";
+                            $message_type = "success";
+                            // Redirect setelah sukses (Post/Redirect/Get pattern)
+                            header("Location: homepage1.php?status=success");
+                            exit();
+                        } else {
+                            $message = "❌ Error database: " . $stmt->error;
+                            $message_type = "error";
+
+                            // Hapus file yang sudah diupload jika insert gagal
+                            if ($image_path && file_exists($image_path)) {
+                                unlink($image_path);
+                            }
+                            if ($document_path && file_exists($document_path)) {
+                                unlink($document_path);
+                            }
+                        }
+
+                        $stmt->close();
+                    }
+                }
+            }
         }
-    }
-
-    // B. Handle Document Upload (nama input: 'document_file')
-    if (isset($_FILES['document_file']) && $_FILES['document_file']['error'] == UPLOAD_ERR_OK) {
-        $document_name = basename($_FILES["document_file"]["name"]);
-        // Menggunakan uniqid() agar nama file unik
-        $document_path = $document_target_dir . uniqid('doc_') . "_" . $document_name;
-
-        if (move_uploaded_file($_FILES["document_file"]["tmp_name"], $document_path)) {
-            // Dokumen berhasil diupload
-        } else {
-            $message .= "Maaf, ada error saat mengupload dokumen Anda.<br>";
-        }
-    }
-
-    // C. Insert data ke database (DENGAN created_by dan created_by_name)
-    if (empty($message)) {
-        $stmt = $conn->prepare("INSERT INTO pengumuman (title, type, date, image_path, document_path, created_by, created_by_name) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        // "sssssis" = 5 string, 1 integer, 1 string
-        $stmt->bind_param("sssssis", $title, $type, $date, $image_path, $document_path, $created_by, $created_by_name);
-
-        if ($stmt->execute()) {
-            $message = "✅ Pengumuman berhasil dibuat!";
-            // Redirect setelah sukses (Post/Redirect/Get pattern)
-            header("Location: homepage1.php?status=success");
-            exit();
-        } else {
-            $message = "❌ Error database: " . $stmt->error;
-        }
-
-        $stmt->close();
     }
 
     // Tutup koneksi setelah selesai memproses request
@@ -113,6 +213,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
 
+        <!-- Hamburger Menu Button -->
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
         <nav class="nav-menu">
             <a href="homepage1.php" class="nav-link">Home</a>
             <a href="aboutuspage.php" class="nav-link">About Us</a>
@@ -137,13 +244,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </nav>
     </header>
 
+    <!-- Overlay untuk Mobile Menu -->
+    <div class="menu-overlay"></div>
+
     <main class="main-content">
         <div class="form-container" id="formContainer">
             <h2 class="form-heading">Create New Announcement</h2>
 
             <?php if (!empty($message)): ?>
-                <div class="status-message"
-                    style="padding: 10px; margin-bottom: 15px; border-radius: 4px; background-color: <?php echo strpos($message, 'Error') !== false || strpos($message, 'Maaf') !== false ? '#f8d7da' : '#d4edda'; ?>; color: <?php echo strpos($message, 'Error') !== false || strpos($message, 'Maaf') !== false ? '#721c24' : '#155724'; ?>;">
+                <div class="status-message status-<?php echo $message_type; ?>">
                     <?php echo $message; ?>
                 </div>
             <?php endif; ?>
@@ -152,12 +261,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 enctype="multipart/form-data">
 
                 <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" id="title" name="title" required>
+                    <label for="title">Title <span class="required">*</span></label>
+                    <input type="text" id="title" name="title" required maxlength="200"
+                        placeholder="Enter announcement title">
                 </div>
 
                 <div class="form-group">
-                    <label for="type">Type</label>
+                    <label for="type">Type <span class="required">*</span></label>
                     <select id="type" name="type" required>
                         <option value="" disabled selected>Choose file type</option>
                         <option value="Jadwal">Jadwal Ujian</option>
@@ -169,69 +279,79 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <div class="form-group">
-                    <label for="date">Date</label>
+                    <label for="date">Date <span class="required">*</span></label>
                     <input type="date" id="date" name="date" required value="<?php echo date('Y-m-d'); ?>">
                 </div>
 
                 <div class="form-group">
-                    <label for="image_file">Image</label>
-                    <div class="dropzone" id="imageDropzone">
-                        <div class="dropzone-content">
-                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <p>You can drag and drop image here.</p>
-                        </div>
-                        <div class="file-info" id="imageFileInfo" style="display: none;">
-                            <span class="file-name" id="imageFileName"></span>
-                            <div class="file-actions">
-                                <button type="button" class="btn-preview" onclick="previewImage()">Preview</button>
-                                <button type="button" class="remove-file" onclick="removeFile('image')">×</button>
+                    <label for="image_file">Image <span class="required">*</span></label>
+                    <div class="upload-section">
+                        <div class="dropzone" id="imageDropzone">
+                            <div class="dropzone-content">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <p>You can drag and drop image here.</p>
+                            </div>
+                            <div class="file-info" id="imageFileInfo" style="display: none;">
+                                <span class="file-name" id="imageFileName"></span>
+                                <div class="file-actions">
+                                    <button type="button" class="btn-preview" onclick="previewImage()">Preview</button>
+                                    <button type="button" class="remove-file" onclick="removeFile('image')">×</button>
+                                </div>
                             </div>
                         </div>
+                        <div class="file-upload-info">
+                            <span>Attachment</span>
+                            <span class="file-limit">Max: 1 image, 5MB (JPG, PNG)</span>
+                        </div>
+                        <input type="file" id="imageFileInput" name="image_file" style="display: none;"
+                            accept=".jpg,.png,.jpeg" required>
+                        <button type="button" class="btn-choose-file"
+                            onclick="document.getElementById('imageFileInput').click()">Choose Image</button>
                     </div>
-                    <div class="file-upload-info">
-                        <span>Attachment</span>
-                        <span class="file-limit">Maximum number of image : 1</span>
-                    </div>
-                    <input type="file" id="imageFileInput" name="image_file" style="display: none;"
-                        accept=".jpg,.png,.jpeg">
-                    <button type="button" class="btn-choose-file"
-                        onclick="document.getElementById('imageFileInput').click()">Choose Image</button>
                 </div>
 
                 <div class="form-group">
-                    <label for="document_file">Document</label>
-                    <div class="dropzone" id="documentDropzone">
-                        <div class="dropzone-content">
-                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <p>You can drag and drop files here.</p>
-                        </div>
-                        <div class="file-info" id="documentFileInfo" style="display: none;">
-                            <span class="file-name" id="documentFileName"></span>
-                            <div class="file-actions">
-                                <button type="button" class="btn-preview" onclick="previewDocument()">Preview</button>
-                                <button type="button" class="remove-file" onclick="removeFile('document')">×</button>
+                    <label for="document_file">Document <span class="required">*</span></label>
+                    <div class="upload-section">
+                        <div class="dropzone" id="documentDropzone">
+                            <div class="dropzone-content">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <p>You can drag and drop files here.</p>
+                            </div>
+                            <div class="file-info" id="documentFileInfo" style="display: none;">
+                                <span class="file-name" id="documentFileName"></span>
+                                <div class="file-actions">
+                                    <button type="button" class="btn-preview"
+                                        onclick="previewDocument()">Preview</button>
+                                    <button type="button" class="remove-file"
+                                        onclick="removeFile('document')">×</button>
+                                </div>
                             </div>
                         </div>
+                        <div class="file-upload-info">
+                            <span>Attachment</span>
+                            <span class="file-limit">Max: 1 file, 10MB (PDF, DOC, XLS)</span>
+                        </div>
+                        <input type="file" id="documentFileInput" name="document_file" style="display: none;"
+                            accept=".pdf,.doc,.docx,.xls,.xlsx" required>
+                        <button type="button" class="btn-choose-file"
+                            onclick="document.getElementById('documentFileInput').click()">Choose File</button>
                     </div>
-                    <div class="file-upload-info">
-                        <span>Attachment</span>
-                        <span class="file-limit">Maximum number of files : 1</span>
-                    </div>
-                    <input type="file" id="documentFileInput" name="document_file" style="display: none;"
-                        accept=".pdf,.doc,.docx,.xls,.xlsx">
-                    <button type="button" class="btn-choose-file"
-                        onclick="document.getElementById('documentFileInput').click()">Choose File</button>
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn-remove" onclick="resetForm()">Remove</button>
-                    <button type="submit" class="btn-submit">Create</button>
+                    <button type="button" class="btn-remove" onclick="resetForm()">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Create
+                    </button>
                 </div>
             </form>
         </div>

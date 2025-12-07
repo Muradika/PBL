@@ -193,7 +193,6 @@ body {
     padding-top: 40px;
     width: 90%;
     margin: 0 auto;
-    max-width: 1400px;
 }
 
 .greeting-text {
@@ -209,6 +208,10 @@ body {
     margin-bottom: 20px;
 }
 
+.search-filter-container {
+    margin-bottom: 18px;
+}
+
 .searchbar {
     display: flex;
     flex-wrap: wrap;
@@ -217,8 +220,7 @@ body {
 }
 
 .searchbox {
-    flex: 1;
-    max-width: 500px;
+    flex: 1 1 300px;
     background: white;
     border: 2px solid #ccc;
     padding: 10px 14px;
