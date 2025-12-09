@@ -1,5 +1,5 @@
 <?php
-session_start(); // Untuk cek user login
+session_start();
 include '../database/pengumuman.php';
 
 // --- 1. SETUP PARAMETER DEFAULT ---
@@ -110,6 +110,7 @@ if (isset($_SESSION['user_id'])) {
 
 $conn->close();
 
+// --- 6. FUNCTION UNTUK URL PARAMS ---
 function get_url_params($page_num)
 {
     $params = $_GET;
@@ -124,6 +125,29 @@ function get_url_params($page_num)
         unset($params['end_date']);
     return http_build_query($params);
 }
+
+// --- 7. SMART PAGINATION LOGIC ---
+$max_visible_pages = 6;
+$half_visible = floor($max_visible_pages / 2);
+
+if ($total_pages <= $max_visible_pages) {
+    $start_page = 1;
+    $end_page = $total_pages;
+} else {
+    if ($current_page <= $half_visible) {
+        $start_page = 1;
+        $end_page = $max_visible_pages;
+    } elseif ($current_page >= ($total_pages - $half_visible)) {
+        $start_page = $total_pages - $max_visible_pages + 1;
+        $end_page = $total_pages;
+    } else {
+        $start_page = $current_page - $half_visible;
+        $end_page = $current_page + $half_visible;
+    }
+}
+
+$show_prev = $current_page > 1;
+$show_next = $current_page < $total_pages;
 ?>
 
 <!DOCTYPE html>
@@ -147,7 +171,6 @@ function get_url_params($page_num)
             </div>
         </div>
 
-        <!-- Hamburger Menu Button -->
         <div class="hamburger">
             <span></span>
             <span></span>
@@ -172,21 +195,21 @@ function get_url_params($page_num)
 
             <div class="date-filter-group">
                 <label for="startDateInput" class="date-label">Dari:</label>
-                <input type="date" id="startDateInput" name="start_date" class="date-input" title="Tanggal Mulai"
+                <input type="date" id="startDateInput" name="start_date" class="date-input"
                     value="<?php echo htmlspecialchars($start_date); ?>" onchange="this.form.submit()" />
                 <label for="endDateInput" class="date-label">Sampai:</label>
-                <input type="date" id="endDateInput" name="end_date" class="date-input" title="Tanggal Akhir"
+                <input type="date" id="endDateInput" name="end_date" class="date-input"
                     value="<?php echo htmlspecialchars($end_date); ?>" onchange="this.form.submit()" />
             </div>
 
             <div class="filter-dropdown-container">
-                <button id="filterButton" class="filter" type="button" title="Filter Berdasarkan Kategori">
+                <button id="filterButton" class="filter" type="button">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M3 5h18M6 12h12M10 19h4" stroke="#0b2b57" stroke-width="2" stroke-linecap="round" />
                     </svg>
                 </button>
                 <div id="filterOptions" class="filter-options">
-                    <a href="?<?php echo get_url_params('1'); ?>&filter=All" data-filter="All"
+                    <a href="?<?php echo get_url_params('1'); ?>&filter=All"
                         class="filter-option <?php echo empty($filter_type) ? 'active' : ''; ?>">Semua Kategori</a>
                     <?php
                     $categories = ["Jadwal", "Beasiswa", "Perubahan Kelas", "Karir", "Kemahasiswaan"];
@@ -196,7 +219,7 @@ function get_url_params($page_num)
                         unset($link_params['page']);
                         $category_url = '?' . http_build_query($link_params);
                         ?>
-                        <a href="<?php echo $category_url; ?>" data-filter="<?php echo htmlspecialchars($cat); ?>"
+                        <a href="<?php echo $category_url; ?>"
                             class="filter-option <?php echo ($filter_type === $cat) ? 'active' : ''; ?>">
                             <?php echo htmlspecialchars($cat); ?>
                         </a>
@@ -216,22 +239,17 @@ function get_url_params($page_num)
                     $is_favorited = in_array($announcement['id'], $user_favorites);
                     ?>
 
-                    <div class="announcement-card" data-id="<?php echo $announcement['id']; ?>"
-                        data-category="<?php echo htmlspecialchars($announcement['type']); ?>"
-                        data-date="<?php echo htmlspecialchars($announcement['date']); ?>"
-                        data-title="<?php echo htmlspecialchars($announcement['title']); ?>">
-
+                    <div class="announcement-card">
                         <a href="<?php echo htmlspecialchars($doc_url); ?>" target="_blank" class="card-link">
                             <div class="card-image-box" style="
                                 background-image: url('<?php echo htmlspecialchars($img_url); ?>');
                                 background-size: cover;
                                 background-position: center;
                             ">
-                                <!-- TOMBOL DOWNLOAD & BOOKMARK -->
                                 <div class="card-actions">
                                     <?php if ($doc_url !== '#'): ?>
-                                        <button class="action-btn download-btn" data-doc="<?php echo htmlspecialchars($doc_url); ?>"
-                                            title="Download">
+                                        <button class="action-btn download-btn"
+                                            data-doc="<?php echo htmlspecialchars($doc_url); ?>">
                                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                                 <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="white" stroke-width="2"
                                                     stroke-linecap="round" stroke-linejoin="round" />
@@ -240,8 +258,7 @@ function get_url_params($page_num)
                                     <?php endif; ?>
 
                                     <button class="action-btn bookmark-btn <?php echo $is_favorited ? 'active' : ''; ?>"
-                                        data-id="<?php echo $announcement['id']; ?>"
-                                        title="<?php echo $is_favorited ? 'Remove from favorites' : 'Add to favorites'; ?>">
+                                        data-id="<?php echo $announcement['id']; ?>">
                                         <svg width="20" height="20" viewBox="0 0 24 24"
                                             fill="<?php echo $is_favorited ? 'white' : 'none'; ?>">
                                             <path d="M5 5v16l7-5 7 5V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z" stroke="white"
@@ -267,19 +284,59 @@ function get_url_params($page_num)
         </div>
     </main>
 
-    <div class="pagination">
-        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-            <a href="?<?php echo get_url_params($i); ?>"
-                class="page-number <?php echo ($i == $current_page) ? 'active' : ''; ?>">
-                <?php echo $i; ?>
-            </a>
-        <?php endfor; ?>
-    </div>
+    <!-- SMART PAGINATION -->
+    <?php if ($total_pages > 1): ?>
+        <div class="pagination-info">
+            Halaman <?php echo $current_page; ?> dari <?php echo $total_pages; ?>
+            (Total: <?php echo $total_announcements; ?> pengumuman)
+        </div>
+
+        <div class="pagination">
+            <!-- Previous Arrow -->
+            <?php if ($show_prev): ?>
+                <a href="?<?php echo get_url_params($current_page - 1); ?>" class="page-arrow" title="Previous">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            <?php endif; ?>
+
+            <!-- First Page -->
+            <?php if ($start_page > 1): ?>
+                <a href="?<?php echo get_url_params(1); ?>" class="page-number">1</a>
+                <?php if ($start_page > 2): ?>
+                    <span class="page-dots">...</span>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <!-- Page Numbers -->
+            <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
+                <a href="?<?php echo get_url_params($i); ?>"
+                    class="page-number <?php echo ($i == $current_page) ? 'active' : ''; ?>">
+                    <?php echo $i; ?>
+                </a>
+            <?php endfor; ?>
+
+            <!-- Last Page -->
+            <?php if ($end_page < $total_pages): ?>
+                <?php if ($end_page < $total_pages - 1): ?>
+                    <span class="page-dots">...</span>
+                <?php endif; ?>
+                <a href="?<?php echo get_url_params($total_pages); ?>" class="page-number">
+                    <?php echo $total_pages; ?>
+                </a>
+            <?php endif; ?>
+
+            <!-- Next Arrow -->
+            <?php if ($show_next): ?>
+                <a href="?<?php echo get_url_params($current_page + 1); ?>" class="page-arrow" title="Next">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
 
     <footer class="modern-footer">
         <div class="footer-container">
             <div class="footer-main">
-                <!-- Brand Section -->
                 <div class="footer-brand">
                     <div class="brand-logo-section">
                         <div class="brand-logo">
@@ -293,12 +350,9 @@ function get_url_params($page_num)
                         Platform digital untuk memudahkan akses informasi akademik mahasiswa dan dosen Politeknik Negeri
                         Batam.
                     </p>
-                    <p class="brand-motto">
-                        For Your Goals Beyond Horizon
-                    </p>
+                    <p class="brand-motto">For Your Goals Beyond Horizon</p>
                 </div>
 
-                <!-- Quick Links -->
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul class="footer-links">
@@ -309,7 +363,6 @@ function get_url_params($page_num)
                     </ul>
                 </div>
 
-                <!-- Resources -->
                 <div class="footer-section">
                     <h4>Resources</h4>
                     <ul class="footer-links">
@@ -324,7 +377,6 @@ function get_url_params($page_num)
                     </ul>
                 </div>
 
-                <!-- Contact & Social -->
                 <div class="footer-section">
                     <h4>Hubungi Kami</h4>
                     <div class="contact-item">
@@ -342,26 +394,21 @@ function get_url_params($page_num)
 
                     <div class="social-media">
                         <a href="https://www.instagram.com/polibatamofficial" target="_blank"
-                            class="social-link instagram" title="Instagram">
+                            class="social-link instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="https://youtube.com/@polibatamtv" target="_blank" class="social-link youtube"
-                            title="YouTube">
+                        <a href="https://youtube.com/@polibatamtv" target="_blank" class="social-link youtube">
                             <i class="fab fa-youtube"></i>
                         </a>
-                        <a href="https://www.polibatam.ac.id" target="_blank" class="social-link linkedin"
-                            title="Website">
+                        <a href="https://www.polibatam.ac.id" target="_blank" class="social-link linkedin">
                             <i class="fas fa-globe"></i>
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Footer Bottom -->
             <div class="footer-bottom">
-                <div class="copyright">
-                    © 2025 Politeknik Negeri Batam. All rights reserved.
-                </div>
+                <div class="copyright">© 2025 Politeknik Negeri Batam. All rights reserved.</div>
                 <div class="footer-bottom-links">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Service</a>

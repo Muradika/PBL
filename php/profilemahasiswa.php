@@ -137,7 +137,6 @@ function get_url_params($page_num)
             </div>
         </div>
 
-        <!-- Hamburger Menu Button -->
         <div class="hamburger">
             <span></span>
             <span></span>
@@ -297,21 +296,77 @@ function get_url_params($page_num)
         </div>
     </main>
 
+    <?php
+    // Smart pagination calculation
+    $max_visible_pages = 6;
+    $half_visible = floor($max_visible_pages / 2);
+
+    if ($total_pages <= $max_visible_pages) {
+        $start_page = 1;
+        $end_page = $total_pages;
+    } else {
+        if ($current_page <= $half_visible) {
+            $start_page = 1;
+            $end_page = $max_visible_pages;
+        } elseif ($current_page >= ($total_pages - $half_visible)) {
+            $start_page = $total_pages - $max_visible_pages + 1;
+            $end_page = $total_pages;
+        } else {
+            $start_page = $current_page - $half_visible;
+            $end_page = $current_page + $half_visible;
+        }
+    }
+
+    $show_prev = $current_page > 1;
+    $show_next = $current_page < $total_pages;
+    ?>
+
     <?php if ($total_pages > 1): ?>
+        <div class="pagination-info">
+            Halaman <?php echo $current_page; ?> dari <?php echo $total_pages; ?>
+            (Total: <?php echo $total_announcements; ?> pengumuman)
+        </div>
+
         <div class="pagination">
-            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <?php if ($show_prev): ?>
+                <a href="?<?php echo get_url_params($current_page - 1); ?>" class="page-arrow" title="Previous">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            <?php endif; ?>
+
+            <?php if ($start_page > 1): ?>
+                <a href="?<?php echo get_url_params(1); ?>" class="page-number">1</a>
+                <?php if ($start_page > 2): ?>
+                    <span class="page-dots">...</span>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
                 <a href="?<?php echo get_url_params($i); ?>"
                     class="page-number <?php echo ($i == $current_page) ? 'active' : ''; ?>">
                     <?php echo $i; ?>
                 </a>
             <?php endfor; ?>
+
+            <?php if ($end_page < $total_pages): ?>
+                <?php if ($end_page < $total_pages - 1): ?>
+                    <span class="page-dots">...</span>
+                <?php endif; ?>
+                <a href="?<?php echo get_url_params($total_pages); ?>" class="page-number">
+                    <?php echo $total_pages; ?>
+                </a>
+            <?php endif; ?>
+
+            <?php if ($show_next): ?>
+                <a href="?<?php echo get_url_params($current_page + 1); ?>" class="page-arrow" title="Next">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
-
     <footer class="modern-footer">
         <div class="footer-container">
             <div class="footer-main">
-                <!-- Brand Section -->
                 <div class="footer-brand">
                     <div class="brand-logo-section">
                         <div class="brand-logo">
@@ -330,7 +385,6 @@ function get_url_params($page_num)
                     </p>
                 </div>
 
-                <!-- Quick Links -->
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul class="footer-links">
@@ -341,7 +395,6 @@ function get_url_params($page_num)
                     </ul>
                 </div>
 
-                <!-- Resources -->
                 <div class="footer-section">
                     <h4>Resources</h4>
                     <ul class="footer-links">
@@ -356,7 +409,6 @@ function get_url_params($page_num)
                     </ul>
                 </div>
 
-                <!-- Contact & Social -->
                 <div class="footer-section">
                     <h4>Hubungi Kami</h4>
                     <div class="contact-item">
@@ -389,7 +441,6 @@ function get_url_params($page_num)
                 </div>
             </div>
 
-            <!-- Footer Bottom -->
             <div class="footer-bottom">
                 <div class="copyright">
                     © 2025 Politeknik Negeri Batam. All rights reserved.
@@ -400,7 +451,6 @@ function get_url_params($page_num)
                     <a href="#">Sitemap</a>
                 </div>
             </div>
-        </div>
     </footer>
 
     <script src="../js/profilemahasiswa.js"></script>
