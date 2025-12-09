@@ -12,7 +12,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 5%;
-    background-color: #12417d;
+    background: linear-gradient(135deg, #12417d 0%, #002b63 100%);
     color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
