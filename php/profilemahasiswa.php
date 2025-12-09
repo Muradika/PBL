@@ -124,6 +124,7 @@ function get_url_params($page_num)
     <title>SIPAk - My Favorites</title>
     <link rel="stylesheet" href="../css/profilemahasiswa.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -307,34 +308,96 @@ function get_url_params($page_num)
         </div>
     <?php endif; ?>
 
-    <footer class="main-footer">
-        <div class="footer-content">
-            <div class="footer-left">
-                <div class="logo-title-group">
-                    <img src="../img/img_Politeknikbnw1.png" alt="Logo Polibatam" class="footer-logo" />
-                    <div class="footer-system-title">
-                        Sistem Informasi Pengumuman <br />
-                        Akademik <span class="footer-online-tag">Online</span>
+    <footer class="modern-footer">
+        <div class="footer-container">
+            <div class="footer-main">
+                <!-- Brand Section -->
+                <div class="footer-brand">
+                    <div class="brand-logo-section">
+                        <div class="brand-logo">
+                            <img src="../img/img_Politeknikbnw1.png" alt="Logo Polibatam">
+                        </div>
+                        <div class="brand-text">
+                            <h3>Sistem Informasi Pengumuman<br>Akademik <span class="highlight">Online</span></h3>
+                        </div>
+                    </div>
+                    <p class="brand-description">
+                        Platform digital untuk memudahkan akses informasi akademik mahasiswa dan dosen Politeknik Negeri
+                        Batam.
+                    </p>
+                    <p class="brand-motto">
+                        For Your Goals Beyond Horizon
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="homepage1.php"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="aboutuspage.php"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                        <li><a href="profilemahasiswa.php"><i class="fas fa-chevron-right"></i> Profile</a></li>
+                        <li><a href="logout.php"><i class="fas fa-chevron-right"></i> Logout</a></li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://learning-if.polibatam.ac.id/" target="_blank"><i
+                                    class="fas fa-chevron-right"></i> E-Learning</a></li>
+                        <li><a href="https://sim.polibatam.ac.id/" target="_blank"><i class="fas fa-chevron-right"></i>
+                                SILAM</a></li>
+                        <li><a href="https://pbl.polibatam.ac.id/" target="_blank"><i class="fas fa-chevron-right"></i>
+                                SIAP-PBL</a></li>
+                        <li><a href="https://helpdesk.polibatam.ac.id/open.php"><i class="fas fa-chevron-right"></i>
+                                Help Center</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact & Social -->
+                <div class="footer-section">
+                    <h4>Hubungi Kami</h4>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Jl. Ahmad Yani Batam Kota,<br>Kota Batam, Kepulauan Riau, Indonesia</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <a href="tel:+627784698581017">+62-778-469858 Ext.1017</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:info@polibatam.ac.id">info@polibatam.ac.id</a>
+                    </div>
+
+                    <div class="social-media">
+                        <a href="https://www.instagram.com/polibatamofficial" target="_blank"
+                            class="social-link instagram" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://youtube.com/@polibatamtv" target="_blank" class="social-link youtube"
+                            title="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="https://www.polibatam.ac.id" target="_blank" class="social-link linkedin"
+                            title="Website">
+                            <i class="fas fa-globe"></i>
+                        </a>
                     </div>
                 </div>
-                <p class="footer-copyright">
-                    © 2025 Politeknik Negeri Batam <br />
-                    For Your Goals Beyond Horizon
-                </p>
             </div>
-            <div class="footer-right">
-                <div class="contact-info">
-                    Alamat: Jl. Ahmad Yani Batam Kota, Kota Batam, <br />
-                    Kepulauan Riau, Indonesia <br /><br />
-                    Phone : +62-778-469858 Ext.1017 <br />
-                    Fax : +62-778-463620 <br />
-                    Email : info@polibatam.ac.id
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="copyright">
+                    © 2025 Politeknik Negeri Batam. All rights reserved.
                 </div>
-                <div class="social-links">
-                    <a href="https://www.instagram.com/polibatamofficial?igsh=dDdmeGVwbzVhbmR3"
-                        class="social-btn instagram">Instagram</a>
-                    <a href="https://youtube.com/@polibatamtv?feature=shared" class="social-btn youtube">YouTube</a>
-                    <a href="https://www.polibatam.ac.id/" class="social-btn linkedin">Website</a>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Sitemap</a>
                 </div>
             </div>
         </div>
