@@ -99,6 +99,7 @@ while ($row = $result->fetch_assoc()) {
 $data_stmt->close();
 $conn->close();
 
+// ========== FUNCTION URL PARAMS ==========
 function get_url_params($page_num)
 {
     $params = $_GET;
@@ -113,6 +114,29 @@ function get_url_params($page_num)
         unset($params['end_date']);
     return http_build_query($params);
 }
+
+// ========== SMART PAGINATION LOGIC ==========
+$max_visible_pages = 6;
+$half_visible = floor($max_visible_pages / 2);
+
+if ($total_pages <= $max_visible_pages) {
+    $start_page = 1;
+    $end_page = $total_pages;
+} else {
+    if ($current_page <= $half_visible) {
+        $start_page = 1;
+        $end_page = $max_visible_pages;
+    } elseif ($current_page >= ($total_pages - $half_visible)) {
+        $start_page = $total_pages - $max_visible_pages + 1;
+        $end_page = $total_pages;
+    } else {
+        $start_page = $current_page - $half_visible;
+        $end_page = $current_page + $half_visible;
+    }
+}
+
+$show_prev = $current_page > 1;
+$show_next = $current_page < $total_pages;
 ?>
 
 <!DOCTYPE html>
@@ -121,9 +145,8 @@ function get_url_params($page_num)
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SIPAk - Profile</title>
+    <title>SIPAk - My Favorites</title>
     <link rel="stylesheet" href="../css/profilemahasiswa.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -137,6 +160,7 @@ function get_url_params($page_num)
             </div>
         </div>
 
+        <!-- Hamburger Menu Button -->
         <div class="hamburger">
             <span></span>
             <span></span>
@@ -187,17 +211,17 @@ function get_url_params($page_num)
         <form class="searchbar" method="GET" action="profilemahasiswa.php">
             <div class="searchbox">
                 <span class="search-icon">🔍</span>
-                <input id="searchInput" name="search" placeholder="Search File (Title, Date, Type)"
+                <input id="searchInput" name="search" placeholder="Search File (Title, Type, etc.)"
                     value="<?php echo htmlspecialchars($search_query); ?>" />
                 <button type="submit" style="display:none;"></button>
             </div>
 
             <div class="date-filter-group">
-                <label for="startDateInput" class="date-label">Dari:</label>
+                <label for="startDateInput" class="date-label">From:</label>
                 <input type="date" id="startDateInput" name="start_date" class="date-input"
                     value="<?php echo htmlspecialchars($start_date); ?>" onchange="this.form.submit()" />
 
-                <label for="endDateInput" class="date-label">Sampai:</label>
+                <label for="endDateInput" class="date-label">To:</label>
                 <input type="date" id="endDateInput" name="end_date" class="date-input"
                     value="<?php echo htmlspecialchars($end_date); ?>" onchange="this.form.submit()" />
             </div>
@@ -296,44 +320,22 @@ function get_url_params($page_num)
         </div>
     </main>
 
-    <?php
-    // Smart pagination calculation
-    $max_visible_pages = 6;
-    $half_visible = floor($max_visible_pages / 2);
-
-    if ($total_pages <= $max_visible_pages) {
-        $start_page = 1;
-        $end_page = $total_pages;
-    } else {
-        if ($current_page <= $half_visible) {
-            $start_page = 1;
-            $end_page = $max_visible_pages;
-        } elseif ($current_page >= ($total_pages - $half_visible)) {
-            $start_page = $total_pages - $max_visible_pages + 1;
-            $end_page = $total_pages;
-        } else {
-            $start_page = $current_page - $half_visible;
-            $end_page = $current_page + $half_visible;
-        }
-    }
-
-    $show_prev = $current_page > 1;
-    $show_next = $current_page < $total_pages;
-    ?>
-
+    <!-- SMART PAGINATION -->
     <?php if ($total_pages > 1): ?>
         <div class="pagination-info">
-            Halaman <?php echo $current_page; ?> dari <?php echo $total_pages; ?>
-            (Total: <?php echo $total_announcements; ?> pengumuman)
+            Page <?php echo $current_page; ?> From <?php echo $total_pages; ?>
+            (Total: <?php echo $total_announcements; ?> Announcements)
         </div>
 
         <div class="pagination">
+            <!-- Previous Arrow -->
             <?php if ($show_prev): ?>
                 <a href="?<?php echo get_url_params($current_page - 1); ?>" class="page-arrow" title="Previous">
                     <i class="fas fa-chevron-left"></i>
                 </a>
             <?php endif; ?>
 
+            <!-- First Page -->
             <?php if ($start_page > 1): ?>
                 <a href="?<?php echo get_url_params(1); ?>" class="page-number">1</a>
                 <?php if ($start_page > 2): ?>
@@ -341,6 +343,7 @@ function get_url_params($page_num)
                 <?php endif; ?>
             <?php endif; ?>
 
+            <!-- Page Numbers -->
             <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
                 <a href="?<?php echo get_url_params($i); ?>"
                     class="page-number <?php echo ($i == $current_page) ? 'active' : ''; ?>">
@@ -348,6 +351,7 @@ function get_url_params($page_num)
                 </a>
             <?php endfor; ?>
 
+            <!-- Last Page -->
             <?php if ($end_page < $total_pages): ?>
                 <?php if ($end_page < $total_pages - 1): ?>
                     <span class="page-dots">...</span>
@@ -357,6 +361,7 @@ function get_url_params($page_num)
                 </a>
             <?php endif; ?>
 
+            <!-- Next Arrow -->
             <?php if ($show_next): ?>
                 <a href="?<?php echo get_url_params($current_page + 1); ?>" class="page-arrow" title="Next">
                     <i class="fas fa-chevron-right"></i>
@@ -364,6 +369,7 @@ function get_url_params($page_num)
             <?php endif; ?>
         </div>
     <?php endif; ?>
+
     <footer class="modern-footer">
         <div class="footer-container">
             <div class="footer-main">
@@ -377,12 +383,10 @@ function get_url_params($page_num)
                         </div>
                     </div>
                     <p class="brand-description">
-                        Platform digital untuk memudahkan akses informasi akademik mahasiswa dan dosen Politeknik Negeri
-                        Batam.
+                        A digital platform facilitate access to academic information for students and lecturers at
+                        Politeknik Negeri Batam.
                     </p>
-                    <p class="brand-motto">
-                        For Your Goals Beyond Horizon
-                    </p>
+                    <p class="brand-motto">For Your Goals Beyond Horizon</p>
                 </div>
 
                 <div class="footer-section">
@@ -410,7 +414,7 @@ function get_url_params($page_num)
                 </div>
 
                 <div class="footer-section">
-                    <h4>Hubungi Kami</h4>
+                    <h4>Contact Us</h4>
                     <div class="contact-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <span>Jl. Ahmad Yani Batam Kota,<br>Kota Batam, Kepulauan Riau, Indonesia</span>
@@ -426,15 +430,13 @@ function get_url_params($page_num)
 
                     <div class="social-media">
                         <a href="https://www.instagram.com/polibatamofficial" target="_blank"
-                            class="social-link instagram" title="Instagram">
+                            class="social-link instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="https://youtube.com/@polibatamtv" target="_blank" class="social-link youtube"
-                            title="YouTube">
+                        <a href="https://youtube.com/@polibatamtv" target="_blank" class="social-link youtube">
                             <i class="fab fa-youtube"></i>
                         </a>
-                        <a href="https://www.polibatam.ac.id" target="_blank" class="social-link linkedin"
-                            title="Website">
+                        <a href="https://www.polibatam.ac.id" target="_blank" class="social-link linkedin">
                             <i class="fas fa-globe"></i>
                         </a>
                     </div>
@@ -442,15 +444,14 @@ function get_url_params($page_num)
             </div>
 
             <div class="footer-bottom">
-                <div class="copyright">
-                    © 2025 Politeknik Negeri Batam. All rights reserved.
-                </div>
+                <div class="copyright">© 2025 Politeknik Negeri Batam. All rights reserved.</div>
                 <div class="footer-bottom-links">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Service</a>
                     <a href="#">Sitemap</a>
                 </div>
             </div>
+        </div>
     </footer>
 
     <script src="../js/profilemahasiswa.js"></script>

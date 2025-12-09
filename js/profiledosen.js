@@ -251,7 +251,7 @@ function handleFiles(file, type) {
     `(${formatBytes(file.size)})`
   );
   showToast(
-    `✓ ${type === "image" ? "Image" : "Document"} uploaded successfully`,
+    ` ${type === "image" ? "Image" : "Document"} uploaded successfully`,
     "success"
   );
 }

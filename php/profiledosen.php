@@ -161,7 +161,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt->bind_param("sssssis", $title, $type, $date, $image_path, $document_path, $created_by, $created_by_name);
 
                         if ($stmt->execute()) {
-                            $message = "✅ Pengumuman berhasil dibuat!";
+                            $message = "Announcement Succesfully Created!";
                             $message_type = "success";
                             // Redirect setelah sukses (Post/Redirect/Get pattern)
                             header("Location: homepage1.php?status=success");
@@ -348,10 +348,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="form-actions">
                     <button type="button" class="btn-remove" onclick="resetForm()">
-                        <i class="fas fa-trash"></i> Remove
+                        Remove
                     </button>
                     <button type="submit" class="btn-submit">
-                        <i class="fas fa-paper-plane"></i> Create
+                        Create
                     </button>
                 </div>
             </form>
@@ -380,8 +380,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                     <p class="brand-description">
-                        Platform digital untuk memudahkan akses informasi akademik mahasiswa dan dosen Politeknik Negeri
-                        Batam.
+                        A digital platform facilitate access to academic information for students and lecturers at
+                        Politeknik Negeri Batam.
                     </p>
                     <p class="brand-motto">
                         For Your Goals Beyond Horizon
@@ -416,7 +416,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <!-- Contact & Social -->
                 <div class="footer-section">
-                    <h4>Hubungi Kami</h4>
+                    <h4>Contact Us</h4>
                     <div class="contact-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <span>Jl. Ahmad Yani Batam Kota,<br>Kota Batam, Kepulauan Riau, Indonesia</span>

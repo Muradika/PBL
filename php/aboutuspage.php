@@ -102,8 +102,8 @@
                         </div>
                     </div>
                     <p class="brand-description">
-                        Platform digital untuk memudahkan akses informasi akademik mahasiswa dan dosen Politeknik Negeri
-                        Batam.
+                        A digital platform facilitate access to academic information for students and lecturers at
+                        Politeknik Negeri Batam.
                     </p>
                     <p class="brand-motto">
                         For Your Goals Beyond Horizon
@@ -138,7 +138,7 @@
 
                 <!-- Contact & Social -->
                 <div class="footer-section">
-                    <h4>Hubungi Kami</h4>
+                    <h4>Contact Us</h4>
                     <div class="contact-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <span>Jl. Ahmad Yani Batam Kota,<br>Kota Batam, Kepulauan Riau, Indonesia</span>

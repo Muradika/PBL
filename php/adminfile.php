@@ -85,9 +85,9 @@ if (isset($_POST['update_file'])) {
         $stmt->bind_param("sssssi", $title, $type, $date, $image_path, $doc_path, $id);
 
         if ($stmt->execute()) {
-            $success = "✅ File berhasil diupdate!";
+            $success = "File Updated!";
         } else {
-            $error = "❌ Gagal update file: " . $conn->error;
+            $error = "File Failed to be Updated: " . $conn->error;
         }
         $stmt->close();
     }
@@ -120,9 +120,9 @@ if (isset($_POST['delete_id'])) {
     $delete_stmt->bind_param("i", $delete_id);
 
     if ($delete_stmt->execute()) {
-        $success = "✅ File berhasil dihapus!";
+        $success = "File Removed!";
     } else {
-        $error = "❌ Gagal menghapus file!";
+        $error = "File Failed to be Removed!";
     }
     $delete_stmt->close();
 }
@@ -278,18 +278,18 @@ function get_url_params()
                 <!-- Search Box -->
                 <div class="searchbox">
                     <span class="search-icon">🔍</span>
-                    <input id="searchInput" name="search" placeholder="Search File (Title, Type, Creator)"
+                    <input id="searchInput" name="search" placeholder="Search File (Title, Type, Creator, etc.)"
                         value="<?php echo htmlspecialchars($search_query); ?>">
                     <button type="submit" style="display:none;"></button>
                 </div>
 
                 <!-- Date Range Filter -->
                 <div class="date-filter-group">
-                    <label for="startDateInput" class="date-label">Dari:</label>
+                    <label for="startDateInput" class="date-label">From:</label>
                     <input type="date" id="startDateInput" name="start_date" class="date-input"
                         value="<?php echo htmlspecialchars($start_date); ?>" onchange="this.form.submit()">
 
-                    <label for="endDateInput" class="date-label">Sampai:</label>
+                    <label for="endDateInput" class="date-label">To:</label>
                     <input type="date" id="endDateInput" name="end_date" class="date-input"
                         value="<?php echo htmlspecialchars($end_date); ?>" onchange="this.form.submit()">
                 </div>
@@ -375,7 +375,7 @@ function get_url_params()
                                     Edit
                                 </button>
                                 <form method="POST" action="adminfile.php" style="display:inline;"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus file ini?');">
+                                    onsubmit="return confirm('Are you sure want to delete this announcement?');">
                                     <input type="hidden" name="delete_id" value="<?php echo $announcement['id']; ?>">
                                     <button type="submit" class="btn-remove">Remove</button>
                                 </form>
@@ -400,7 +400,7 @@ function get_url_params()
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-edit"></i> Edit Pengumuman</h2>
+                <h2><i class="fas fa-edit"></i> Edit Announcement</h2>
                 <span class="close" onclick="closeEditModal()">&times;</span>
             </div>
 
@@ -433,13 +433,13 @@ function get_url_params()
                 <div class="form-group">
                     <label>Photo (Optional)</label>
                     <input type="file" name="edit_image" accept="image/*">
-                    <small>Kosongkan jika tidak ingin mengganti foto</small>
+                    <small>Leave empty if don't want to change the photo</small>
                 </div>
 
                 <div class="form-group">
                     <label>Document (Optional)</label>
                     <input type="file" name="edit_document" accept=".pdf,.doc,.docx">
-                    <small>Kosongkan jika tidak ingin mengganti dokumen</small>
+                    <small>Leave empty if don't want to change the document</small>
                 </div>
 
                 <div class="modal-footer">

@@ -389,7 +389,7 @@ body {
     margin: 0;
 }
 
-/* ============================ PAGINATION ============================ */
+/* ============================ SMART PAGINATION ============================ */
 .pagination-info {
     text-align: center;
     margin: 30px 0 15px;
@@ -450,16 +450,16 @@ body {
 .page-arrow {
     min-width: 45px;
     background: linear-gradient(135deg, #12417d 0%, #002b63 100%);
-    border-color: #667eea;
+    border-color: #12417d;
     color: white;
     font-size: 14px;
 }
 
 .page-arrow:hover {
-    background: linear-gradient(135deg, #12417d 0%, #002b63 100%);
-    border-color: #764ba2;
+    background: linear-gradient(135deg, #002b63 0%, #12417d 100%);
+    border-color: #002b63;
     transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 20px rgba(18, 65, 125, 0.4);
 }
 
 .page-arrow i {
@@ -476,6 +476,28 @@ body {
     font-size: 18px;
     font-weight: bold;
     letter-spacing: 2px;
+}
+
+.page-arrow.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Animation */
+@keyframes pageSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pagination {
+    animation: pageSlide 0.3s ease-out;
 }
 
 /* Disabled state untuk arrow (optional) */

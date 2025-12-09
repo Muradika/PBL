@@ -188,16 +188,16 @@ $show_next = $current_page < $total_pages;
         <form class="searchbar" method="GET" action="homepage1.php">
             <div class="searchbox">
                 <span class="search-icon">🔍</span>
-                <input id="searchInput" name="search" placeholder="Search File (Title, Date, Type)"
+                <input id="searchInput" name="search" placeholder="Search File (Title, Type, etc.)"
                     value="<?php echo htmlspecialchars($search_query); ?>" />
                 <button type="submit" style="display:none;"></button>
             </div>
 
             <div class="date-filter-group">
-                <label for="startDateInput" class="date-label">Dari:</label>
+                <label for="startDateInput" class="date-label">From:</label>
                 <input type="date" id="startDateInput" name="start_date" class="date-input"
                     value="<?php echo htmlspecialchars($start_date); ?>" onchange="this.form.submit()" />
-                <label for="endDateInput" class="date-label">Sampai:</label>
+                <label for="endDateInput" class="date-label">To:</label>
                 <input type="date" id="endDateInput" name="end_date" class="date-input"
                     value="<?php echo htmlspecialchars($end_date); ?>" onchange="this.form.submit()" />
             </div>
@@ -287,8 +287,8 @@ $show_next = $current_page < $total_pages;
     <!-- SMART PAGINATION -->
     <?php if ($total_pages > 1): ?>
         <div class="pagination-info">
-            Halaman <?php echo $current_page; ?> dari <?php echo $total_pages; ?>
-            (Total: <?php echo $total_announcements; ?> pengumuman)
+            Page <?php echo $current_page; ?> From <?php echo $total_pages; ?>
+            (Total: <?php echo $total_announcements; ?> Announcements)
         </div>
 
         <div class="pagination">
@@ -347,8 +347,8 @@ $show_next = $current_page < $total_pages;
                         </div>
                     </div>
                     <p class="brand-description">
-                        Platform digital untuk memudahkan akses informasi akademik mahasiswa dan dosen Politeknik Negeri
-                        Batam.
+                        A digital platform facilitate access to academic information for students and lecturers at
+                        Politeknik Negeri Batam.
                     </p>
                     <p class="brand-motto">For Your Goals Beyond Horizon</p>
                 </div>
@@ -378,7 +378,7 @@ $show_next = $current_page < $total_pages;
                 </div>
 
                 <div class="footer-section">
-                    <h4>Hubungi Kami</h4>
+                    <h4>Contact Us</h4>
                     <div class="contact-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <span>Jl. Ahmad Yani Batam Kota,<br>Kota Batam, Kepulauan Riau, Indonesia</span>

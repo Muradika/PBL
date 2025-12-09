@@ -53,7 +53,7 @@ if (isset($_POST["login"])) {
   // Cek jika akun ter-lock
   if ($is_locked) {
     $remaining = $lockout_time - (time() - $_SESSION['last_attempt_time']);
-    $error_message = "Terlalu banyak percobaan login. Coba lagi dalam " . ceil($remaining / 60) . " menit.";
+    $error_message = "Too Much Attempt. Try Again in " . ceil($remaining / 60) . " menit.";
   } else {
     $email = trim($_POST["email"]);
     $password = $_POST["password"];
@@ -62,7 +62,7 @@ if (isset($_POST["login"])) {
 
     // Validasi input
     if (empty($email) || empty($password) || empty($role)) {
-      $error_message = "Semua field harus diisi!";
+      $error_message = "All Fields Must be Filled in!";
     } else {
       // Query user berdasarkan email dan role
       $sql = "SELECT * FROM user WHERE email=? AND role=?";
@@ -138,12 +138,12 @@ if (isset($_POST["login"])) {
         } else {
           $_SESSION['login_attempts']++;
           $_SESSION['last_attempt_time'] = time();
-          $error_message = "Password salah!";
+          $error_message = "Wrong Password!";
         }
       } else {
         $_SESSION['login_attempts']++;
         $_SESSION['last_attempt_time'] = time();
-        $error_message = "Email atau role tidak ditemukan!";
+        $error_message = "Email or Role Not Found!";
       }
       $stmt->close();
     }
@@ -178,7 +178,7 @@ if (isset($_POST["login"])) {
 
     <?php if ($is_locked): ?>
       <div class="locked-message">
-        🔒 Akun ter-lock. Silakan tunggu 15 menit.
+        Account Locked Due to Too Many Failed Login Attempts. Please Try Again Later.
       </div>
     <?php endif; ?>
 
@@ -204,7 +204,7 @@ if (isset($_POST["login"])) {
       <!-- Remember Me Checkbox -->
       <div class="remember-me">
         <input type="checkbox" id="remember" name="remember" />
-        <label for="remember">Remember me</label>
+        <label for="remember">Remember Me</label>
       </div>
 
       <button type="submit" name="login" class="btn-login" <?php echo $is_locked ? 'disabled' : ''; ?>>
@@ -213,7 +213,7 @@ if (isset($_POST["login"])) {
 
       <?php if ($_SESSION['login_attempts'] > 0 && !$is_locked): ?>
         <div class="attempts-warning">
-          ⚠️ Percobaan login: <?php echo $_SESSION['login_attempts']; ?>/<?php echo $max_attempts; ?>
+          ⚠️ Login Attempt: <?php echo $_SESSION['login_attempts']; ?>/<?php echo $max_attempts; ?>
         </div>
       <?php endif; ?>
     </form>

@@ -43,9 +43,9 @@ if (isset($_POST['add_user'])) {
             $insert->bind_param("sssss", $id_number, $nama, $email, $hashed_password, $role);
 
             if ($insert->execute()) {
-                $success = "✅ User berhasil ditambahkan!";
+                $success = "User Added!";
             } else {
-                $error = "❌ Gagal menambahkan user: " . $conn->error;
+                $error = "Failed Added User: " . $conn->error;
             }
             $insert->close();
         }
@@ -68,16 +68,16 @@ if (isset($_POST['edit_user'])) {
         $update = $conn->prepare("UPDATE user SET nama_lengkap = ?, email = ?, password = ?, role = ? WHERE id = ?");
         $update->bind_param("sssss", $nama, $email, $hashed_password, $role, $id);
 
-        $success = "✅ User berhasil diupdate dengan password baru!";
+        $success = "User Succesfully Updated New Password!";
     } else {
         $update = $conn->prepare("UPDATE user SET nama_lengkap = ?, email = ?, role = ? WHERE id = ?");
         $update->bind_param("ssss", $nama, $email, $role, $id);
 
-        $success = "✅ User berhasil diupdate!";
+        $success = "User Added!";
     }
 
     if (!$update->execute()) {
-        $error = "❌ Gagal update user: " . $conn->error;
+        $error = "Failed Updated User: " . $conn->error;
         $success = null;
     }
     $update->close();
@@ -95,9 +95,9 @@ if (isset($_POST['delete_id'])) {
         $delete->bind_param("s", $delete_id);
 
         if ($delete->execute()) {
-            $success = "✅ User berhasil dihapus!";
+            $success = "User Succesfully Deleted!";
         } else {
-            $error = "❌ Gagal menghapus user: " . $conn->error;
+            $error = "Failed Removed User: " . $conn->error;
         }
         $delete->close();
     }
@@ -225,7 +225,7 @@ $conn->close();
                 <!-- Search Box -->
                 <div class="searchbox">
                     <span class="search-icon">🔍</span>
-                    <input id="searchInput" name="search" placeholder="Search User (Name, Email, ID Number)"
+                    <input id="searchInput" name="search" placeholder="Search User (Name, Email, ID Number, etc.)"
                         value="<?php echo htmlspecialchars($search_query); ?>">
                     <button type="submit" style="display:none;"></button>
                 </div>
