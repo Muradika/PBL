@@ -44,9 +44,9 @@
                 <div class="card-placeholder muradika"></div>
                 <div class="card-details">
                     <h3 class="member-name">Muradika Laksamana Putra</h3>
-                    <p class="member-prodi">Prodi : Teknik Informatika</p>
-                    <p class="member-nim">NIM : 3312501059</p>
-                    <p class="member-kontribusi">Kontribusi : Back-End</p>
+                    <p class="member-prodi">Program : Informatics Engineering</p>
+                    <p class="member-nim">ID : 3312501059</p>
+                    <p class="member-kontribusi">Task : Back-End</p>
                 </div>
             </div>
 
@@ -54,9 +54,9 @@
                 <div class="card-placeholder bryan"></div>
                 <div class="card-details">
                     <h3 class="member-name">Bryan Abisai Immanuel Sitorus</h3>
-                    <p class="member-prodi">Prodi : Teknik Informatika</p>
-                    <p class="member-nim">NIM : 3312501058</p>
-                    <p class="member-kontribusi">Kontribusi : Full Stack Developer</p>
+                    <p class="member-prodi">Program : Informatics Engineering</p>
+                    <p class="member-nim">ID : 3312501058</p>
+                    <p class="member-kontribusi">Task : Full Stack Developer</p>
                 </div>
             </div>
 
@@ -67,9 +67,9 @@
                         Siti <br />
                         Halimah Chania
                     </h3>
-                    <p class="member-prodi">Prodi : Teknik Informatika</p>
-                    <p class="member-nim">NIM : 3312501057</p>
-                    <p class="member-kontribusi">Kontribusi : Front-End</p>
+                    <p class="member-prodi">Program : Informatics Engineering</p>
+                    <p class="member-nim">ID : 3312501057</p>
+                    <p class="member-kontribusi">Task : Front-End</p>
                 </div>
             </div>
 
@@ -80,9 +80,9 @@
                         Zahrah <br />
                         Athirah Badiah
                     </h3>
-                    <p class="member-prodi">Prodi : Teknik Informatika</p>
-                    <p class="member-nim">NIM : 3312501060</p>
-                    <p class="member-kontribusi">Kontribusi : Back-End</p>
+                    <p class="member-prodi">Program : Informatics Engineering</p>
+                    <p class="member-nim">ID : 3312501060</p>
+                    <p class="member-kontribusi">Task : Back-End</p>
                 </div>
             </div>
         </div>
