@@ -30,7 +30,7 @@ if (isset($_POST['update_file'])) {
         $allowed_img = ['jpg', 'jpeg', 'png'];
 
         if (!in_array($img_ext, $allowed_img)) {
-            $error = "Format gambar tidak diizinkan! Hanya JPG, JPEG, PNG.";
+            $error = "Format not allowed! Only JPG, JPEG, PNG.";
         } else {
             $new_img = 'img_' . time() . '.' . $img_ext;
             $img_dir = '../uploads/images/';
@@ -56,10 +56,10 @@ if (isset($_POST['update_file'])) {
 
     if (!empty($_FILES['edit_document']['name'])) {
         $ext = strtolower(pathinfo($_FILES['edit_document']['name'], PATHINFO_EXTENSION));
-        $allowed = ['pdf', 'doc', 'docx'];
+        $allowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
 
         if (!in_array($ext, $allowed)) {
-            $error = "Format dokumen tidak diizinkan! Hanya PDF, DOC, DOCX.";
+            $error = "Format not allowed! Only PDF, DOC, DOCX, XLS, XLSX.";
         } else {
             $new_name = 'doc_' . time() . '.' . $ext;
             $upload_dir = '../uploads/documents/';
@@ -388,8 +388,8 @@ function get_url_params()
                             <path
                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <h3>Tidak ada file yang ditemukan</h3>
-                        <p>Coba ubah filter atau kata kunci pencarian Anda</p>
+                        <h3>No files found</h3>
+                        <p>Please try different search or filter criteria</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -438,7 +438,7 @@ function get_url_params()
 
                 <div class="form-group">
                     <label>Document (Optional)</label>
-                    <input type="file" name="edit_document" accept=".pdf,.doc,.docx">
+                    <input type="file" name="edit_document" accept=".pdf,.doc,.docx,.xls,.xlsx">
                     <small>Leave empty if don't want to change the document</small>
                 </div>
 

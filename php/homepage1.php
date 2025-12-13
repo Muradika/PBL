@@ -277,9 +277,16 @@ $show_next = $current_page < $total_pages;
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p style="grid-column: 1 / -1; text-align: center; padding: 250px;">
-                    Tidak ada pengumuman yang ditemukan dengan kriteria yang dicari.
-                </p>
+                <div class="no-announcements-wrapper">
+                    <div class="no-announcements-content">
+                        <div class="no-announcements-icon">📭</div>
+                        <h3 class="no-announcements-title">No Announcements Found</h3>
+                        <p class="no-announcements-text">
+                            We couldn't find any announcements matching your search criteria.<br>
+                            Please try different keywords or filters.
+                        </p>
+                    </div>
+                </div>
             <?php endif; ?>
         </div>
     </main>

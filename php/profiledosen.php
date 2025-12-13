@@ -40,24 +40,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Validasi input wajib
     if (empty($title) || empty($type) || empty($date)) {
-        $message = "⚠️ Semua field wajib diisi!";
+        $message = "All fields are required to be filled in!";
         $message_type = "error";
     } else {
         // Validasi panjang title
         if (strlen($title) > 200) {
-            $message = "⚠️ Judul terlalu panjang (maksimal 200 karakter)";
+            $message = "Title is too long (max. 200 characters)!";
             $message_type = "error";
         } else {
             // Validasi tipe pengumuman
             $allowed_types = ["Jadwal", "Beasiswa", "Perubahan Kelas", "Karir", "Kemahasiswaan"];
             if (!in_array($type, $allowed_types)) {
-                $message = "⚠️ Tipe pengumuman tidak valid!";
+                $message = "Announcement type not valid!";
                 $message_type = "error";
             } else {
                 // Validasi format tanggal
                 $date_obj = DateTime::createFromFormat('Y-m-d', $date);
                 if (!$date_obj || $date_obj->format('Y-m-d') !== $date) {
-                    $message = "⚠️ Format tanggal tidak valid!";
+                    $message = "Date format not valid!";
                     $message_type = "error";
                 } else {
                     // Ambil data user yang login
@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         // Validasi ukuran file
                         if ($image_file['size'] > MAX_IMAGE_SIZE) {
-                            $message .= "⚠️ Ukuran gambar terlalu besar (maksimal 5MB)<br>";
+                            $message .= "Picture size is too big (max. 5MB)<br>";
                             $message_type = "error";
                         } else {
                             // Validasi MIME type
@@ -92,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $allowed_mime = ['image/jpeg', 'image/jpg', 'image/png'];
 
                             if (!in_array($mime_type, $allowed_mime)) {
-                                $message .= "⚠️ Format gambar tidak valid (hanya JPG, JPEG, PNG)<br>";
+                                $message .= "Picture format is not valid (only JPG, JPEG, PNG)<br>";
                                 $message_type = "error";
                             } else {
                                 // Sanitasi nama file
@@ -101,14 +101,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $image_path = $image_target_dir . $image_name;
 
                                 if (!move_uploaded_file($image_file['tmp_name'], $image_path)) {
-                                    $message .= "⚠️ Gagal mengupload gambar<br>";
+                                    $message .= "Failed uploading picture<br>";
                                     $message_type = "error";
                                     $image_path = null;
                                 }
                             }
                         }
                     } else {
-                        $message .= "⚠️ Gambar wajib diupload<br>";
+                        $message .= "Picture required to be filled in<br>";
                         $message_type = "error";
                     }
 
@@ -118,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         // Validasi ukuran file
                         if ($document_file['size'] > MAX_DOCUMENT_SIZE) {
-                            $message .= "⚠️ Ukuran dokumen terlalu besar (maksimal 10MB)<br>";
+                            $message .= "Document size is too big (max. 10MB)<br>";
                             $message_type = "error";
                         } else {
                             // Validasi MIME type
@@ -135,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             ];
 
                             if (!in_array($mime_type, $allowed_mime)) {
-                                $message .= "⚠️ Format dokumen tidak valid (hanya PDF, DOC, DOCX, XLS, XLSX)<br>";
+                                $message .= "Document format not valid! (only PDF, DOC, DOCX, XLS, XLSX)<br>";
                                 $message_type = "error";
                             } else {
                                 // Sanitasi nama file
@@ -144,14 +144,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $document_path = $document_target_dir . $document_name;
 
                                 if (!move_uploaded_file($document_file['tmp_name'], $document_path)) {
-                                    $message .= "⚠️ Gagal mengupload dokumen<br>";
+                                    $message .= "Failed uploading document<br>";
                                     $message_type = "error";
                                     $document_path = null;
                                 }
                             }
                         }
                     } else {
-                        $message .= "⚠️ Dokumen wajib diupload<br>";
+                        $message .= "Document required to be filled in!<br>";
                         $message_type = "error";
                     }
 

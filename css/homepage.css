@@ -389,6 +389,55 @@ body {
     margin: 0;
 }
 
+/* ============================ NO ANNOUNCEMENTS ============================ */
+.no-announcements-wrapper {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    padding: 40px 20px;
+}
+
+.no-announcements-content {
+    background: white;
+    border-radius: 20px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+}
+
+.no-announcements-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.no-announcements-title {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0 0 15px 0;
+    font-weight: 700;
+}
+
+.no-announcements-text {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
 /* ============================ SMART PAGINATION ============================ */
 .pagination-info {
     text-align: center;
@@ -498,13 +547,6 @@ body {
 
 .pagination {
     animation: pageSlide 0.3s ease-out;
-}
-
-/* Disabled state untuk arrow (optional) */
-.page-arrow.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    pointer-events: none;
 }
 
 /* ============================ FOOTER ============================ */
@@ -902,8 +944,32 @@ body {
         height: 16px;
     }
 
+    /* No Announcements - Mobile */
+    .no-announcements-wrapper {
+        min-height: 300px;
+        padding: 30px 15px;
+    }
+
+    .no-announcements-content {
+        padding: 40px 25px;
+        border-radius: 16px;
+    }
+
+    .no-announcements-icon {
+        font-size: 3.5rem;
+        margin-bottom: 15px;
+    }
+
+    .no-announcements-title {
+        font-size: 1.4rem;
+        margin-bottom: 12px;
+    }
+
+    .no-announcements-text {
+        font-size: 0.9rem;
+    }
+
     /* Pagination */
-@media (max-width: 768px) {
     .pagination-info {
         font-size: 0.85rem;
         margin: 20px 0 10px;
@@ -932,9 +998,42 @@ body {
         height: 40px;
         font-size: 16px;
     }
+
+    /* Footer */
+    .footer-main {
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 40px;
+    }
+
+    .footer-section:last-child {
+        grid-column: 1 / -1;
+    }
 }
 
 @media (max-width: 480px) {
+    /* No Announcements - Smaller Mobile */
+    .no-announcements-wrapper {
+        min-height: 250px;
+        padding: 20px 10px;
+    }
+
+    .no-announcements-content {
+        padding: 35px 20px;
+    }
+
+    .no-announcements-icon {
+        font-size: 3rem;
+    }
+
+    .no-announcements-title {
+        font-size: 1.2rem;
+    }
+
+    .no-announcements-text {
+        font-size: 0.85rem;
+    }
+
+    /* Pagination - Smaller Mobile */
     .pagination-info {
         font-size: 0.8rem;
     }
@@ -960,35 +1059,8 @@ body {
         height: 36px;
         font-size: 14px;
     }
-}
 
-/* Animation for page transition */
-@keyframes pageSlide {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.pagination {
-    animation: pageSlide 0.3s ease-out;
-}
-
-    .footer-main {
-        grid-template-columns: 2fr 1fr 1fr;
-        gap: 40px;
-    }
-
-    .footer-section:last-child {
-        grid-column: 1 / -1;
-    }
-}
-
-@media (max-width: 768px) {
+    /* Footer - Smaller Mobile */
     .modern-footer {
         margin-top: 60px;
     }
@@ -1008,12 +1080,12 @@ body {
     }
 
     .brand-logo {
-        width: 70px;
-        height: 70px;
+        width: 60px;
+        height: 60px;
     }
 
     .brand-text h3 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
 
     .footer-section h4 {
@@ -1028,31 +1100,17 @@ body {
 
     .footer-bottom-links {
         justify-content: center;
+        flex-direction: column;
+        gap: 10px;
     }
 
     .social-media {
         justify-content: flex-start;
-    }
-}
-
-@media (max-width: 480px) {
-    .brand-logo {
-        width: 60px;
-        height: 60px;
-    }
-
-    .brand-text h3 {
-        font-size: 1.1rem;
     }
 
     .social-link {
         width: 40px;
         height: 40px;
         font-size: 1.1rem;
-    }
-
-    .footer-bottom-links {
-        flex-direction: column;
-        gap: 10px;
     }
 }

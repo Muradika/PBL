@@ -199,12 +199,12 @@ $show_next = $current_page < $total_pages;
             ?>
 
             <p class="greeting-text">
-                👋 Halo <?php echo htmlspecialchars($nama); ?>, kamu login sebagai
+                👋 Hello <?php echo htmlspecialchars($nama); ?>, you are logged in as a
                 <?php echo htmlspecialchars($role); ?>
             </p>
 
             <p class="subtitle-text">
-                <?php echo $total_announcements; ?> pengumuman yang Anda bookmark
+                <?php echo $total_announcements; ?> announcements you have bookmarked
             </p>
         </div>
 
@@ -303,17 +303,17 @@ $show_next = $current_page < $total_pages;
                     </svg>
                     <h3 style="color: #999; margin-bottom: 10px;">
                         <?php echo (!empty($search_query) || !empty($filter_type) || !empty($start_date) || !empty($end_date))
-                            ? "Tidak ada hasil yang ditemukan"
-                            : "Belum ada favorites"; ?>
+                            ? "No announcements found"
+                            : "There are no bookmarked announcements"; ?>
                     </h3>
                     <p style="color: #aaa; margin-bottom: 30px;">
                         <?php echo (!empty($search_query) || !empty($filter_type) || !empty($start_date) || !empty($end_date))
-                            ? "Coba ubah filter atau kata kunci pencarian Anda"
-                            : "Klik tombol bookmark pada pengumuman di homepage untuk menambahkan ke favorites"; ?>
+                            ? "Please try different search or filter criteria"
+                            : "Click the bookmark button on the homepage announcement to add it to your favorites"; ?>
                     </p>
                     <a href="<?php echo (!empty($search_query) || !empty($filter_type) || !empty($start_date) || !empty($end_date)) ? 'profilemahasiswa.php' : 'homepage1.php'; ?>"
                         style="display: inline-block; padding: 12px 30px; background: #ff6347; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
-                        <?php echo (!empty($search_query) || !empty($filter_type) || !empty($start_date) || !empty($end_date)) ? '🔄 Reset Filter' : '← Kembali ke Homepage'; ?>
+                        <?php echo (!empty($search_query) || !empty($filter_type) || !empty($start_date) || !empty($end_date)) ? 'Reset Filter' : 'Back to homepage'; ?>
                     </a>
                 </div>
             <?php endif; ?>

@@ -89,7 +89,7 @@ if (isset($_POST['delete_id'])) {
 
     // Prevent deleting own account
     if ($delete_id == $_SESSION['user_id']) {
-        $error = "⚠️ Tidak dapat menghapus akun sendiri!";
+        $error = "⚠️ Can't delete your own account!";
     } else {
         $delete = $conn->prepare("DELETE FROM user WHERE id = ?");
         $delete->bind_param("s", $delete_id);
@@ -317,8 +317,8 @@ $conn->close();
                         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2">
                             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" />
                         </svg>
-                        <h3>Tidak ada user yang ditemukan</h3>
-                        <p>Coba ubah filter atau kata kunci pencarian Anda</p>
+                        <h3>No users found</h3>
+                        <p>Please try different search or filter criteria</p>
                     </div>
                 <?php endif; ?>
             </div>
