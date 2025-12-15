@@ -157,7 +157,8 @@ if (isset($_POST["login"])) {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SIPAk - Login</title>
-  <link rel="stylesheet" href="../css/loginpage.css" />
+  <link rel="icon" type="image/png" href="../img/img_Politeknikbnw.png" />
+  <link rel=" stylesheet" href="../css/loginpage.css" />
 </head>
 
 <body>
