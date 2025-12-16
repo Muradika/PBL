@@ -140,12 +140,12 @@ $show_next = $current_page < $total_pages;
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SIPAk - My Favorites</title>
+    <title>SIPAk - Favorit Saya</title>
     <link rel="icon" type="image/png" href="../img/img_Politeknikbnw.png" />
     <link rel="stylesheet" href="../css/profilemahasiswa.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -169,23 +169,23 @@ $show_next = $current_page < $total_pages;
         </div>
 
         <nav class="nav-menu">
-            <a href="homepage1.php" class="nav-link">Home</a>
-            <a href="aboutuspage.php" class="nav-link">About Us</a>
+            <a href="homepage1.php" class="nav-link">Beranda</a>
+            <a href="aboutuspage.php" class="nav-link">Tentang Kami</a>
             <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle active" id="profile-dropdown-btn">Profile</a>
+                <a href="#" class="nav-link dropdown-toggle active" id="profile-dropdown-btn">Profil</a>
                 <div class="dropdown-menu" id="profile-dropdown-menu">
                     <a href="profilemahasiswa.php" class="dropdown-item create-btn">
-                        <i class="fas fa-bookmark"></i> Favorites
+                        <i class="fas fa-bookmark"></i> Favorit
                     </a>
 
                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'dosen'): ?>
                         <a href="profiledosen.php" class="dropdown-item add-btn">
-                            <i class="fas fa-plus-circle"></i> Add
+                            <i class="fas fa-plus-circle"></i> Tambah
                         </a>
                     <?php endif; ?>
 
                     <a href="logout.php" class="dropdown-item logout-btn">
-                        <i class="fas fa-sign-out-alt"></i> Log Out
+                        <i class="fas fa-sign-out-alt"></i> Keluar
                     </a>
                 </div>
             </div>
@@ -195,34 +195,34 @@ $show_next = $current_page < $total_pages;
     <main class="main">
         <div style="padding: 0px 0 10px 0;">
             <?php
-            $nama = isset($_SESSION['nama_lengkap']) ? $_SESSION['nama_lengkap'] : 'User';
+            $nama = isset($_SESSION['nama_lengkap']) ? $_SESSION['nama_lengkap'] : 'Pengguna';
             $role = isset($_SESSION['role']) ? ucfirst($_SESSION['role']) : 'Pengguna';
             ?>
 
             <p class="greeting-text">
-                👋 Hello <?php echo htmlspecialchars($nama); ?>, you are logged in as a
+                👋 Halo <?php echo htmlspecialchars($nama); ?>, Anda login sebagai
                 <?php echo htmlspecialchars($role); ?>
             </p>
 
             <p class="subtitle-text">
-                <?php echo $total_announcements; ?> announcements you have bookmarked
+                <?php echo $total_announcements; ?> pengumuman yang telah Anda tandai
             </p>
         </div>
 
         <form class="searchbar" method="GET" action="profilemahasiswa.php">
             <div class="searchbox">
                 <span class="search-icon">🔍</span>
-                <input id="searchInput" name="search" placeholder="Search File (Title, Type, etc.)"
+                <input id="searchInput" name="search" placeholder="Cari Berkas (Judul, Jenis, dll.)"
                     value="<?php echo htmlspecialchars($search_query); ?>" />
                 <button type="submit" style="display:none;"></button>
             </div>
 
             <div class="date-filter-group">
-                <label for="startDateInput" class="date-label">From:</label>
+                <label for="startDateInput" class="date-label">Dari:</label>
                 <input type="date" id="startDateInput" name="start_date" class="date-input"
                     value="<?php echo htmlspecialchars($start_date); ?>" onchange="this.form.submit()" />
 
-                <label for="endDateInput" class="date-label">To:</label>
+                <label for="endDateInput" class="date-label">Sampai:</label>
                 <input type="date" id="endDateInput" name="end_date" class="date-input"
                     value="<?php echo htmlspecialchars($end_date); ?>" onchange="this.form.submit()" />
             </div>
@@ -304,17 +304,17 @@ $show_next = $current_page < $total_pages;
                     </svg>
                     <h3 style="color: #999; margin-bottom: 10px;">
                         <?php echo (!empty($search_query) || !empty($filter_type) || !empty($start_date) || !empty($end_date))
-                            ? "No announcements found"
-                            : "There are no bookmarked announcements"; ?>
+                            ? "Tidak ada pengumuman ditemukan"
+                            : "Belum ada pengumuman yang ditandai"; ?>
                     </h3>
                     <p style="color: #aaa; margin-bottom: 30px;">
                         <?php echo (!empty($search_query) || !empty($filter_type) || !empty($start_date) || !empty($end_date))
-                            ? "Please try different search or filter criteria"
-                            : "Click the bookmark button on the homepage announcement to add it to your favorites"; ?>
+                            ? "Silakan coba kriteria pencarian atau filter yang berbeda"
+                            : "Klik tombol tandai pada pengumuman di beranda untuk menambahkannya ke favorit"; ?>
                     </p>
                     <a href="<?php echo (!empty($search_query) || !empty($filter_type) || !empty($start_date) || !empty($end_date)) ? 'profilemahasiswa.php' : 'homepage1.php'; ?>"
                         style="display: inline-block; padding: 12px 30px; background: #ff6347; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
-                        <?php echo (!empty($search_query) || !empty($filter_type) || !empty($start_date) || !empty($end_date)) ? 'Reset Filter' : 'Back to homepage'; ?>
+                        <?php echo (!empty($search_query) || !empty($filter_type) || !empty($start_date) || !empty($end_date)) ? 'Atur Ulang Filter' : 'Kembali ke beranda'; ?>
                     </a>
                 </div>
             <?php endif; ?>
@@ -324,14 +324,14 @@ $show_next = $current_page < $total_pages;
     <!-- SMART PAGINATION -->
     <?php if ($total_pages > 1): ?>
         <div class="pagination-info">
-            Page <?php echo $current_page; ?> From <?php echo $total_pages; ?>
-            (Total: <?php echo $total_announcements; ?> Announcements)
+            Halaman <?php echo $current_page; ?> dari <?php echo $total_pages; ?>
+            (Total: <?php echo $total_announcements; ?> Pengumuman)
         </div>
 
         <div class="pagination">
             <!-- Previous Arrow -->
             <?php if ($show_prev): ?>
-                <a href="?<?php echo get_url_params($current_page - 1); ?>" class="page-arrow" title="Previous">
+                <a href="?<?php echo get_url_params($current_page - 1); ?>" class="page-arrow" title="Sebelumnya">
                     <i class="fas fa-chevron-left"></i>
                 </a>
             <?php endif; ?>
@@ -364,7 +364,7 @@ $show_next = $current_page < $total_pages;
 
             <!-- Next Arrow -->
             <?php if ($show_next): ?>
-                <a href="?<?php echo get_url_params($current_page + 1); ?>" class="page-arrow" title="Next">
+                <a href="?<?php echo get_url_params($current_page + 1); ?>" class="page-arrow" title="Selanjutnya">
                     <i class="fas fa-chevron-right"></i>
                 </a>
             <?php endif; ?>
@@ -384,24 +384,24 @@ $show_next = $current_page < $total_pages;
                         </div>
                     </div>
                     <p class="brand-description">
-                        A digital platform facilitate access to academic information for students and lecturers at
+                        Platform digital yang memfasilitasi akses informasi akademik untuk mahasiswa dan dosen di
                         Politeknik Negeri Batam.
                     </p>
                     <p class="brand-motto">For Your Goals Beyond Horizon</p>
                 </div>
 
                 <div class="footer-section">
-                    <h4>Quick Links</h4>
+                    <h4>Tautan Cepat</h4>
                     <ul class="footer-links">
-                        <li><a href="homepage1.php"><i class="fas fa-chevron-right"></i> Home</a></li>
-                        <li><a href="aboutuspage.php"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                        <li><a href="profilemahasiswa.php"><i class="fas fa-chevron-right"></i> Profile</a></li>
-                        <li><a href="logout.php"><i class="fas fa-chevron-right"></i> Logout</a></li>
+                        <li><a href="homepage1.php"><i class="fas fa-chevron-right"></i> Beranda</a></li>
+                        <li><a href="aboutuspage.php"><i class="fas fa-chevron-right"></i> Tentang Kami</a></li>
+                        <li><a href="profilemahasiswa.php"><i class="fas fa-chevron-right"></i> Profil</a></li>
+                        <li><a href="logout.php"><i class="fas fa-chevron-right"></i> Keluar</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-section">
-                    <h4>Resources</h4>
+                    <h4>Sumber Daya</h4>
                     <ul class="footer-links">
                         <li><a href="https://learning-if.polibatam.ac.id/" target="_blank"><i
                                     class="fas fa-chevron-right"></i> E-Learning</a></li>
@@ -410,12 +410,12 @@ $show_next = $current_page < $total_pages;
                         <li><a href="https://pbl.polibatam.ac.id/" target="_blank"><i class="fas fa-chevron-right"></i>
                                 SIAP-PBL</a></li>
                         <li><a href="https://helpdesk.polibatam.ac.id/open.php"><i class="fas fa-chevron-right"></i>
-                                Help Center</a></li>
+                                Pusat Bantuan</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-section">
-                    <h4>Contact Us</h4>
+                    <h4>Hubungi Kami</h4>
                     <div class="contact-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <span>Jl. Ahmad Yani Batam Kota,<br>Kota Batam, Kepulauan Riau, Indonesia</span>
@@ -445,11 +445,11 @@ $show_next = $current_page < $total_pages;
             </div>
 
             <div class="footer-bottom">
-                <div class="copyright">© 2025 Politeknik Negeri Batam. All rights reserved.</div>
+                <div class="copyright">© 2025 Politeknik Negeri Batam. Hak Cipta Dilindungi.</div>
                 <div class="footer-bottom-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Sitemap</a>
+                    <a href="#">Kebijakan Privasi</a>
+                    <a href="#">Ketentuan Layanan</a>
+                    <a href="#">Peta Situs</a>
                 </div>
             </div>
         </div>

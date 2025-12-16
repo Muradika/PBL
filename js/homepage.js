@@ -159,32 +159,32 @@ document.addEventListener("DOMContentLoaded", function () {
             const svg = this.querySelector("svg path");
             if (this.classList.contains("active")) {
               svg.setAttribute("fill", "white");
-              this.setAttribute("title", "Remove from favorites");
+              this.setAttribute("title", "Hapus dari favorit");
 
               // Show success message
-              showToast("✓ Added to favorites!", "success");
+              showToast("✓ Ditambahkan ke favorit!", "success");
             } else {
               svg.setAttribute("fill", "none");
-              this.setAttribute("title", "Add to favorites");
+              this.setAttribute("title", "Tambahkan ke favorit");
 
               // Show success message
-              showToast("✗ Removed from favorites", "info");
+              showToast("✗ Dihapus dari favorit", "info");
             }
           } else {
             if (data.message === "User not logged in") {
-              showToast("⚠ Please login first", "warning");
+              showToast("⚠ Silakan login terlebih dahulu", "warning");
               // Redirect to login after 1 second
               setTimeout(() => {
                 window.location.href = "loginpage.php";
               }, 1000);
             } else {
-              showToast("✗ Failed: " + data.message, "error");
+              showToast("✗ Gagal: " + data.message, "error");
             }
           }
         })
         .catch((error) => {
           console.error("Error:", error);
-          showToast("✗ Connection error", "error");
+          showToast("✗ Kesalahan koneksi", "error");
         });
     });
   });

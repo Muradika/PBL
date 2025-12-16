@@ -40,24 +40,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Validasi input wajib
     if (empty($title) || empty($type) || empty($date)) {
-        $message = "All fields are required to be filled in!";
+        $message = "Semua kolom wajib diisi!";
         $message_type = "error";
     } else {
         // Validasi panjang title
         if (strlen($title) > 200) {
-            $message = "Title is too long (max. 200 characters)!";
+            $message = "Judul terlalu panjang (maks. 200 karakter)!";
             $message_type = "error";
         } else {
             // Validasi tipe pengumuman
             $allowed_types = ["Jadwal", "Beasiswa", "Perubahan Kelas", "Karir", "Kemahasiswaan"];
             if (!in_array($type, $allowed_types)) {
-                $message = "Announcement type not valid!";
+                $message = "Tipe pengumuman tidak valid!";
                 $message_type = "error";
             } else {
                 // Validasi format tanggal
                 $date_obj = DateTime::createFromFormat('Y-m-d', $date);
                 if (!$date_obj || $date_obj->format('Y-m-d') !== $date) {
-                    $message = "Date format not valid!";
+                    $message = "Format tanggal tidak valid!";
                     $message_type = "error";
                 } else {
                     // Ambil data user yang login
@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         // Validasi ukuran file
                         if ($image_file['size'] > MAX_IMAGE_SIZE) {
-                            $message .= "Picture size is too big (max. 5MB)<br>";
+                            $message .= "Ukuran gambar terlalu besar (maks. 5MB)<br>";
                             $message_type = "error";
                         } else {
                             // Validasi MIME type
@@ -92,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $allowed_mime = ['image/jpeg', 'image/jpg', 'image/png'];
 
                             if (!in_array($mime_type, $allowed_mime)) {
-                                $message .= "Picture format is not valid (only JPG, JPEG, PNG)<br>";
+                                $message .= "Format gambar tidak valid (hanya JPG, JPEG, PNG)<br>";
                                 $message_type = "error";
                             } else {
                                 // Sanitasi nama file
@@ -101,14 +101,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $image_path = $image_target_dir . $image_name;
 
                                 if (!move_uploaded_file($image_file['tmp_name'], $image_path)) {
-                                    $message .= "Failed uploading picture<br>";
+                                    $message .= "Gagal mengunggah gambar<br>";
                                     $message_type = "error";
                                     $image_path = null;
                                 }
                             }
                         }
                     } else {
-                        $message .= "Picture required to be filled in<br>";
+                        $message .= "Gambar wajib diisi<br>";
                         $message_type = "error";
                     }
 
@@ -118,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         // Validasi ukuran file
                         if ($document_file['size'] > MAX_DOCUMENT_SIZE) {
-                            $message .= "Document size is too big (max. 10MB)<br>";
+                            $message .= "Ukuran dokumen terlalu besar (maks. 10MB)<br>";
                             $message_type = "error";
                         } else {
                             // Validasi MIME type
@@ -135,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             ];
 
                             if (!in_array($mime_type, $allowed_mime)) {
-                                $message .= "Document format not valid! (only PDF, DOC, DOCX, XLS, XLSX)<br>";
+                                $message .= "Format dokumen tidak valid! (hanya PDF, DOC, DOCX, XLS, XLSX)<br>";
                                 $message_type = "error";
                             } else {
                                 // Sanitasi nama file
@@ -144,14 +144,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $document_path = $document_target_dir . $document_name;
 
                                 if (!move_uploaded_file($document_file['tmp_name'], $document_path)) {
-                                    $message .= "Failed uploading document<br>";
+                                    $message .= "Gagal mengunggah dokumen<br>";
                                     $message_type = "error";
                                     $document_path = null;
                                 }
                             }
                         }
                     } else {
-                        $message .= "Document required to be filled in!<br>";
+                        $message .= "Dokumen wajib diisi!<br>";
                         $message_type = "error";
                     }
 
@@ -161,7 +161,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt->bind_param("sssssis", $title, $type, $date, $image_path, $document_path, $created_by, $created_by_name);
 
                         if ($stmt->execute()) {
-                            $message = "Announcement Succesfully Created!";
+                            $message = "Pengumuman Berhasil Dibuat!";
                             $message_type = "success";
                             // Redirect setelah sukses (Post/Redirect/Get pattern)
                             header("Location: homepage1.php?status=success");
@@ -199,7 +199,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIPAk - Tambah Pengumuman</title>
     <link rel="icon" type="image/png" href="../img/img_Politeknikbnw.png" />
-    <meta name="description" content="Sistem Informasi Pengumuman Akademik Online - Profile Dosen">
+    <meta name="description" content="Sistem Informasi Pengumuman Akademik Online - Profil Dosen">
     <link rel="stylesheet" href="../css/profiledosen.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -223,23 +223,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <nav class="nav-menu">
-            <a href="homepage1.php" class="nav-link">Home</a>
-            <a href="aboutuspage.php" class="nav-link">About Us</a>
+            <a href="homepage1.php" class="nav-link">Beranda</a>
+            <a href="aboutuspage.php" class="nav-link">Tentang Kami</a>
             <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle active" id="profile-dropdown-btn">Profile</a>
+                <a href="#" class="nav-link dropdown-toggle active" id="profile-dropdown-btn">Profil</a>
                 <div class="dropdown-menu" id="profile-dropdown-menu">
                     <a href="profilemahasiswa.php" class="dropdown-item create-btn">
-                        <i class="fas fa-bookmark"></i> Favorites
+                        <i class="fas fa-bookmark"></i> Favorit
                     </a>
 
                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'dosen'): ?>
                         <a href="profiledosen.php" class="dropdown-item add-btn">
-                            <i class="fas fa-plus-circle"></i> Add
+                            <i class="fas fa-plus-circle"></i> Tambah
                         </a>
                     <?php endif; ?>
 
                     <a href="logout.php" class="dropdown-item logout-btn">
-                        <i class="fas fa-sign-out-alt"></i> Log Out
+                        <i class="fas fa-sign-out-alt"></i> Keluar
                     </a>
                 </div>
             </div>
@@ -251,7 +251,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <main class="main-content">
         <div class="form-container" id="formContainer">
-            <h2 class="form-heading">Create New Announcement</h2>
+            <h2 class="form-heading">Buat Pengumuman Baru</h2>
 
             <?php if (!empty($message)): ?>
                 <div class="status-message status-<?php echo $message_type; ?>">
@@ -263,15 +263,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 enctype="multipart/form-data">
 
                 <div class="form-group">
-                    <label for="title">Title <span class="required">*</span></label>
+                    <label for="title">Judul <span class="required">*</span></label>
                     <input type="text" id="title" name="title" required maxlength="200"
-                        placeholder="Enter announcement title">
+                        placeholder="Masukkan judul pengumuman">
                 </div>
 
                 <div class="form-group">
-                    <label for="type">Type <span class="required">*</span></label>
+                    <label for="type">Jenis <span class="required">*</span></label>
                     <select id="type" name="type" required>
-                        <option value="" disabled selected>Choose file type</option>
+                        <option value="" disabled selected>Pilih jenis berkas</option>
                         <option value="Jadwal">Jadwal Ujian</option>
                         <option value="Beasiswa">Beasiswa</option>
                         <option value="Perubahan Kelas">Perubahan Kelas</option>
@@ -281,12 +281,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <div class="form-group">
-                    <label for="date">Date <span class="required">*</span></label>
+                    <label for="date">Tanggal <span class="required">*</span></label>
                     <input type="date" id="date" name="date" required value="<?php echo date('Y-m-d'); ?>">
                 </div>
 
                 <div class="form-group">
-                    <label for="image_file">Image <span class="required">*</span></label>
+                    <label for="image_file">Gambar <span class="required">*</span></label>
                     <div class="upload-section">
                         <div class="dropzone" id="imageDropzone">
                             <div class="dropzone-content">
@@ -294,29 +294,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
-                                <p>You can drag and drop image here.</p>
+                                <p>Seret dan letakkan gambar di sini</p>
                             </div>
                             <div class="file-info" id="imageFileInfo" style="display: none;">
                                 <span class="file-name" id="imageFileName"></span>
                                 <div class="file-actions">
-                                    <button type="button" class="btn-preview" onclick="previewImage()">Preview</button>
+                                    <button type="button" class="btn-preview"
+                                        onclick="previewImage()">Pratinjau</button>
                                     <button type="button" class="remove-file" onclick="removeFile('image')">×</button>
                                 </div>
                             </div>
                         </div>
                         <div class="file-upload-info">
-                            <span>Attachment</span>
-                            <span class="file-limit">Max: 1 image, 5MB (JPG, PNG)</span>
+                            <span>Lampiran</span>
+                            <span class="file-limit">Maks: 1 gambar, 5MB (JPG, PNG)</span>
                         </div>
                         <input type="file" id="imageFileInput" name="image_file" style="display: none;"
                             accept=".jpg,.png,.jpeg" required>
                         <button type="button" class="btn-choose-file"
-                            onclick="document.getElementById('imageFileInput').click()">Choose Image</button>
+                            onclick="document.getElementById('imageFileInput').click()">Pilih Gambar</button>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="document_file">Document <span class="required">*</span></label>
+                    <label for="document_file">Dokumen <span class="required">*</span></label>
                     <div class="upload-section">
                         <div class="dropzone" id="documentDropzone">
                             <div class="dropzone-content">
@@ -324,35 +325,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
-                                <p>You can drag and drop files here.</p>
+                                <p>Seret dan letakkan berkas di sini</p>
                             </div>
                             <div class="file-info" id="documentFileInfo" style="display: none;">
                                 <span class="file-name" id="documentFileName"></span>
                                 <div class="file-actions">
                                     <button type="button" class="btn-preview"
-                                        onclick="previewDocument()">Preview</button>
+                                        onclick="previewDocument()">Pratinjau</button>
                                     <button type="button" class="remove-file"
                                         onclick="removeFile('document')">×</button>
                                 </div>
                             </div>
                         </div>
                         <div class="file-upload-info">
-                            <span>Attachment</span>
-                            <span class="file-limit">Max: 1 file, 10MB (PDF, DOC, XLS)</span>
+                            <span>Lampiran</span>
+                            <span class="file-limit">Maks: 1 berkas, 10MB (PDF, DOC, XLS)</span>
                         </div>
                         <input type="file" id="documentFileInput" name="document_file" style="display: none;"
                             accept=".pdf,.doc,.docx,.xls,.xlsx" required>
                         <button type="button" class="btn-choose-file"
-                            onclick="document.getElementById('documentFileInput').click()">Choose File</button>
+                            onclick="document.getElementById('documentFileInput').click()">Pilih Berkas</button>
                     </div>
                 </div>
 
                 <div class="form-actions">
                     <button type="button" class="btn-remove" onclick="resetForm()">
-                        Remove
+                        Hapus
                     </button>
                     <button type="submit" class="btn-submit">
-                        Create
+                        Buat
                     </button>
                 </div>
             </form>
@@ -363,7 +364,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div id="imagePreviewModal" class="preview-modal">
         <div class="modal-content-preview">
             <span class="close-modal" onclick="closeImagePreview()">&times;</span>
-            <img id="previewImageContent" src="" alt="Image Preview" />
+            <img id="previewImageContent" src="" alt="Pratinjau Gambar" />
         </div>
     </div>
 
@@ -381,7 +382,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                     <p class="brand-description">
-                        A digital platform facilitate access to academic information for students and lecturers at
+                        Platform digital yang memfasilitasi akses informasi akademik untuk mahasiswa dan dosen di
                         Politeknik Negeri Batam.
                     </p>
                     <p class="brand-motto">
@@ -391,18 +392,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <!-- Quick Links -->
                 <div class="footer-section">
-                    <h4>Quick Links</h4>
+                    <h4>Tautan Cepat</h4>
                     <ul class="footer-links">
-                        <li><a href="homepage1.php"><i class="fas fa-chevron-right"></i> Home</a></li>
-                        <li><a href="aboutuspage.php"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                        <li><a href="profilemahasiswa.php"><i class="fas fa-chevron-right"></i> Profile</a></li>
-                        <li><a href="logout.php"><i class="fas fa-chevron-right"></i> Logout</a></li>
+                        <li><a href="homepage1.php"><i class="fas fa-chevron-right"></i> Beranda</a></li>
+                        <li><a href="aboutuspage.php"><i class="fas fa-chevron-right"></i> Tentang Kami</a></li>
+                        <li><a href="profilemahasiswa.php"><i class="fas fa-chevron-right"></i> Profil</a></li>
+                        <li><a href="logout.php"><i class="fas fa-chevron-right"></i> Keluar</a></li>
                     </ul>
                 </div>
 
                 <!-- Resources -->
                 <div class="footer-section">
-                    <h4>Resources</h4>
+                    <h4>Sumber Daya</h4>
                     <ul class="footer-links">
                         <li><a href="https://learning-if.polibatam.ac.id/" target="_blank"><i
                                     class="fas fa-chevron-right"></i> E-Learning</a></li>
@@ -411,13 +412,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <li><a href="https://pbl.polibatam.ac.id/" target="_blank"><i class="fas fa-chevron-right"></i>
                                 SIAP-PBL</a></li>
                         <li><a href="https://helpdesk.polibatam.ac.id/open.php"><i class="fas fa-chevron-right"></i>
-                                Help Center</a></li>
+                                Pusat Bantuan</a></li>
                     </ul>
                 </div>
 
                 <!-- Contact & Social -->
                 <div class="footer-section">
-                    <h4>Contact Us</h4>
+                    <h4>Hubungi Kami</h4>
                     <div class="contact-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <span>Jl. Ahmad Yani Batam Kota,<br>Kota Batam, Kepulauan Riau, Indonesia</span>
@@ -451,12 +452,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <!-- Footer Bottom -->
             <div class="footer-bottom">
                 <div class="copyright">
-                    © 2025 Politeknik Negeri Batam. All rights reserved.
+                    © 2025 Politeknik Negeri Batam. Hak Cipta Dilindungi.
                 </div>
                 <div class="footer-bottom-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Sitemap</a>
+                    <a href="#">Kebijakan Privasi</a>
+                    <a href="#">Ketentuan Layanan</a>
+                    <a href="#">Peta Situs</a>
                 </div>
             </div>
         </div>

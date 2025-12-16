@@ -30,7 +30,7 @@ if (isset($_POST['update_file'])) {
         $allowed_img = ['jpg', 'jpeg', 'png'];
 
         if (!in_array($img_ext, $allowed_img)) {
-            $error = "Format not allowed! Only JPG, JPEG, PNG.";
+            $error = "Format tidak diizinkan! Hanya JPG, JPEG, PNG.";
         } else {
             $new_img = 'img_' . time() . '.' . $img_ext;
             $img_dir = '../uploads/images/';
@@ -59,7 +59,7 @@ if (isset($_POST['update_file'])) {
         $allowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
 
         if (!in_array($ext, $allowed)) {
-            $error = "Format not allowed! Only PDF, DOC, DOCX, XLS, XLSX.";
+            $error = "Format tidak diizinkan! Hanya PDF, DOC, DOCX, XLS, XLSX.";
         } else {
             $new_name = 'doc_' . time() . '.' . $ext;
             $upload_dir = '../uploads/documents/';
@@ -85,9 +85,9 @@ if (isset($_POST['update_file'])) {
         $stmt->bind_param("sssssi", $title, $type, $date, $image_path, $doc_path, $id);
 
         if ($stmt->execute()) {
-            $success = "File Updated!";
+            $success = "Berkas Berhasil Diperbarui!";
         } else {
-            $error = "File Failed to be Updated: " . $conn->error;
+            $error = "Berkas Gagal Diperbarui: " . $conn->error;
         }
         $stmt->close();
     }
@@ -120,9 +120,9 @@ if (isset($_POST['delete_id'])) {
     $delete_stmt->bind_param("i", $delete_id);
 
     if ($delete_stmt->execute()) {
-        $success = "File Removed!";
+        $success = "Berkas Berhasil Dihapus!";
     } else {
-        $error = "File Failed to be Removed!";
+        $error = "Berkas Gagal Dihapus!";
     }
     $delete_stmt->close();
 }
@@ -208,7 +208,7 @@ function get_url_params()
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIPAk - File Management</title>
+    <title>SIPAk - Manajemen Berkas</title>
     <link rel="icon" type="image/png" href="../img/img_Politeknikbnw.png" />
     <link rel="stylesheet" href="../css/adminfile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -234,17 +234,17 @@ function get_url_params()
         <!-- Desktop Navigation with Dropdown -->
         <nav class="nav-menu">
             <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn"> Admin Dashboard
+                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn"> Dasbor Admin
                 </a>
                 <div class="dropdown-menu" id="profile-dropdown-menu">
                     <a href="adminuser.php" class="dropdown-item user-btn">
-                        <i class="fas fa-users"></i> User Management
+                        <i class="fas fa-users"></i> Manajemen Pengguna
                     </a>
                     <a href="adminfile.php" class="dropdown-item file-btn">
-                        <i class="fas fa-file-alt"></i> File Management
+                        <i class="fas fa-file-alt"></i> Manajemen Berkas
                     </a>
                     <a href="logout.php" class="dropdown-item logout-btn">
-                        <i class="fas fa-sign-out-alt"></i> Log Out
+                        <i class="fas fa-sign-out-alt"></i> Keluar
                     </a>
                 </div>
             </div>
@@ -253,13 +253,13 @@ function get_url_params()
         <!-- Mobile Navigation (Direct Links) -->
         <nav class="nav-menu-mobile">
             <a href="adminuser.php" class="nav-link-mobile">
-                <i class="fas fa-users"></i> User Management
+                <i class="fas fa-users"></i> Manajemen Pengguna
             </a>
             <a href="adminfile.php" class="nav-link-mobile">
-                <i class="fas fa-file-alt"></i> File Management
+                <i class="fas fa-file-alt"></i> Manajemen Berkas
             </a>
             <a href="logout.php" class="nav-link-mobile">
-                <i class="fas fa-sign-out-alt"></i> Log Out
+                <i class="fas fa-sign-out-alt"></i> Keluar
             </a>
         </nav>
     </header>
@@ -279,18 +279,18 @@ function get_url_params()
                 <!-- Search Box -->
                 <div class="searchbox">
                     <span class="search-icon">🔍</span>
-                    <input id="searchInput" name="search" placeholder="Search File (Title, Type, Creator, etc.)"
+                    <input id="searchInput" name="search" placeholder="Cari Berkas (Judul, Jenis, Pembuat, dll.)"
                         value="<?php echo htmlspecialchars($search_query); ?>">
                     <button type="submit" style="display:none;"></button>
                 </div>
 
                 <!-- Date Range Filter -->
                 <div class="date-filter-group">
-                    <label for="startDateInput" class="date-label">From:</label>
+                    <label for="startDateInput" class="date-label">Dari:</label>
                     <input type="date" id="startDateInput" name="start_date" class="date-input"
                         value="<?php echo htmlspecialchars($start_date); ?>" onchange="this.form.submit()">
 
-                    <label for="endDateInput" class="date-label">To:</label>
+                    <label for="endDateInput" class="date-label">Sampai:</label>
                     <input type="date" id="endDateInput" name="end_date" class="date-input"
                         value="<?php echo htmlspecialchars($end_date); ?>" onchange="this.form.submit()">
                 </div>
@@ -324,12 +324,12 @@ function get_url_params()
 
             <!-- TABLE HEADER -->
             <div class="table-header">
-                <div class="th-type">TYPE</div>
-                <div class="th-title">TITLE</div>
-                <div class="th-date">DATE</div>
-                <div class="th-creator">CREATED BY</div>
-                <div class="th-document">DOCUMENT</div>
-                <div class="th-actions">ACTIONS</div>
+                <div class="th-type">JENIS</div>
+                <div class="th-title">JUDUL</div>
+                <div class="th-date">TANGGAL</div>
+                <div class="th-creator">DIBUAT OLEH</div>
+                <div class="th-document">DOKUMEN</div>
+                <div class="th-actions">AKSI</div>
             </div>
 
             <!-- TABLE ROWS -->
@@ -354,7 +354,7 @@ function get_url_params()
 
                             <!-- Creator -->
                             <div class="td-creator">
-                                <?php echo htmlspecialchars($announcement['created_by_name'] ?? 'Unknown'); ?>
+                                <?php echo htmlspecialchars($announcement['created_by_name'] ?? 'Tidak Diketahui'); ?>
                             </div>
 
                             <!-- Document -->
@@ -362,10 +362,10 @@ function get_url_params()
                                 <?php if (!empty($announcement['document_path'])): ?>
                                     <a href="<?php echo htmlspecialchars($announcement['document_path']); ?>" target="_blank"
                                         class="doc-link">
-                                        📄 View
+                                        📄 Lihat
                                     </a>
                                 <?php else: ?>
-                                    <span class="no-doc">No Doc</span>
+                                    <span class="no-doc">Tidak Ada Dok</span>
                                 <?php endif; ?>
                             </div>
 
@@ -373,12 +373,12 @@ function get_url_params()
                             <div class="td-actions">
                                 <button type="button" class="btn-edit"
                                     onclick='openEditModal(<?php echo json_encode($announcement); ?>)'>
-                                    Edit
+                                    Ubah
                                 </button>
                                 <form method="POST" action="adminfile.php" style="display:inline;"
-                                    onsubmit="return confirm('Are you sure want to delete this announcement?');">
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengumuman ini?');">
                                     <input type="hidden" name="delete_id" value="<?php echo $announcement['id']; ?>">
-                                    <button type="submit" class="btn-remove">Remove</button>
+                                    <button type="submit" class="btn-remove">Hapus</button>
                                 </form>
                             </div>
                         </div>
@@ -389,8 +389,8 @@ function get_url_params()
                             <path
                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <h3>No files found</h3>
-                        <p>Please try different search or filter criteria</p>
+                        <h3>Tidak ada berkas ditemukan</h3>
+                        <p>Silakan coba kata kunci atau filter yang berbeda</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -401,7 +401,7 @@ function get_url_params()
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-edit"></i> Edit Announcement</h2>
+                <h2><i class="fas fa-edit"></i> Ubah Pengumuman</h2>
                 <span class="close" onclick="closeEditModal()">&times;</span>
             </div>
 
@@ -411,12 +411,12 @@ function get_url_params()
                 <input type="hidden" name="old_document" id="old_document">
 
                 <div class="form-group">
-                    <label>Title</label>
+                    <label>Judul</label>
                     <input type="text" name="edit_title" id="edit_title" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Type</label>
+                    <label>Jenis</label>
                     <select name="edit_type" id="edit_type" required>
                         <option value="Jadwal">Jadwal</option>
                         <option value="Beasiswa">Beasiswa</option>
@@ -427,25 +427,25 @@ function get_url_params()
                 </div>
 
                 <div class="form-group">
-                    <label>Date</label>
+                    <label>Tanggal</label>
                     <input type="date" name="edit_date" id="edit_date" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Photo (Optional)</label>
+                    <label>Foto (Opsional)</label>
                     <input type="file" name="edit_image" accept="image/*">
-                    <small>Leave empty if don't want to change the photo</small>
+                    <small>Kosongkan jika tidak ingin mengubah foto</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Document (Optional)</label>
+                    <label>Dokumen (Opsional)</label>
                     <input type="file" name="edit_document" accept=".pdf,.doc,.docx,.xls,.xlsx">
-                    <small>Leave empty if don't want to change the document</small>
+                    <small>Kosongkan jika tidak ingin mengubah dokumen</small>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
-                    <button type="submit" name="update_file" class="btn-submit">Update File</button>
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Batal</button>
+                    <button type="submit" name="update_file" class="btn-submit">Perbarui Berkas</button>
                 </div>
             </form>
         </div>

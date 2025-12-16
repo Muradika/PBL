@@ -201,7 +201,7 @@ function handleFiles(file, type) {
   const maxSize = type === "image" ? MAX_IMAGE_SIZE : MAX_DOCUMENT_SIZE;
   if (file.size > maxSize) {
     const maxSizeMB = maxSize / (1024 * 1024);
-    showToast(`File size exceeds ${maxSizeMB}MB limit!`, "error");
+    showToast(`Ukuran berkas melebihi batas ${maxSizeMB}MB!`, "error");
     // Clear input
     if (type === "image") {
       imageFileInput.value = "";
@@ -215,7 +215,10 @@ function handleFiles(file, type) {
   if (type === "image") {
     const validTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (!validTypes.includes(file.type)) {
-      showToast("Please upload only JPG, JPEG, or PNG image files!", "error");
+      showToast(
+        "Harap unggah hanya berkas gambar JPG, JPEG, atau PNG!",
+        "error"
+      );
       imageFileInput.value = "";
       return;
     }
@@ -226,7 +229,7 @@ function handleFiles(file, type) {
 
     if (!isValid) {
       showToast(
-        "Please upload only PDF, DOC, DOCX, XLS, or XLSX files!",
+        "Harap unggah hanya berkas PDF, DOC, DOCX, XLS, atau XLSX!",
         "error"
       );
       documentFileInput.value = "";
@@ -246,12 +249,12 @@ function handleFiles(file, type) {
   infoElement.style.display = "flex";
 
   console.log(
-    `File ${type} uploaded:`,
+    `Berkas ${type} diunggah:`,
     file.name,
     `(${formatBytes(file.size)})`
   );
   showToast(
-    ` ${type === "image" ? "Image" : "Document"} uploaded successfully`,
+    ` ${type === "image" ? "Gambar" : "Dokumen"} berhasil diunggah`,
     "success"
   );
 }
@@ -274,15 +277,15 @@ function removeFile(type) {
   infoElement.style.display = "none";
 
   fileInput.value = "";
-  console.log(`File ${type} removed`);
-  showToast(`${type === "image" ? "Image" : "Document"} removed`, "info");
+  console.log(`Berkas ${type} dihapus`);
+  showToast(`${type === "image" ? "Gambar" : "Dokumen"} dihapus`, "info");
 }
 
 window.previewImage = previewImage;
 function previewImage() {
   const selectedImageFile = uploadedFiles.image;
   if (!selectedImageFile) {
-    showToast("No image selected!", "warning");
+    showToast("Tidak ada gambar yang dipilih!", "warning");
     return;
   }
 
@@ -324,7 +327,7 @@ window.previewDocument = previewDocument;
 function previewDocument() {
   const selectedDocumentFile = uploadedFiles.document;
   if (!selectedDocumentFile) {
-    showToast("No document selected!", "warning");
+    showToast("Tidak ada dokumen yang dipilih!", "warning");
     return;
   }
 
@@ -346,7 +349,7 @@ function previewDocument() {
     document.body.removeChild(a);
 
     showToast(
-      "Document will be downloaded. Open it with compatible software to preview.",
+      "Dokumen akan diunduh. Buka dengan perangkat lunak yang kompatibel untuk pratinjau.",
       "info"
     );
   }
@@ -354,12 +357,12 @@ function previewDocument() {
 
 window.resetForm = resetForm;
 function resetForm() {
-  if (confirm("Are you sure you want to clear all form data?")) {
+  if (confirm("Apakah Anda yakin ingin menghapus semua data formulir?")) {
     if (form) form.reset();
     removeFile("image");
     removeFile("document");
-    console.log("Form reset");
-    showToast("Form cleared successfully", "info");
+    console.log("Formulir direset");
+    showToast("Formulir berhasil dihapus", "info");
   }
 }
 
@@ -377,7 +380,7 @@ function validateFormAndSubmit(e) {
   if (!title || !type || !date || !image_file || !document_file) {
     e.preventDefault();
     showToast(
-      "Please fill in all required fields (Title, Type, Date, Image, Document)!",
+      "Harap isi semua kolom yang wajib diisi (Judul, Jenis, Tanggal, Gambar, Dokumen)!",
       "error"
     );
 
@@ -386,9 +389,9 @@ function validateFormAndSubmit(e) {
     else if (!type) document.getElementById("type").focus();
     else if (!date) document.getElementById("date").focus();
     else if (!image_file) {
-      showToast("Please upload an image!", "error");
+      showToast("Harap unggah gambar!", "error");
     } else if (!document_file) {
-      showToast("Please upload a document!", "error");
+      showToast("Harap unggah dokumen!", "error");
     }
 
     return false;
@@ -397,7 +400,7 @@ function validateFormAndSubmit(e) {
   // Validasi panjang title
   if (title.length > 200) {
     e.preventDefault();
-    showToast("Title is too long (maximum 200 characters)!", "error");
+    showToast("Judul terlalu panjang (maksimal 200 karakter)!", "error");
     document.getElementById("title").focus();
     return false;
   }
@@ -406,7 +409,7 @@ function validateFormAndSubmit(e) {
   const submitBtn = document.querySelector(".btn-submit");
   if (submitBtn) {
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuat...';
   }
 
   return true;

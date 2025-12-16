@@ -24,7 +24,7 @@ if (isset($_POST['add_user'])) {
 
     // Validate ID number (10 digits only)
     if (!preg_match('/^\d{10}$/', $id_number)) {
-        $error = "ID Number harus 10 digit angka!";
+        $error = "Nomor ID harus 10 digit angka!";
     } else {
         // Check if ID number already exists
         $check_id = $conn->prepare("SELECT id FROM user WHERE id = ?");
@@ -33,7 +33,7 @@ if (isset($_POST['add_user'])) {
         $check_id->store_result();
 
         if ($check_id->num_rows > 0) {
-            $error = "ID Number sudah terdaftar!";
+            $error = "Nomor ID sudah terdaftar!";
         } else {
             // ✅ HASH PASSWORD SEBELUM DISIMPAN
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -43,9 +43,9 @@ if (isset($_POST['add_user'])) {
             $insert->bind_param("sssss", $id_number, $nama, $email, $hashed_password, $role);
 
             if ($insert->execute()) {
-                $success = "User Added!";
+                $success = "Pengguna Berhasil Ditambahkan!";
             } else {
-                $error = "Failed Added User: " . $conn->error;
+                $error = "Gagal Menambahkan Pengguna: " . $conn->error;
             }
             $insert->close();
         }
@@ -68,16 +68,16 @@ if (isset($_POST['edit_user'])) {
         $update = $conn->prepare("UPDATE user SET nama_lengkap = ?, email = ?, password = ?, role = ? WHERE id = ?");
         $update->bind_param("sssss", $nama, $email, $hashed_password, $role, $id);
 
-        $success = "User Succesfully Updated New Password!";
+        $success = "Pengguna Berhasil Diperbarui dengan Kata Sandi Baru!";
     } else {
         $update = $conn->prepare("UPDATE user SET nama_lengkap = ?, email = ?, role = ? WHERE id = ?");
         $update->bind_param("ssss", $nama, $email, $role, $id);
 
-        $success = "User Added!";
+        $success = "Pengguna Berhasil Diperbarui!";
     }
 
     if (!$update->execute()) {
-        $error = "Failed Updated User: " . $conn->error;
+        $error = "Gagal Memperbarui Pengguna: " . $conn->error;
         $success = null;
     }
     $update->close();
@@ -89,15 +89,15 @@ if (isset($_POST['delete_id'])) {
 
     // Prevent deleting own account
     if ($delete_id == $_SESSION['user_id']) {
-        $error = "⚠️ Can't delete your own account!";
+        $error = "⚠️ Tidak dapat menghapus akun Anda sendiri!";
     } else {
         $delete = $conn->prepare("DELETE FROM user WHERE id = ?");
         $delete->bind_param("s", $delete_id);
 
         if ($delete->execute()) {
-            $success = "User Succesfully Deleted!";
+            $success = "Pengguna Berhasil Dihapus!";
         } else {
-            $error = "Failed Removed User: " . $conn->error;
+            $error = "Gagal Menghapus Pengguna: " . $conn->error;
         }
         $delete->close();
     }
@@ -155,7 +155,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIPAk - User Management</title>
+    <title>SIPAk - Manajemen Pengguna</title>
     <link rel="icon" type="image/png" href="../img/img_Politeknikbnw.png" />
     <link rel="stylesheet" href="../css/adminuser.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -181,17 +181,17 @@ $conn->close();
         <!-- Desktop Navigation with Dropdown -->
         <nav class="nav-menu">
             <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn"> Admin Dashboard
+                <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn"> Dasbor Admin
                 </a>
                 <div class="dropdown-menu" id="profile-dropdown-menu">
                     <a href="adminuser.php" class="dropdown-item user-btn">
-                        <i class="fas fa-users"></i> User Management
+                        <i class="fas fa-users"></i> Manajemen Pengguna
                     </a>
                     <a href="adminfile.php" class="dropdown-item file-btn">
-                        <i class="fas fa-file-alt"></i> File Management
+                        <i class="fas fa-file-alt"></i> Manajemen Berkas
                     </a>
                     <a href="logout.php" class="dropdown-item logout-btn">
-                        <i class="fas fa-sign-out-alt"></i> Log Out
+                        <i class="fas fa-sign-out-alt"></i> Keluar
                     </a>
                 </div>
             </div>
@@ -200,13 +200,13 @@ $conn->close();
         <!-- Mobile Navigation (Direct Links) -->
         <nav class="nav-menu-mobile">
             <a href="adminuser.php" class="nav-link-mobile">
-                <i class="fas fa-users"></i> User Management
+                <i class="fas fa-users"></i> Manajemen Pengguna
             </a>
             <a href="adminfile.php" class="nav-link-mobile">
-                <i class="fas fa-file-alt"></i> File Management
+                <i class="fas fa-file-alt"></i> Manajemen Berkas
             </a>
             <a href="logout.php" class="nav-link-mobile">
-                <i class="fas fa-sign-out-alt"></i> Log Out
+                <i class="fas fa-sign-out-alt"></i> Keluar
             </a>
         </nav>
     </header>
@@ -226,14 +226,14 @@ $conn->close();
                 <!-- Search Box -->
                 <div class="searchbox">
                     <span class="search-icon">🔍</span>
-                    <input id="searchInput" name="search" placeholder="Search User (Name, Email, ID Number, etc.)"
+                    <input id="searchInput" name="search" placeholder="Cari Pengguna (Nama, Email, Nomor ID, dll.)"
                         value="<?php echo htmlspecialchars($search_query); ?>">
                     <button type="submit" style="display:none;"></button>
                 </div>
 
                 <!-- Add User Button -->
                 <button type="button" class="btn-add-user" onclick="openAddModal()">
-                    <span class="add-icon">+</span> Add User
+                    <span class="add-icon">+</span> Tambah Pengguna
                 </button>
 
                 <!-- Role Filter Dropdown -->
@@ -265,11 +265,11 @@ $conn->close();
 
             <!-- TABLE HEADER -->
             <div class="table-header">
-                <div class="th-name">NAME</div>
-                <div class="th-id">ID NUMBER</div>
+                <div class="th-name">NAMA</div>
+                <div class="th-id">NOMOR ID</div>
                 <div class="th-email">EMAIL</div>
                 <div class="th-role">ROLE</div>
-                <div class="th-actions">ACTIONS</div>
+                <div class="th-actions">AKSI</div>
             </div>
 
             <!-- TABLE ROWS -->
@@ -303,12 +303,12 @@ $conn->close();
                             <div class="td-actions">
                                 <button type="button" class="btn-edit"
                                     onclick='openEditModal(<?php echo json_encode($user); ?>)'>
-                                    Edit
+                                    Ubah
                                 </button>
                                 <form method="POST" action="adminuser.php" style="display:inline;"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');">
                                     <input type="hidden" name="delete_id" value="<?php echo $user['id']; ?>">
-                                    <button type="submit" class="btn-remove">Remove</button>
+                                    <button type="submit" class="btn-remove">Hapus</button>
                                 </form>
                             </div>
                         </div>
@@ -318,8 +318,8 @@ $conn->close();
                         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2">
                             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" />
                         </svg>
-                        <h3>No users found</h3>
-                        <p>Please try different search or filter criteria</p>
+                        <h3>Tidak ada pengguna ditemukan</h3>
+                        <p>Silakan coba kata kunci atau filter yang berbeda</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -330,40 +330,40 @@ $conn->close();
     <div id="addModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-user-plus"></i> Add New User</h2>
+                <h2><i class="fas fa-user-plus"></i> Tambah Pengguna Baru</h2>
                 <span class="close" onclick="closeAddModal()">&times;</span>
             </div>
             <form method="POST" action="adminuser.php">
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="nama_lengkap" required placeholder="Enter full name">
+                    <label>Nama Lengkap</label>
+                    <input type="text" name="nama_lengkap" required placeholder="Masukkan nama lengkap">
                 </div>
                 <div class="form-group">
-                    <label>ID Number (10 digits)</label>
-                    <input type="text" name="id_number" required pattern="\d{10}" placeholder="Enter 10-digit ID number"
-                        maxlength="10">
-                    <small>Must be exactly 10 digits</small>
+                    <label>Nomor ID (10 digit)</label>
+                    <input type="text" name="id_number" required pattern="\d{10}"
+                        placeholder="Masukkan nomor ID 10 digit" maxlength="10">
+                    <small>Harus tepat 10 digit</small>
                 </div>
                 <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" required placeholder="Enter email address">
+                    <label>Alamat Email</label>
+                    <input type="email" name="email" required placeholder="Masukkan alamat email">
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" required placeholder="Enter password" minlength="6">
+                    <label>Kata Sandi</label>
+                    <input type="password" name="password" required placeholder="Masukkan kata sandi" minlength="6">
                 </div>
                 <div class="form-group">
                     <label>Role</label>
                     <select name="role" required>
-                        <option value="">Select Role</option>
+                        <option value="">Pilih Role</option>
                         <option value="admin">Admin</option>
                         <option value="mahasiswa">Mahasiswa</option>
                         <option value="dosen">Dosen</option>
                     </select>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeAddModal()">Cancel</button>
-                    <button type="submit" name="add_user" class="btn-submit">Add User</button>
+                    <button type="button" class="btn-cancel" onclick="closeAddModal()">Batal</button>
+                    <button type="submit" name="add_user" class="btn-submit">Tambah Pengguna</button>
                 </div>
             </form>
         </div>
@@ -373,28 +373,28 @@ $conn->close();
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-user-edit"></i> Edit User</h2>
+                <h2><i class="fas fa-user-edit"></i> Ubah Pengguna</h2>
                 <span class="close" onclick="closeEditModal()">&times;</span>
             </div>
             <form method="POST" action="adminuser.php">
                 <input type="hidden" name="edit_id" id="edit_id">
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="edit_nama" id="edit_nama" required placeholder="Enter full name">
+                    <label>Nama Lengkap</label>
+                    <input type="text" name="edit_nama" id="edit_nama" required placeholder="Masukkan nama lengkap">
                 </div>
                 <div class="form-group">
-                    <label>ID Number</label>
-                    <input type="text" id="edit_id_display" disabled placeholder="ID Number (cannot be changed)">
-                    <small>ID Number cannot be changed</small>
+                    <label>Nomor ID</label>
+                    <input type="text" id="edit_id_display" disabled placeholder="Nomor ID (tidak dapat diubah)">
+                    <small>Nomor ID tidak dapat diubah</small>
                 </div>
                 <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="edit_email" id="edit_email" required placeholder="Enter email address">
+                    <label>Alamat Email</label>
+                    <input type="email" name="edit_email" id="edit_email" required placeholder="Masukkan alamat email">
                 </div>
                 <div class="form-group">
-                    <label>Password (leave blank to keep current)</label>
+                    <label>Kata Sandi (kosongkan jika tidak ingin mengubah)</label>
                     <input type="password" name="edit_password" id="edit_password"
-                        placeholder="Enter new password (optional)" minlength="6">
+                        placeholder="Masukkan kata sandi baru (opsional)" minlength="6">
                 </div>
                 <div class="form-group">
                     <label>Role</label>
@@ -405,8 +405,8 @@ $conn->close();
                     </select>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
-                    <button type="submit" name="edit_user" class="btn-submit">Update User</button>
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Batal</button>
+                    <button type="submit" name="edit_user" class="btn-submit">Perbarui Pengguna</button>
                 </div>
             </form>
         </div>

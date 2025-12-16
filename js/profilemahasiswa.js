@@ -52,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.appendChild(toast);
 
     setTimeout(() => {
-      // Menggunakan class untuk animasi keluar (asumsi CSS terkait sudah ada)
       toast.style.animation = "slideOut 0.3s ease-out";
       setTimeout(() => toast.remove(), 300);
     }, 3000);
@@ -83,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
       menuOverlay.classList.toggle("active");
 
       if (navMenu.classList.contains("active")) {
-        document.body.style.overflow = "hidden"; // Mencegah scroll saat menu terbuka
+        document.body.style.overflow = "hidden";
       } else {
         document.body.style.overflow = "";
       }
@@ -103,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     menuOverlay.addEventListener("click", () => {
-      closeHamburgerMenu(); // Tutup menu saat klik overlay
+      closeHamburgerMenu();
     });
   }
 
@@ -149,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Fallback Visibility (Original Code) - Memastikan transisi berjalan
+  // Fallback Visibility - Memastikan transisi berjalan
   function applyFallbackVisibility() {
     if (!filterContainer || !filterOptionsContainer) return;
     if (filterContainer.classList.contains("show")) {
@@ -172,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
       attributeFilter: ["class"],
     });
   }
-  applyFallbackVisibility(); // Jalankan sekali saat load
+  applyFallbackVisibility();
 
   // Tutup filter saat klik di luar
   document.addEventListener("click", (e) => {
@@ -196,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const link = document.createElement("a");
         link.href = docUrl;
         link.download = "";
-        link.target = "_blank"; // Buka di tab baru (opsional)
+        link.target = "_blank";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -204,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Feedback visual
         this.style.background = "#28a745";
         setTimeout(() => {
-          this.style.background = ""; // Kembalikan ke style semula
+          this.style.background = "";
         }, 1000);
       }
     });
@@ -219,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const announcementId = this.getAttribute("data-id");
       const card = this.closest(".announcement-card");
 
-      if (!confirm("Remove this announcement from favorites?")) {
+      if (!confirm("Hapus pengumuman ini dari favorit?")) {
         return;
       }
 
@@ -245,18 +244,18 @@ document.addEventListener("DOMContentLoaded", function () {
               const remainingCards =
                 document.querySelectorAll(".announcement-card");
               if (remainingCards.length === 0) {
-                location.reload(); // Muat ulang halaman jika semua dihapus
+                location.reload();
               }
             }, 300);
 
-            showToast("✓ Removed from favorites", "success");
+            showToast("✓ Dihapus dari favorit", "success");
           } else {
-            showToast("✗ Failed to remove", "error");
+            showToast("✗ Gagal menghapus", "error");
           }
         })
         .catch((error) => {
           console.error("Error:", error);
-          showToast("✗ Connection error", "error");
+          showToast("✗ Kesalahan koneksi", "error");
         });
     });
   });

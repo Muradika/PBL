@@ -53,7 +53,7 @@ if (isset($_POST["login"])) {
   // Cek jika akun ter-lock
   if ($is_locked) {
     $remaining = $lockout_time - (time() - $_SESSION['last_attempt_time']);
-    $error_message = "Too Much Attempt. Try Again in " . ceil($remaining / 60) . " menit.";
+    $error_message = "Terlalu banyak percobaan. Coba lagi dalam " . ceil($remaining / 60) . " menit.";
   } else {
     $email = trim($_POST["email"]);
     $password = $_POST["password"];
@@ -62,7 +62,7 @@ if (isset($_POST["login"])) {
 
     // Validasi input
     if (empty($email) || empty($password) || empty($role)) {
-      $error_message = "All Fields Must be Filled in!";
+      $error_message = "Semua kolom harus diisi!";
     } else {
       // Query user berdasarkan email dan role
       $sql = "SELECT * FROM user WHERE email=? AND role=?";
@@ -138,12 +138,12 @@ if (isset($_POST["login"])) {
         } else {
           $_SESSION['login_attempts']++;
           $_SESSION['last_attempt_time'] = time();
-          $error_message = "Wrong Password!";
+          $error_message = "Kata sandi salah!";
         }
       } else {
         $_SESSION['login_attempts']++;
         $_SESSION['last_attempt_time'] = time();
-        $error_message = "Email or Role Not Found!";
+        $error_message = "Email atau jenis pengguna tidak ditemukan!";
       }
       $stmt->close();
     }
@@ -151,14 +151,14 @@ if (isset($_POST["login"])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SIPAk - Login</title>
+  <title>SIPAk - Masuk</title>
   <link rel="icon" type="image/png" href="../img/img_Politeknikbnw.png" />
-  <link rel=" stylesheet" href="../css/loginpage.css" />
+  <link rel="stylesheet" href="../css/loginpage.css" />
 </head>
 
 <body>
@@ -179,7 +179,7 @@ if (isset($_POST["login"])) {
 
     <?php if ($is_locked): ?>
       <div class="locked-message">
-        Account Locked Due to Too Many Failed Login Attempts. Please Try Again Later.
+        Akun Terkunci Karena Terlalu Banyak Percobaan Login yang Gagal. Silakan Coba Lagi Nanti.
       </div>
     <?php endif; ?>
 
@@ -189,12 +189,12 @@ if (isset($_POST["login"])) {
       </div>
 
       <div class="input-group">
-        <input id="password" name="password" type="password" placeholder="Password" required <?php echo $is_locked ? 'disabled' : ''; ?> />
+        <input id="password" name="password" type="password" placeholder="Kata Sandi" required <?php echo $is_locked ? 'disabled' : ''; ?> />
       </div>
 
       <div class="input-group select-wrapper">
         <select id="role" name="role" required <?php echo $is_locked ? 'disabled' : ''; ?>>
-          <option value="" disabled selected>Choose User</option>
+          <option value="" disabled selected>Pilih Pengguna</option>
           <option value="mahasiswa">Mahasiswa</option>
           <option value="dosen">Dosen/Staff</option>
           <option value="admin">Admin</option>
@@ -205,16 +205,16 @@ if (isset($_POST["login"])) {
       <!-- Remember Me Checkbox -->
       <div class="remember-me">
         <input type="checkbox" id="remember" name="remember" />
-        <label for="remember">Remember Me</label>
+        <label for="remember">Ingat Saya</label>
       </div>
 
       <button type="submit" name="login" class="btn-login" <?php echo $is_locked ? 'disabled' : ''; ?>>
-        <?php echo $is_locked ? 'Locked' : 'Log In'; ?>
+        <?php echo $is_locked ? 'Terkunci' : 'Masuk'; ?>
       </button>
 
       <?php if ($_SESSION['login_attempts'] > 0 && !$is_locked): ?>
         <div class="attempts-warning">
-          ⚠️ Login Attempt: <?php echo $_SESSION['login_attempts']; ?>/<?php echo $max_attempts; ?>
+          ⚠️ Percobaan Login: <?php echo $_SESSION['login_attempts']; ?>/<?php echo $max_attempts; ?>
         </div>
       <?php endif; ?>
     </form>
