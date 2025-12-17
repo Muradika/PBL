@@ -362,6 +362,7 @@ body {
     font-weight: 700;
     font-size: 13px;
     color: #5b748f;
+    gap: 15px;
 }
 
 .th-type, .th-date, .th-creator, .th-document, .th-actions { text-align: center; }
@@ -669,6 +670,41 @@ body {
     box-shadow: 0 6px 20px rgba(18, 65, 125, 0.4);
 }
 
+/* ================= TABLET & SMALL DESKTOP RESPONSIVE ================= */
+@media (max-width: 1200px) and (min-width: 769px) {
+    .container {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+
+    .table-header,
+    .table-row {
+        grid-template-columns: 120px 1fr 120px 150px 120px 150px;
+        gap: 10px;
+        padding: 16px 18px;
+    }
+
+    .th-type, .th-date, .th-creator, .th-document, .th-actions,
+    .td-type, .td-date, .td-creator, .td-document, .td-actions {
+        font-size: 12px;
+    }
+
+    .type-badge {
+        font-size: 10px;
+        padding: 5px 10px;
+    }
+
+    .btn-edit, .btn-remove {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .doc-link {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+}
+
 /* ================= MOBILE RESPONSIVE ================= */
 @media (max-width: 768px) {
     /* Navbar Mobile */
@@ -810,7 +846,12 @@ body {
         gap: 12px;
     }
 
+    .td-type, .td-date, .td-creator, .td-document, .td-actions {
+        justify-content: flex-start;
+    }
+
     .td-type::before {
+        content: "📋 ";
         font-size: 16px;
         margin-right: 8px;
     }
@@ -824,27 +865,22 @@ body {
         margin-bottom: 4px;
     }
 
-    .td-date {
-        justify-content: flex-start;
-    }
-
     .td-date::before {
-        content: "Date: ";
+        content: "📅 ";
         font-size: 16px;
         margin-right: 8px;
-    }
-
-    .td-creator {
-        justify-content: flex-start;
     }
 
     .td-creator::before {
+        content: "👤 ";
         font-size: 16px;
         margin-right: 8px;
     }
 
-    .td-document {
-        justify-content: flex-start;
+    .td-document::before {
+        content: "📄 ";
+        font-size: 16px;
+        margin-right: 8px;
     }
 
     .td-actions {
