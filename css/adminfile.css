@@ -878,7 +878,6 @@ body {
     }
 
     .td-document::before {
-        content: "📄 ";
         font-size: 16px;
         margin-right: 8px;
     }
