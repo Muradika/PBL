@@ -30,7 +30,7 @@ if (isset($_COOKIE['user_token'])) {
 // Destroy session
 session_destroy();
 
-// Redirect ke login page
-header("Location: loginpage.php");
+// Redirect ke halaman awal
+header("Location: landingpage.php");
 exit();
 ?>

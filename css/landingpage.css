@@ -1,0 +1,850 @@
+/* ==================== RESET & GENERAL ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+    background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 50%, #2d5a8c 100%);
+    color: #fff;
+}
+
+/* ==================== ANIMATED BACKGROUND ==================== */
+.bg-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.bg-animation span {
+    position: absolute;
+    display: block;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 25s linear infinite;
+    bottom: -150px;
+}
+
+.bg-animation span:nth-child(1) {
+    left: 10%;
+    width: 80px;
+    height: 80px;
+    animation-delay: 0s;
+}
+
+.bg-animation span:nth-child(2) {
+    left: 20%;
+    width: 40px;
+    height: 40px;
+    animation-delay: 2s;
+    animation-duration: 18s;
+}
+
+.bg-animation span:nth-child(3) {
+    left: 35%;
+    width: 60px;
+    height: 60px;
+    animation-delay: 4s;
+}
+
+.bg-animation span:nth-child(4) {
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    animation-delay: 0s;
+    animation-duration: 20s;
+}
+
+.bg-animation span:nth-child(5) {
+    left: 65%;
+    width: 50px;
+    height: 50px;
+    animation-delay: 3s;
+}
+
+.bg-animation span:nth-child(6) {
+    left: 80%;
+    width: 70px;
+    height: 70px;
+    animation-delay: 6s;
+}
+
+.bg-animation span:nth-child(7) {
+    left: 90%;
+    width: 45px;
+    height: 45px;
+    animation-delay: 8s;
+    animation-duration: 22s;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-1000px) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ==================== NAVIGATION ==================== */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 1.5rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    background: rgba(10, 25, 41, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+    padding: 1rem 5%;
+    background: rgba(10, 25, 41, 0.98);
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-section img {
+    height: 50px;
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.logo-section img:hover {
+    transform: scale(1.05);
+}
+
+.brand-text h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.brand-text .highlight {
+    color: #ff6b35;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #ff6b35;
+    transition: width 0.3s;
+}
+
+.nav-links a:hover {
+    color: #ff6b35;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.btn-login-nav {
+    padding: 0.7rem 1.8rem;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    border: none;
+    border-radius: 25px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.btn-login-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+}
+
+/* ==================== HERO SECTION ==================== */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 5%;
+    z-index: 1;
+}
+
+.hero-content {
+    text-align: center;
+    max-width: 900px;
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.hero h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #fff, #a8d8ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero .subtitle {
+    font-size: 1.3rem;
+    color: #b8d4ff;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-fill {
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: #fff;
+    box-shadow: 0 5px 25px rgba(255, 107, 53, 0.3);
+}
+
+.btn-fill:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 35px rgba(255, 107, 53, 0.5);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #fff;
+    border: 2px solid #fff;
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+}
+
+/* ==================== STATS SECTION ==================== */
+.stats {
+    position: relative;
+    padding: 4rem 5%;
+    z-index: 1;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.stat-item {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #b8d4ff;
+    font-size: 1rem;
+}
+
+/* ==================== FEATURES SECTION ==================== */
+.features {
+    position: relative;
+    padding: 6rem 5%;
+    z-index: 1;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-header h2 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.section-header p {
+    font-size: 1.2rem;
+    color: #b8d4ff;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s;
+    cursor: pointer;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.feature-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s;
+}
+
+.feature-card:hover .feature-icon {
+    transform: rotate(360deg);
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: #b8d4ff;
+    line-height: 1.6;
+}
+
+/* ==================== FOOTER CTA ==================== */
+.footer-cta {
+    position: relative;
+    padding: 5rem 5%;
+    text-align: center;
+    z-index: 1;
+}
+
+.footer-cta h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.footer-cta p {
+    font-size: 1.2rem;
+    color: #b8d4ff;
+    margin-bottom: 2.5rem;
+}
+
+/* ==================== FOOTER ==================== */
+footer {
+    position: relative;
+    padding: 2rem 5%;
+    text-align: center;
+    background: rgba(10, 25, 41, 0.8);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1;
+}
+
+footer p {
+    color: #b8d4ff;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .navbar {
+        padding: 1.2rem 4%;
+    }
+
+    .hero h1 {
+        font-size: 3.5rem;
+    }
+
+    .hero .subtitle {
+        font-size: 1.2rem;
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+    }
+}
+
+/* Mobile Landscape & Tablet Portrait */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem 4%;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .logo-section {
+        gap: 0.7rem;
+    }
+
+    .logo-section img {
+        height: 45px;
+    }
+
+    .brand-text h2 {
+        font-size: 1.1rem;
+    }
+
+    .btn-login-nav {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    /* Hero Section */
+    .hero {
+        padding: 2rem 4%;
+        min-height: 90vh;
+    }
+
+    .hero-content {
+        padding-top: 80px;
+    }
+
+    .hero-badge {
+        font-size: 0.85rem;
+        padding: 0.4rem 1.2rem;
+    }
+
+    .hero h1 {
+        font-size: 2.8rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .hero .subtitle {
+        font-size: 1.05rem;
+        margin-bottom: 2rem;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+
+    /* Stats Section */
+    .stats {
+        padding: 3rem 4%;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .stat-item {
+        padding: 1.5rem;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+    }
+
+    /* Features Section */
+    .features {
+        padding: 4rem 4%;
+    }
+
+    .section-header {
+        margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.2rem;
+    }
+
+    .section-header p {
+        font-size: 1.05rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .feature-card {
+        padding: 2rem;
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.3rem;
+    }
+
+    /* Footer CTA */
+    .footer-cta {
+        padding: 4rem 4%;
+    }
+
+    .footer-cta h2 {
+        font-size: 2rem;
+    }
+
+    .footer-cta p {
+        font-size: 1.05rem;
+    }
+
+    /* Footer */
+    footer {
+        padding: 1.5rem 4%;
+    }
+}
+
+/* Mobile Portrait */
+@media (max-width: 480px) {
+    .navbar {
+        padding: 0.9rem 3%;
+    }
+
+    .logo-section {
+        gap: 0.5rem;
+    }
+
+    .logo-section img {
+        height: 38px;
+    }
+
+    .brand-text h2 {
+        font-size: 0.95rem;
+    }
+
+    .btn-login-nav {
+        padding: 0.5rem 1.2rem;
+        font-size: 0.85rem;
+        border-radius: 20px;
+    }
+
+    /* Hero Section */
+    .hero {
+        padding: 1.5rem 3%;
+        min-height: 85vh;
+    }
+
+    .hero-content {
+        padding-top: 70px;
+    }
+
+    .hero-badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        line-height: 1.3;
+    }
+
+    .hero .subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 1.8rem;
+        line-height: 1.5;
+    }
+
+    .cta-buttons {
+        gap: 0.8rem;
+    }
+
+    .btn-primary {
+        padding: 0.85rem 2rem;
+        font-size: 0.95rem;
+    }
+
+    /* Stats Section */
+    .stats {
+        padding: 2.5rem 3%;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
+
+    .stat-item {
+        padding: 1.3rem;
+    }
+
+    .stat-number {
+        font-size: 2.2rem;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+    }
+
+    /* Features Section */
+    .features {
+        padding: 3.5rem 3%;
+    }
+
+    .section-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.8rem;
+        line-height: 1.3;
+    }
+
+    .section-header p {
+        font-size: 0.95rem;
+        padding: 0 1rem;
+    }
+
+    .features-grid {
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        padding: 1.8rem;
+    }
+
+    .feature-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 1.6rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .feature-card p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    /* Footer CTA */
+    .footer-cta {
+        padding: 3.5rem 3%;
+    }
+
+    .footer-cta h2 {
+        font-size: 1.7rem;
+        line-height: 1.3;
+    }
+
+    .footer-cta p {
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    /* Footer */
+    footer {
+        padding: 1.2rem 3%;
+    }
+
+    footer p {
+        font-size: 0.85rem;
+    }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 360px) {
+    .navbar {
+        padding: 0.8rem 3%;
+    }
+
+    .logo-section img {
+        height: 35px;
+    }
+
+    .brand-text h2 {
+        font-size: 0.85rem;
+    }
+
+    .btn-login-nav {
+        padding: 0.45rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .hero h1 {
+        font-size: 1.7rem;
+    }
+
+    .hero .subtitle {
+        font-size: 0.88rem;
+    }
+
+    .btn-primary {
+        padding: 0.75rem 1.8rem;
+        font-size: 0.9rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .feature-card {
+        padding: 1.5rem;
+    }
+
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.4rem;
+    }
+}
+
+/* Landscape Orientation Fix */
+@media (max-height: 600px) and (orientation: landscape) {
+    .hero {
+        min-height: auto;
+        padding: 5rem 5% 3rem;
+    }
+
+    .hero-content {
+        padding-top: 0;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero .subtitle {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+}
