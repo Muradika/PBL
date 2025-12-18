@@ -7,6 +7,7 @@
     <title>SIPAk - Sistem Informasi Pengumuman Akademik Online</title>
     <link rel="icon" type="image/png" href="../img/img_Politeknikbnw.png" />
     <link rel="stylesheet" href="../css/landingpage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -40,7 +41,7 @@
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-content">
-            <div class="hero-badge">✨ Platform Pengumuman Akademik Terpadu</div>
+            <div class="hero-badge">Platform Pengumuman Akademik Terpadu</div>
             <h1>Sistem Informasi Pengumuman Akademik Online</h1>
             <p class="subtitle">
                 Akses semua pengumuman kampus dengan mudah, cepat, dan terorganisir.
@@ -126,8 +127,11 @@
 
     <!-- Footer -->
     <footer>
-        <p>© 2025 Politeknik Negeri Batam - SIPAk. Hak Cipta Dilindungi.</p>
+        <p>© 2025 Politeknik Negeri Batam. Hak Cipta Dilindungi.</p>
         <p style="margin-top: 0.5rem; font-size: 0.9rem;">For Your Goals Beyond Horizon</p>
+        <p style="margin-top: 2rem; font-size: 0.7rem;">Untuk Registrasi & Bantuan Hubungi :</p>
+        <p style="margin-top: 0.5rem; font-size: 0.7rem;">adminsipak1@gmail.com & adminsipak2@gmail.com</p>
+        <p style="margin-top: 0.5rem; font-size: 0.7rem;">0813-7411-7686 & 0895-2195-3535</p>
     </footer>
 
     <script src="../js/landingpage.js"></script>
