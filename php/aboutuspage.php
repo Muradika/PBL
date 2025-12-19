@@ -47,7 +47,7 @@
                     <h3 class="member-name">Muradika Laksamana Putra</h3>
                     <p class="member-prodi">Program Studi : Teknik Informatika</p>
                     <p class="member-nim">NIM : 3312501059</p>
-                    <p class="member-kontribusi">Tugas : Back-End</p>
+                    <p class="member-kontribusi">Tugas : Leader & Back-End</p>
                 </div>
             </div>
 
