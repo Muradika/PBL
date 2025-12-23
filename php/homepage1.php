@@ -127,7 +127,7 @@ function get_url_params($page_num)
 }
 
 // --- 7. SMART PAGINATION LOGIC ---
-$max_visible_pages = 6;
+$max_visible_pages = 3;
 $half_visible = floor($max_visible_pages / 2);
 
 if ($total_pages <= $max_visible_pages) {
