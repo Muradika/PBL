@@ -87,6 +87,32 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => alert.remove(), 300);
     });
   }, 5000);
+
+  // ========== SMOOTH SCROLL TO TOP ON PAGE CHANGE ==========
+  // Otomatis scroll ke atas kalau ada parameter 'page' di URL
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has("page")) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ========== PAGINATION LINK ENHANCEMENT ==========
+  // Tambahkan smooth scroll untuk pagination links
+  const paginationLinks = document.querySelectorAll(
+    ".page-number, .page-arrow"
+  );
+  paginationLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      // Scroll to top sebelum pindah halaman
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      // Optional: Tambahkan loading indicator
+      const pagination = document.querySelector(".pagination");
+      if (pagination) {
+        pagination.style.opacity = "0.6";
+        pagination.style.pointerEvents = "none";
+      }
+    });
+  });
 });
 
 // ========== ADD MODAL FUNCTIONS ==========

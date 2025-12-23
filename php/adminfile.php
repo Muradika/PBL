@@ -127,69 +127,104 @@ if (isset($_POST['delete_id'])) {
     $delete_stmt->close();
 }
 
-// ========== FILTERS WITH PREPARED STATEMENTS ==========
+// ========== PAGINATION SETUP ==========
+$files_per_page = 10;
+$current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+if ($current_page < 1)
+    $current_page = 1;
+
 $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
 $filter_type = isset($_GET['filter']) && $_GET['filter'] !== 'All' ? trim($_GET['filter']) : '';
 $start_date = isset($_GET['start_date']) ? trim($_GET['start_date']) : '';
 $end_date = isset($_GET['end_date']) ? trim($_GET['end_date']) : '';
 
-// Build query with prepared statements
+$offset = ($current_page - 1) * $files_per_page;
+
+// ========== BUILD QUERY ==========
 $where_clauses = [];
-$params = [];
-$types = '';
+$bind_params = '';
+$bind_values = [];
 
 if (!empty($search_query)) {
     $where_clauses[] = "(title LIKE ? OR type LIKE ? OR created_by_name LIKE ?)";
     $search_param = '%' . $search_query . '%';
-    $params[] = $search_param;
-    $params[] = $search_param;
-    $params[] = $search_param;
-    $types .= 'sss';
+    $bind_params .= 'sss';
+    $bind_values[] = $search_param;
+    $bind_values[] = $search_param;
+    $bind_values[] = $search_param;
 }
 
 if (!empty($filter_type)) {
     $where_clauses[] = "type = ?";
-    $params[] = $filter_type;
-    $types .= 's';
+    $bind_params .= 's';
+    $bind_values[] = $filter_type;
 }
 
 if (!empty($start_date)) {
     $where_clauses[] = "date >= ?";
-    $params[] = $start_date;
-    $types .= 's';
+    $bind_params .= 's';
+    $bind_values[] = $start_date;
 }
 
 if (!empty($end_date)) {
     $where_clauses[] = "date <= ?";
-    $params[] = $end_date;
-    $types .= 's';
+    $bind_params .= 's';
+    $bind_values[] = $end_date;
 }
 
 $where_sql = count($where_clauses) > 0 ? " WHERE " . implode(" AND ", $where_clauses) : "";
 
-// Query with prepared statement
-$query = "SELECT id, title, type, date, image_path, document_path, created_by_name FROM pengumuman" . $where_sql . " ORDER BY date DESC";
-$stmt = $conn->prepare($query);
+// ========== COUNT TOTAL ==========
+$count_query = "SELECT COUNT(*) AS total FROM pengumuman" . $where_sql;
+$count_stmt = $conn->prepare($count_query);
 
-if (!empty($params)) {
-    $stmt->bind_param($types, ...$params);
+if (!empty($bind_params)) {
+    $refs = [];
+    foreach ($bind_values as $k => $v) {
+        $refs[$k] = &$bind_values[$k];
+    }
+    array_unshift($refs, $bind_params);
+    call_user_func_array([$count_stmt, 'bind_param'], $refs);
 }
 
-$stmt->execute();
-$result = $stmt->get_result();
-$announcements = [];
+$count_stmt->execute();
+$total_files_result = $count_stmt->get_result()->fetch_assoc();
+$total_files = $total_files_result['total'];
+$total_pages = ceil($total_files / $files_per_page);
+$count_stmt->close();
 
-while ($row = $result->fetch_assoc()) {
-    $announcements[] = $row;
+// ========== FETCH DATA ==========
+$data_query = "SELECT id, title, type, date, image_path, document_path, created_by_name FROM pengumuman"
+    . $where_sql
+    . " ORDER BY date DESC LIMIT ?, ?";
+
+$bind_params .= 'ii';
+$bind_values[] = $offset;
+$bind_values[] = $files_per_page;
+
+$data_stmt = $conn->prepare($data_query);
+
+if (!empty($bind_params)) {
+    $refs = [];
+    foreach ($bind_values as $k => $v) {
+        $refs[$k] = &$bind_values[$k];
+    }
+    array_unshift($refs, $bind_params);
+    call_user_func_array([$data_stmt, 'bind_param'], $refs);
 }
 
-$stmt->close();
+$data_stmt->execute();
+$result = $data_stmt->get_result();
+$announcements = $result->fetch_all(MYSQLI_ASSOC);
+
+$data_stmt->close();
 $conn->close();
 
-// Helper function
-function get_url_params()
+// ========== URL PARAMS HELPER ==========
+function get_url_params($page_num)
 {
     $params = $_GET;
+    $params['page'] = $page_num;
     if (empty($params['search']))
         unset($params['search']);
     if (isset($params['filter']) && $params['filter'] === 'All')
@@ -200,6 +235,29 @@ function get_url_params()
         unset($params['end_date']);
     return http_build_query($params);
 }
+
+// ========== SMART PAGINATION LOGIC ==========
+$max_visible_pages = 3;
+$half_visible = floor($max_visible_pages / 2);
+
+if ($total_pages <= $max_visible_pages) {
+    $start_page = 1;
+    $end_page = $total_pages;
+} else {
+    if ($current_page <= $half_visible) {
+        $start_page = 1;
+        $end_page = $max_visible_pages;
+    } elseif ($current_page >= ($total_pages - $half_visible)) {
+        $start_page = $total_pages - $max_visible_pages + 1;
+        $end_page = $total_pages;
+    } else {
+        $start_page = $current_page - $half_visible;
+        $end_page = $current_page + $half_visible;
+    }
+}
+
+$show_prev = $current_page > 1;
+$show_next = $current_page < $total_pages;
 ?>
 
 <!DOCTYPE html>
@@ -224,14 +282,12 @@ function get_url_params()
             </div>
         </div>
 
-        <!-- Hamburger Menu Button (Mobile Only) -->
         <div class="hamburger">
             <span></span>
             <span></span>
             <span></span>
         </div>
 
-        <!-- Desktop Navigation with Dropdown -->
         <nav class="nav-menu">
             <div class="dropdown">
                 <a href="#" class="nav-link dropdown-toggle" id="profile-dropdown-btn"> Dasbor Admin
@@ -250,7 +306,6 @@ function get_url_params()
             </div>
         </nav>
 
-        <!-- Mobile Navigation (Direct Links) -->
         <nav class="nav-menu-mobile">
             <a href="adminuser.php" class="nav-link-mobile">
                 <i class="fas fa-users"></i> Manajemen Pengguna
@@ -266,7 +321,6 @@ function get_url_params()
 
     <div class="container">
         <main class="main">
-            <!-- Success/Error Messages -->
             <?php if (isset($success)): ?>
                 <div class="alert alert-success"><?php echo $success; ?></div>
             <?php endif; ?>
@@ -274,9 +328,7 @@ function get_url_params()
                 <div class="alert alert-error"><?php echo $error; ?></div>
             <?php endif; ?>
 
-            <!-- SEARCH & FILTERS -->
             <form class="searchbar" method="GET" action="adminfile.php">
-                <!-- Search Box -->
                 <div class="searchbox">
                     <span class="search-icon">🔍</span>
                     <input id="searchInput" name="search" placeholder="Cari Berkas (Judul, Jenis, Pembuat, dll.)"
@@ -284,7 +336,6 @@ function get_url_params()
                     <button type="submit" style="display:none;"></button>
                 </div>
 
-                <!-- Date Range Filter -->
                 <div class="date-filter-group">
                     <label for="startDateInput" class="date-label">Dari:</label>
                     <input type="date" id="startDateInput" name="start_date" class="date-input"
@@ -295,7 +346,6 @@ function get_url_params()
                         value="<?php echo htmlspecialchars($end_date); ?>" onchange="this.form.submit()">
                 </div>
 
-                <!-- Category Filter Dropdown -->
                 <div class="filter-dropdown-container">
                     <button id="filterButton" class="filter" type="button" title="Filter Berdasarkan Kategori">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -305,15 +355,19 @@ function get_url_params()
                     </button>
 
                     <div id="filterOptions" class="filter-options">
-                        <a href="?<?php echo get_url_params(); ?>&filter=All"
+                        <a href="?<?php echo get_url_params(1); ?>&filter=All"
                             class="filter-option <?php echo empty($filter_type) ? 'active' : ''; ?>">
                             Semua Kategori
                         </a>
                         <?php
                         $categories = ["Jadwal", "Beasiswa", "Perubahan Kelas", "Karir", "Kemahasiswaan"];
                         foreach ($categories as $cat):
+                            $link_params = $_GET;
+                            $link_params['filter'] = $cat;
+                            unset($link_params['page']);
+                            $category_url = '?' . http_build_query($link_params);
                             ?>
-                            <a href="?search=<?php echo urlencode($search_query); ?>&filter=<?php echo $cat; ?>"
+                            <a href="<?php echo $category_url; ?>"
                                 class="filter-option <?php echo ($filter_type === $cat) ? 'active' : ''; ?>">
                                 <?php echo htmlspecialchars($cat); ?>
                             </a>
@@ -322,7 +376,6 @@ function get_url_params()
                 </div>
             </form>
 
-            <!-- TABLE HEADER -->
             <div class="table-header">
                 <div class="th-type">JENIS</div>
                 <div class="th-title">JUDUL</div>
@@ -332,32 +385,26 @@ function get_url_params()
                 <div class="th-actions">AKSI</div>
             </div>
 
-            <!-- TABLE ROWS -->
             <div class="table-body">
                 <?php if (!empty($announcements)): ?>
                     <?php foreach ($announcements as $announcement): ?>
                         <div class="table-row">
-                            <!-- Type -->
                             <div class="td-type">
                                 <span class="type-badge"><?php echo htmlspecialchars($announcement['type']); ?></span>
                             </div>
 
-                            <!-- Title -->
                             <div class="td-title">
                                 <?php echo htmlspecialchars($announcement['title']); ?>
                             </div>
 
-                            <!-- Date -->
                             <div class="td-date">
                                 <?php echo date('d M Y', strtotime($announcement['date'])); ?>
                             </div>
 
-                            <!-- Creator -->
                             <div class="td-creator">
                                 <?php echo htmlspecialchars($announcement['created_by_name'] ?? 'Tidak Diketahui'); ?>
                             </div>
 
-                            <!-- Document -->
                             <div class="td-document">
                                 <?php if (!empty($announcement['document_path'])): ?>
                                     <a href="<?php echo htmlspecialchars($announcement['document_path']); ?>" target="_blank"
@@ -369,7 +416,6 @@ function get_url_params()
                                 <?php endif; ?>
                             </div>
 
-                            <!-- Actions -->
                             <div class="td-actions">
                                 <button type="button" class="btn-edit"
                                     onclick='openEditModal(<?php echo json_encode($announcement); ?>)'>
@@ -396,6 +442,56 @@ function get_url_params()
             </div>
         </main>
     </div>
+
+    <!-- SMART PAGINATION -->
+    <?php if ($total_pages > 1): ?>
+        <div class="pagination-info">
+            Halaman <?php echo $current_page; ?> dari <?php echo $total_pages; ?>
+            (Total: <?php echo $total_files; ?> Berkas)
+        </div>
+
+        <div class="pagination">
+            <!-- Previous Arrow -->
+            <?php if ($show_prev): ?>
+                <a href="?<?php echo get_url_params($current_page - 1); ?>" class="page-arrow" title="Sebelumnya">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            <?php endif; ?>
+
+            <!-- First Page -->
+            <?php if ($start_page > 1): ?>
+                <a href="?<?php echo get_url_params(1); ?>" class="page-number">1</a>
+                <?php if ($start_page > 2): ?>
+                    <span class="page-dots">...</span>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <!-- Page Numbers -->
+            <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
+                <a href="?<?php echo get_url_params($i); ?>"
+                    class="page-number <?php echo ($i == $current_page) ? 'active' : ''; ?>">
+                    <?php echo $i; ?>
+                </a>
+            <?php endfor; ?>
+
+            <!-- Last Page -->
+            <?php if ($end_page < $total_pages): ?>
+                <?php if ($end_page < $total_pages - 1): ?>
+                    <span class="page-dots">...</span>
+                <?php endif; ?>
+                <a href="?<?php echo get_url_params($total_pages); ?>" class="page-number">
+                    <?php echo $total_pages; ?>
+                </a>
+            <?php endif; ?>
+
+            <!-- Next Arrow -->
+            <?php if ($show_next): ?>
+                <a href="?<?php echo get_url_params($current_page + 1); ?>" class="page-arrow" title="Selanjutnya">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
 
     <!-- EDIT MODAL -->
     <div id="editModal" class="modal">
