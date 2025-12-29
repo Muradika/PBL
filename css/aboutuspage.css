@@ -182,19 +182,19 @@ body {
 
 /* FOTO TIDAK ZOOM - TETAP STATIC */
 .card-placeholder.muradika {
-    background-image: url('../img/img_dika.jpg');
+    background-image: url('../img/img_dika.jpeg');
 }
 
 .card-placeholder.bryan {
-    background-image: url('../img/img_bryan.jpg');
+    background-image: url('../img/img_bryan.jpeg');
 }
 
 .card-placeholder.siti {
-    background-image: url('../img/img_siti.jpg');
+    background-image: url('../img/img_siti.jpeg');
 }
 
 .card-placeholder.zahrah {
-    background-image: url('../img/img_zahrah.jpg');
+    background-image: url('../img/img_zahrah.jpeg');
 }
 
 .card-details {
