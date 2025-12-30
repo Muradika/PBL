@@ -41,7 +41,8 @@
         </h1>
 
         <div class="team-card-container">
-            <div class="team-card">
+            <!-- CARD 1: MURADIKA -->
+            <a href="https://www.instagram.com/muradikaa_?igsh=eHFkemh1ajY2MDRy" target="_blank" class="team-card">
                 <div class="card-placeholder muradika"></div>
                 <div class="card-details">
                     <h3 class="member-name">Muradika Laksamana Putra</h3>
@@ -49,9 +50,10 @@
                     <p class="member-nim">NIM : 3312501059</p>
                     <p class="member-kontribusi">Tugas : Leader & Back-End</p>
                 </div>
-            </div>
+            </a>
 
-            <div class="team-card">
+            <!-- CARD 2: BRYAN -->
+            <a href="https://www.instagram.com/bryanstrz?igsh=MWJydmI3emxqeGhweA==" target="_blank" class="team-card">
                 <div class="card-placeholder bryan"></div>
                 <div class="card-details">
                     <h3 class="member-name">Bryan Abisai Immanuel Sitorus</h3>
@@ -59,9 +61,10 @@
                     <p class="member-nim">NIM : 3312501058</p>
                     <p class="member-kontribusi">Tugas : Full Stack Developer</p>
                 </div>
-            </div>
+            </a>
 
-            <div class="team-card">
+            <!-- CARD 3: SITI -->
+            <a href="https://www.instagram.com/sitichania_?igsh=bjRwc290Mnl3d2dz" target="_blank" class="team-card">
                 <div class="card-placeholder siti"></div>
                 <div class="card-details">
                     <h3 class="member-name">
@@ -72,9 +75,10 @@
                     <p class="member-nim">NIM : 3312501057</p>
                     <p class="member-kontribusi">Tugas : Front-End</p>
                 </div>
-            </div>
+            </a>
 
-            <div class="team-card">
+            <!-- CARD 4: ZAHRAH -->
+            <a href="https://www.instagram.com/zahrahathirah_?igsh=bGlqaTZ4cDQ1bHdj" target="_blank" class="team-card">
                 <div class="card-placeholder zahrah"></div>
                 <div class="card-details">
                     <h3 class="member-name">
@@ -85,7 +89,7 @@
                     <p class="member-nim">NIM : 3312501060</p>
                     <p class="member-kontribusi">Tugas : Back-End</p>
                 </div>
-            </div>
+            </a>
         </div>
     </main>
 
